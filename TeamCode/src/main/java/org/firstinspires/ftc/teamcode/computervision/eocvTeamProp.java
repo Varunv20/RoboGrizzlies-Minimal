@@ -80,12 +80,10 @@ public class eocvTeamProp extends OpenCvPipeline {
         return new int[] {r,g,b};
     }
     public boolean mae(double[] l, Telemetry telemetry) {
-        // double[] red = {255, 0, 0};
+        double[] red = {255, 0, 0};
        // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
-       double[] h = RGBtoHSV(l[0],l[1],l[2]);
-       // l[0] <= 255 && l[0] >= 180 && l[1] <= 120 && l[1] >= 0 && l[2] <= 120 && l[2] >= 0
-        if ((h[0] <= 30 && h[0] >= 0 || h[0] <= 350 && h[0] >= 300) && h[1] > 40 && h[2] > 40)
+        if (l[0] <= 255 && l[0] >= 180 && l[1] <= 120 && l[1] >= 0 && l[2] <= 120 && l[2] >= 0)
         {
             //telemetry.addData("color", "red" );
             return true;
@@ -110,7 +108,6 @@ public class eocvTeamProp extends OpenCvPipeline {
         }
         ArrayList<Integer> red_sum_list = new ArrayList<Integer>();
         Integer counter = 0;
-
         for (int i = 0;i < redheights.size(); i++ ) {
             counter += redheights.get(i);
             if (i%100 == 0) {
