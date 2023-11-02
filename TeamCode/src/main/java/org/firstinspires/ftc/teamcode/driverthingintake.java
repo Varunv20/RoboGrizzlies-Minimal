@@ -4,26 +4,17 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-@TeleOp(name="DRIVETRAIN_ONLY", group="Driver OP")
-public class driverthing extends LinearOpMode {
+@TeleOp(name="DRIVETRAIN_ONLYINTAKE", group="Driver OP")
+public class driverthingintake extends LinearOpMode {
 
     // Declare OpMode members.
     private final ElapsedTime runtime = new ElapsedTime();
@@ -36,11 +27,11 @@ public class driverthing extends LinearOpMode {
     public DcMotor br;
     public DcMotor intakeMotor;
 
-    public DcMotor linearextenderLeft;
-    public DcMotor linearextenderRight;
-    public Servo paperAirplane;
-    public Servo extenderRotator;
-    public Servo extenderPlacer;
+   // public DcMotor linearextenderLeft;
+   // public DcMotor linearextenderRight;
+   // public Servo paperAirplane;
+  //  public Servo extenderRotator;
+  //  public Servo extenderPlacer;
 
 
 
@@ -51,8 +42,8 @@ public class driverthing extends LinearOpMode {
 
 
 
-    public static final String TAG = "Vuforia VuMark Sample";
-    WebcamName webcamName;
+   // public static final String TAG = "Vuforia VuMark Sample";
+   /// WebcamName webcamName;
     OpenCvWebcam webcam;
     OpenCvPipeline pipeline;
 
@@ -91,12 +82,12 @@ public class driverthing extends LinearOpMode {
         bl= hardwareMap.get(DcMotor.class, "BL");
         br= hardwareMap.get(DcMotor.class, "BR");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
-        linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
+      //  linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
+     //   linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
 
-        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
-        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
-        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+      //  paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+      //  extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
+      //  extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
 
        // E = hardwareMap.get(DcMotor.class, "E");
 
@@ -107,10 +98,10 @@ public class driverthing extends LinearOpMode {
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      //  linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    //    linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+     //   linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    //    linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -125,7 +116,7 @@ public class driverthing extends LinearOpMode {
         fr.setDirection(DcMotor.Direction.FORWARD);
         bl.setDirection(DcMotor.Direction.REVERSE);
         br.setDirection(DcMotor.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
         // runs the moment robot is initialized 136
@@ -143,9 +134,12 @@ public class driverthing extends LinearOpMode {
             if (gamepad1.right_bumper) {
                 if (intake_running) {
                     stopIntake();
+                    intake_running = false;
                 }
                 else{
                     startIntake();
+                    intake_running = false;
+
                 }
             }
             if (gamepad1.dpad_down) {
@@ -202,10 +196,10 @@ public class driverthing extends LinearOpMode {
             //}
             //if(gamepad1.right_trigger > 0.5){grabber.setPosition(.550);}
 
-            if(gamepad1.b){extend(linearextenderLeft, linearextenderRight, 0);}
-            if(gamepad1.a){extend(linearextenderLeft, linearextenderRight, 1);}
-            if(gamepad1.x){extend(linearextenderLeft, linearextenderRight, 2);}
-            if(gamepad1.y){extend(linearextenderLeft, linearextenderRight, 3);}
+         //   if(gamepad1.b){extend(linearextenderLeft, linearextenderRight, 0);}
+         //   if(gamepad1.a){extend(linearextenderLeft, linearextenderRight, 1);}
+          //  if(gamepad1.x){extend(linearextenderLeft, linearextenderRight, 2);}
+         //   if(gamepad1.y){extend(linearextenderLeft, linearextenderRight, 3);}
             telemetry.addData("fl",fl.getPower());
             telemetry.addData("fr",fr.getPower());
             telemetry.addData("bl",bl.getPower());
@@ -225,25 +219,25 @@ public class driverthing extends LinearOpMode {
 
 
     void rotateBox(){
-        extenderRotator.setPosition(.550);
+     //   extenderRotator.setPosition(.550);
         sleep(100);
     }
     void unrotateBox(){
-        extenderRotator.setPosition(0.0);
+     //   extenderRotator.setPosition(0.0);
         sleep(100);
     }
     void open(){
-        extenderPlacer.setPosition(.550);
+     //   extenderPlacer.setPosition(.550);
         sleep(100);
     }
     void close(){
 
-        extenderPlacer.setPosition(0.0);
+       // extenderPlacer.setPosition(0.0);
         sleep(100);
     }
 
     void launch() {
-        paperAirplane.setPosition(.35);
+      //  paperAirplane.setPosition(.35);
         sleep(100);
     }
     // void grab(){
