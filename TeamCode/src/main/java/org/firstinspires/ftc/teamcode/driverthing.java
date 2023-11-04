@@ -114,28 +114,19 @@ public class driverthing extends OpMode {
      //final double MAX_LS_HEIGHT = 50;
     @Override
     public void loop() {
-
-
         // runs the moment robot is initialized 136
         //    waitForStart();
         //    runtime.reset();
-
-
-          move();
-
+        move();
         if (gamepad1.dpad_left) {
             telemetry.addData("accessed: stopintake", "0");
-
-
           //  stopIntake();
             intakeMotor.setPower(0);
-
         }
         if (gamepad1.dpad_right) {
             telemetry.addData("accessed: startintake", "0");
-
            // startIntake();
-intakeMotor.setPower(0.75);
+            intakeMotor.setPower(0.75);
         }
         if (gamepad1.dpad_up) {
             intakeMotor.setPower(-0.75);
@@ -181,23 +172,16 @@ intakeMotor.setPower(0.75);
         // }
         if (gamepad1.right_bumper) {
             rotateBox();
-
         }
         if (gamepad1.left_bumper) {
             unrotateBox();
-
         }
         if (gamepad1.b) {
             open();
-
         }
         if (gamepad1.x) {
             close();
-
         }
-
-
-
 
 /*
             if(gamepad1.left_stick_button && !rishi)
@@ -243,7 +227,6 @@ intakeMotor.setPower(0.75);
             telemetry.update();
         }
 
-
        /* void slidesToHeight (double heightCM, double power){
             linearextenderRight.setTargetPosition((int) (heightCM * TICKS_PER_CENTIMETER));
             linearextenderLeft.setTargetPosition((int) (heightCM * TICKS_PER_CENTIMETER));
@@ -269,7 +252,6 @@ intakeMotor.setPower(0.75);
    //     sleep(100);
     }
    void close(){
-
         extenderPlacer.setPosition(0.0);
    //    sleep(100);
     }
@@ -340,7 +322,6 @@ intakeMotor.setPower(0.75);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
-
     }
 
     void move(){
@@ -355,8 +336,4 @@ intakeMotor.setPower(0.75);
         br.setPower((Range.clip((vertical + horizontal - turn), -1, 1))/**powersetterr*/);
     }
 
-
-
-
-    }
-
+}
