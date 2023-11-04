@@ -38,7 +38,7 @@ public class driverthing extends LinearOpMode {
 
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
-    public Servo paperAirplane;
+    //public Servo paperAirplane;
     public Servo extenderRotator;
     public Servo extenderPlacer;
 
@@ -58,12 +58,13 @@ public class driverthing extends LinearOpMode {
 
     Boolean intake_running = false;
 
+     //final double MAX_LS_HEIGHT = 50;
     @Override public void runOpMode() {
 
         /*
          * Retrieve the camera we are to use.
          */
-       // webcamName = hardwareMap.get(WebcamName.class, "webcam");
+        // webcamName = hardwareMap.get(WebcamName.class, "webcam");
         //int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         //webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);        // OR...  Do Not Activate the Camera Monitor View, to save power
         //pipeline = new opencvpipelines();
@@ -71,34 +72,30 @@ public class driverthing extends LinearOpMode {
 
         //webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         //{
-           // @Override
-          //  public void onOpened()
-            //{
-             //   webcam.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
-            //}
+        // @Override
+        //  public void onOpened()
+        //{
+        //   webcam.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+        //}
 
-           // @Override
-            //public void onError(int errorCode) {}
-       // });
-
-
+        // @Override
+        //public void onError(int errorCode) {}
+        // });
 
 
-
-
-        fl= hardwareMap.get(DcMotor.class, "FL");
-        fr= hardwareMap.get(DcMotor.class, "FR");
-        bl= hardwareMap.get(DcMotor.class, "BL");
-        br= hardwareMap.get(DcMotor.class, "BR");
+        fl = hardwareMap.get(DcMotor.class, "FL");
+        fr = hardwareMap.get(DcMotor.class, "FR");
+        bl = hardwareMap.get(DcMotor.class, "BL");
+        br = hardwareMap.get(DcMotor.class, "BR");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
         linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
 
-        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
-        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
-        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+        // paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
+         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
 
-       // E = hardwareMap.get(DcMotor.class, "E");
+        // E = hardwareMap.get(DcMotor.class, "E");
 
         //grabber = hardwareMap.get(Servo.class, "grab");
 
@@ -121,11 +118,18 @@ public class driverthing extends LinearOpMode {
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        fl.setDirection(DcMotor.Direction.REVERSE);
-        fr.setDirection(DcMotor.Direction.FORWARD);
-        bl.setDirection(DcMotor.Direction.REVERSE);
-        br.setDirection(DcMotor.Direction.FORWARD);
+        fl.setDirection(DcMotor.Direction.FORWARD);
+        fr.setDirection(DcMotor.Direction.REVERSE);
+        bl.setDirection(DcMotor.Direction.FORWARD);
+        br.setDirection(DcMotor.Direction.REVERSE);
         intakeMotor.setDirection(DcMotor.Direction.FORWARD);
+        linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
+
+
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+        final double CENTIMETERS_PER_TICK = 1 / TICKS_PER_CENTIMETER;
+
+        final double MAX_SLIDE_HEIGHT = 50;
 
 
         // runs the moment robot is initialized 136
@@ -133,39 +137,87 @@ public class driverthing extends LinearOpMode {
         runtime.reset();
 
 
-
-
-
-
         while (opModeIsActive()) {
 
             move();
-            if (gamepad1.right_bumper) {
+            if (gamepad1.dpad_left) {
                 if (intake_running) {
                     stopIntake();
-                }
-                else{
+                    intake_running = false;
+                } else {
                     startIntake();
+                    intake_running = true;
+
                 }
             }
-            if (gamepad1.dpad_down) {
-                launch();
+            //  if (gamepad1.y) {
+            //  linearextenderLeft.setTargetPosition(50);
+            //    linearextenderRight.setTargetPosition(-50);
+//
+            //    linearextenderLeft.setPower(1);
+            //    linearextenderRight.setPower(1);
+
+
+            //  }
+        }
+        if (gamepad2.a) {
+            linearextenderLeft.setPower(0.5);
+            linearextenderRight.setPower(0.5);
+        } else if (gamepad2.y ) {
+            linearextenderLeft.setPower(-0.5);
+            linearextenderRight.setPower(-0.5);
+        } else {
+            linearextenderLeft.setPower(0);
+            linearextenderRight.setPower(0);
+        }
+         /*   if (gamepad1.y) {
+                linearextenderRight.setTargetPosition((int)TICKS_PER_CENTIMETER*50);
+                linearextenderLeft.setTargetPosition((int)TICKS_PER_CENTIMETER*50);
+
+                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
-            if (gamepad1.right_bumper){
-                rotateBox();
+            if (gamepad1.a) {
+                linearextenderRight.setTargetPosition((int)TICKS_PER_CENTIMETER*0);
+                linearextenderLeft.setTargetPosition((int)TICKS_PER_CENTIMETER*0);
+
+                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            }
+            if (gamepad2.y) {
+                linearextenderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+                linearextenderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                linearextenderRight.setPower(0.5);
+                linearextenderLeft.setPower(0.5);
+            }*/
+
+            if (gamepad1.dpad_down) {
+                //launch();
+            }
+            if (gamepad1.right_bumper) {
+                 rotateBox();
 
             }
             if (gamepad1.left_bumper) {
-                unrotateBox();
+                   unrotateBox();
 
             }
-            if (gamepad1.left_trigger > 0.3){
-                open();
+            if (gamepad1.left_trigger > 0.3) {
+                 open();
 
             }
-            if (gamepad1.right_trigger > 0.3){
-                close();
+            if (gamepad1.right_trigger > 0.3) {
+                  close();
 
+            }
+
+            if (gamepad2.dpad_left) {
+
+            }
+            if (gamepad2.dpad_up) {
+             //   slidesToHeight(-51, 0.7);
             }
 
 /*
@@ -185,74 +237,76 @@ public class driverthing extends LinearOpMode {
 */
 
 
-
-
             //if(gamepad1.left_trigger > 0.5){ grabber.setPosition(.35);
-          // }
+            // }
 
             //if(gamepad1.left_bumper){
-              //  E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //  E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                //while(gamepad1.left_bumper){
-                ///E.setPower(-1);
-                //}
-                //E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-             //   E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-               // E.setPower(0);
+            //while(gamepad1.left_bumper){
+            ///E.setPower(-1);
+            //}
+            //E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            //   E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            // E.setPower(0);
             //}
             //if(gamepad1.right_trigger > 0.5){grabber.setPosition(.550);}
 
-            if(gamepad1.b){extend(linearextenderLeft, linearextenderRight, 0);}
+    /*        if(gamepad1.b){extend(linearextenderLeft, linearextenderRight, 0);}
             if(gamepad1.a){extend(linearextenderLeft, linearextenderRight, 1);}
             if(gamepad1.x){extend(linearextenderLeft, linearextenderRight, 2);}
-            if(gamepad1.y){extend(linearextenderLeft, linearextenderRight, 3);}
-            telemetry.addData("fl",fl.getPower());
-            telemetry.addData("fr",fr.getPower());
-            telemetry.addData("bl",bl.getPower());
-          //  telemetry.addData("e",E.getCurrentPosition());
-         //   telemetry.addData("grab", grabber.getPosition());
+            if(gamepad1.y){extend(linearextenderLeft, linearextenderRight, 3);}*/
+            telemetry.addData("fl", fl.getPower());
+            telemetry.addData("fr", fr.getPower());
+            telemetry.addData("bl", bl.getPower());
+            //  telemetry.addData("e",E.getCurrentPosition());
+            //   telemetry.addData("grab", grabber.getPosition());
             telemetry.update();
-       }
-
-    }
+        }
 
 
+       /* void slidesToHeight (double heightCM, double power){
+            linearextenderRight.setTargetPosition((int) (heightCM * TICKS_PER_CENTIMETER));
+            linearextenderLeft.setTargetPosition((int) (heightCM * TICKS_PER_CENTIMETER));
 
+            linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
-
-
-
-
+            linearextenderRight.setPower(power);
+            linearextenderLeft.setPower(power);
+        }*/
+    //}
     void rotateBox(){
-        extenderRotator.setPosition(.550);
+        extenderRotator.setPosition(0.3);
         sleep(100);
     }
     void unrotateBox(){
-        extenderRotator.setPosition(0.0);
+        extenderRotator.setPosition(0.7);
         sleep(100);
     }
     void open(){
-        extenderPlacer.setPosition(.550);
+        extenderPlacer.setPosition(0.3);
         sleep(100);
     }
-    void close(){
+   void close(){
 
         extenderPlacer.setPosition(0.0);
         sleep(100);
     }
 
-    void launch() {
-        paperAirplane.setPosition(.35);
-        sleep(100);
-    }
+   // void launch() {
+     //   paperAirplane.setPosition(.35);
+    //    sleep(100);
+    //}
     // void grab(){
     //}
     //void ungrab(){
     //}
 
-    void extend(DcMotor left,  DcMotor right, int position) {
+  /*  void extend(DcMotor left,  DcMotor right, int position) {
 
+        final double TICKSPERCENTIMETER = 537.7/11.2;
+        final double CENTIMETERSPERTICK = 1/TICKSPERCENTIMETER;
         switch (position) {
             case 0:
                 if(left.getCurrentPosition()>10 ) {
@@ -268,8 +322,10 @@ public class driverthing extends LinearOpMode {
                 }
                 break;
             case 1:
-                left.setTargetPosition(1300);
-                right.setTargetPosition(1300);
+             //   final double TICKSPERCENTIMETER = 537.7/11.2;
+            //    final double CENTIMETERSPERTICK = 1/TICKSPERCENTIMETER;
+                left.setTargetPosition(((int)CENTIMETERSPERTICK)*12);
+                right.setTargetPosition(((int)CENTIMETERSPERTICK)*12);
                 left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 left.setPower(0.75);
@@ -277,8 +333,8 @@ public class driverthing extends LinearOpMode {
 
                 break;
             case 2:
-                left.setTargetPosition(1994);
-                right.setTargetPosition(1994);
+                left.setTargetPosition(((int)CENTIMETERSPERTICK)*12);
+                right.setTargetPosition(((int)CENTIMETERSPERTICK)*12);
                 left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 left.setPower(0.75);
@@ -286,8 +342,8 @@ public class driverthing extends LinearOpMode {
 
                 break;
             case 3:
-                left.setTargetPosition(2990);
-                right.setTargetPosition(2990);
+                left.setTargetPosition(((int)CENTIMETERSPERTICK)*50);
+                right.setTargetPosition(((int)CENTIMETERSPERTICK)*50);
                 left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 left.setPower(0.75);
@@ -297,6 +353,8 @@ public class driverthing extends LinearOpMode {
                 break;
         }
     }
+
+   */
     void startIntake(){
         intakeMotor.setPower(1.0);
     }

@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-@Autonomous(name="farAutoBlue", group="Autonomous")
-public class farAutoBlue extends LinearOpMode {
+@Autonomous(name="closeAutoBlue", group="Autonomous")
+public class closeAutoBlue extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
@@ -48,9 +48,9 @@ public class farAutoBlue extends LinearOpMode {
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
         linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
         //E = hardwareMap.get(DcMotor.class, "E");
-     //   color_sensor = hardwareMap.colorSensor.get("color_sensor");
+        //   color_sensor = hardwareMap.colorSensor.get("color_sensor");
 
-       // grabber = hardwareMap.get(Servo.class,"grab"); //THE SERVO IS IN PEROCENT, BW/ 1 OR 0. BASELINE IS .5
+        // grabber = hardwareMap.get(Servo.class,"grab"); //THE SERVO IS IN PEROCENT, BW/ 1 OR 0. BASELINE IS .5
 
         fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -61,7 +61,7 @@ public class farAutoBlue extends LinearOpMode {
         linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-       // E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -86,7 +86,7 @@ public class farAutoBlue extends LinearOpMode {
             movebackward(54);
             sleep(200);
 
-            strafeleft(181);
+            strafeleft(60);
             sleep(1000);
 
             moveforward(55.5);
@@ -264,8 +264,8 @@ public class farAutoBlue extends LinearOpMode {
     }
 
     //void launch() {
-      //  paperAirplane.setPosition(.35);
-      //  sleep(100);
+    //  paperAirplane.setPosition(.35);
+    //  sleep(100);
     //}
     // void grab(){
     //}

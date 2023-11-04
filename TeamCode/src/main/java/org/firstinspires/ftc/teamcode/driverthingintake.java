@@ -81,6 +81,7 @@ public class driverthingintake extends LinearOpMode {
         fr= hardwareMap.get(DcMotor.class, "FR");
         bl= hardwareMap.get(DcMotor.class, "BL");
         br= hardwareMap.get(DcMotor.class, "BR");
+
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
       //  linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
      //   linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
@@ -292,7 +293,7 @@ public class driverthingintake extends LinearOpMode {
         }
     }
     void startIntake(){
-        intakeMotor.setPower(1.0);
+        intakeMotor.setPower(0.5);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
