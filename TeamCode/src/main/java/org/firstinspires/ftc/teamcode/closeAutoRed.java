@@ -79,12 +79,12 @@ public class closeAutoRed extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()) {
-            moveforward(66);
-            sleep(300);
+            moveforward(12);
+            sleep(100);
 
             //place spike mark stuff
-            movebackward(54);
-            sleep(300);
+           // movebackward(54);
+            //sleep(300);
             straferight(60);
             sleep(1000);
             moveforward(55.5);

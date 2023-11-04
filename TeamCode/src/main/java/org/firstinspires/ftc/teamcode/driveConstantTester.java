@@ -90,13 +90,13 @@ public class driveConstantTester extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "FR");
         bl = hardwareMap.get(DcMotor.class, "BL");
         br = hardwareMap.get(DcMotor.class, "BR");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
-        linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
+        //intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        ///linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
+        //linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
 
         // paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
-        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
-        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+        //extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
+        //extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
 
         // E = hardwareMap.get(DcMotor.class, "E");
 
@@ -106,11 +106,11 @@ public class driveConstantTester extends LinearOpMode {
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -118,15 +118,15 @@ public class driveConstantTester extends LinearOpMode {
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         fl.setDirection(DcMotor.Direction.FORWARD);
         fr.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.REVERSE);
-        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
-        linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
+        //intakeMotor.setDirection(DcMotor.Direction.FORWARD);
+        //linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
 
 
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
@@ -157,11 +157,11 @@ public class driveConstantTester extends LinearOpMode {
 
             }
             if (gamepad1.right_bumper) {
-                turnconstant -= 0.01;
+                turnconstant -= 0.0001;
 
             }
             if (gamepad1.left_bumper) {
-                turnconstant += 0.01;
+                turnconstant += 0.0001;
 
             }
             if (gamepad1.right_trigger > 0.3) {
@@ -182,6 +182,12 @@ public class driveConstantTester extends LinearOpMode {
                 straferight(2.54*12* 3);
 
             }
+            telemetry.addData("move", moveconstant);
+            telemetry.addData("strafe", strafeconstant);
+            telemetry.addData("turn",turnconstant);
+            //  telemetry.addData("e",E.getCurrentPosition());
+            //   telemetry.addData("grab", grabber.getPosition());
+            telemetry.update();
             //  if (gamepad1.y) {
             //  linearextenderLeft.setTargetPosition(50);
             //    linearextenderRight.setTargetPosition(-50);
@@ -192,16 +198,7 @@ public class driveConstantTester extends LinearOpMode {
 
             //  }
         }
-        if (gamepad2.a) {
-            linearextenderLeft.setPower(0.5);
-            linearextenderRight.setPower(0.5);
-        } else if (gamepad2.y ) {
-            linearextenderLeft.setPower(-0.5);
-            linearextenderRight.setPower(-0.5);
-        } else {
-            linearextenderLeft.setPower(0);
-            linearextenderRight.setPower(0);
-        }
+
          /*   if (gamepad1.y) {
                 linearextenderRight.setTargetPosition((int)TICKS_PER_CENTIMETER*50);
                 linearextenderLeft.setTargetPosition((int)TICKS_PER_CENTIMETER*50);
@@ -247,12 +244,7 @@ public class driveConstantTester extends LinearOpMode {
             if(gamepad1.a){extend(linearextenderLeft, linearextenderRight, 1);}
             if(gamepad1.x){extend(linearextenderLeft, linearextenderRight, 2);}
             if(gamepad1.y){extend(linearextenderLeft, linearextenderRight, 3);}*/
-        telemetry.addData("move", moveconstant);
-        telemetry.addData("strafe", strafeconstant);
-        telemetry.addData("turn",turnconstant);
-        //  telemetry.addData("e",E.getCurrentPosition());
-        //   telemetry.addData("grab", grabber.getPosition());
-        telemetry.update();
+
     }
 
 

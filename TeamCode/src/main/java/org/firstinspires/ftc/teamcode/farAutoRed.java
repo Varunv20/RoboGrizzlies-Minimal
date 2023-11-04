@@ -79,12 +79,12 @@ public class farAutoRed extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()) {
-            moveforward(66);
+            moveforward(12);
             sleep(300);
 
             //place spike mark stuff
-            movebackward(54);
-            sleep(300);
+           // movebackward(54);
+           // sleep(300);
             straferight(181);
             sleep(1000);
             moveforward(55.5);

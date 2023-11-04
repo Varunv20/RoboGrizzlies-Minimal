@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-@Autonomous(name="closeAutoBlue", group="Autonomous")
-public class closeAutoBlue extends LinearOpMode {
+@Autonomous(name="closeAutoBluePush", group="Autonomous")
+public class closeAutoBluePush extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
@@ -21,11 +21,11 @@ public class closeAutoBlue extends LinearOpMode {
     public DcMotor fr;
     public DcMotor bl;
     public DcMotor br;
-    public Servo paperAirplane;
-    public Servo extenderRotator;
-    public Servo extenderPlacer;
-    public DcMotor linearextenderLeft;
-    public DcMotor linearextenderRight;
+    // public Servo paperAirplane;
+    // public Servo extenderRotator;
+    //public Servo extenderPlacer;
+    //public DcMotor linearextenderLeft;
+    //public DcMotor linearextenderRight;
     double moveconstant = 1783 * (2/2.05); //WORKS
     double motorrotation = 538; //WORKS
     double turnconstant = 11.3846625767; // per degree, so its rly small
@@ -42,11 +42,11 @@ public class closeAutoBlue extends LinearOpMode {
         bl = hardwareMap.get(DcMotor.class, "BL");
         br = hardwareMap.get(DcMotor.class, "BR");
 
-        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
-        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
-        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
-        linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
-        linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
+        // paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+        //extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
+        //extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+        //linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
+        //linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
         //E = hardwareMap.get(DcMotor.class, "E");
         //   color_sensor = hardwareMap.colorSensor.get("color_sensor");
 
@@ -56,10 +56,10 @@ public class closeAutoBlue extends LinearOpMode {
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ////linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -79,34 +79,17 @@ public class closeAutoBlue extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()) {
-            moveforward(15);
+            moveforward(20);
             sleep(100);
 
             //place spike mark stuff
-           // movebackward(54);
-          //  sleep(200);
-
-            strafeleft(60);
-            sleep(1000);
-
-            moveforward(55.5);
-            sleep(200);
-
             turnleft(90);
             sleep(200);
 
-            extend_no_enc(0);
-            rotateBox();
-            open();
-            close();
-            unrotateBox();
-            extend_no_enc(1);
-            //place stuff
-            strafeleft(58);
-            sleep(200);
+            moveforward(70);
+            sleep(1000);
 
-            moveforward(49);
-            sleep(200);
+
 
             break;
         }
@@ -245,23 +228,7 @@ public class closeAutoBlue extends LinearOpMode {
         br.setPower(0);
 
     }
-    void rotateBox(){
-        extenderRotator.setPosition(0.3);
-        sleep(100);
-    }
-    void unrotateBox(){
-        extenderRotator.setPosition(0.7);
-        sleep(100);
-    }
-    void open(){
-        extenderPlacer.setPosition(0.3);
-        sleep(100);
-    }
-    void close(){
 
-        extenderPlacer.setPosition(0.0);
-        sleep(100);
-    }
 
     //void launch() {
     //  paperAirplane.setPosition(.35);
@@ -271,22 +238,7 @@ public class closeAutoBlue extends LinearOpMode {
     //}
     //void ungrab(){
     //}
-    void extend_no_enc(int position) {
-        if (position == 0) {
-            linearextenderLeft.setPower(0.5);
-            linearextenderRight.setPower(0.5);
-            sleep(800);
-            linearextenderLeft.setPower(0);
-            linearextenderRight.setPower(0);
-        }
-        else if (position == 1) {
-            linearextenderLeft.setPower(-0.5);
-            linearextenderRight.setPower(-0.5);
-            sleep(800);
-            linearextenderLeft.setPower(0);
-            linearextenderRight.setPower(0);
-        }
-    }
+
     void extend(DcMotor left,  DcMotor right, int position) {
 
         switch (position) {
