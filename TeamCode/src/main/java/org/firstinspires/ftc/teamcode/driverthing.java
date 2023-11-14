@@ -40,6 +40,7 @@ public class driverthing extends OpMode {
     Servo extenderRotator;
     Servo extenderPlacer;
     Boolean intake_running = false;
+    double i = 0;
     @Override
     public void init() {
         fl = hardwareMap.get(DcMotor.class, "FL");
@@ -133,6 +134,9 @@ public class driverthing extends OpMode {
         if (gamepad1.dpad_up) {
             intakeMotor.setPower(-0.75);
         }
+        if (gamepad1.dpad_down) {
+            telemetry.addData("beans","0");
+        }
         if (gamepad1.y) {
             linearextenderLeft.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
             linearextenderRight.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
@@ -180,10 +184,33 @@ public class driverthing extends OpMode {
         //launch();
         // }
         if (gamepad1.right_bumper) {
-            rotateBox();
+            holdPixelWithBox();
         }
         if (gamepad1.left_bumper) {
-            unrotateBox();
+            dropBox();
+            // left and right bumper swapped after first comp
+        }
+        if (gamepad1.right_trigger > 0.5) {
+            // toggles intake
+            if (i == 0) {
+                stopIntake();
+                i = 1;
+            }
+            else {
+                startIntake();
+                i = 0;
+            }
+        }
+        if(gamepad1.left_trigger > 0.5) {
+            // toggles intake
+            if (i == 0) {
+                stopIntake();
+                i = -1;
+            }
+            else {
+                reverseIntake();
+                i = 0;
+            }
         }
         if (gamepad1.b) {
             //open();
@@ -259,11 +286,11 @@ public class driverthing extends OpMode {
         }*/
     //}
 
-    void rotateBox(){
+    void dropBox(){
         extenderRotator.setPosition(0.3);
        // sleep(100);
     }
-    void unrotateBox(){
+    void holdPixelWithBox(){
         extenderRotator.setPosition(0.7);
     //    sleep(100);
     }
@@ -342,6 +369,9 @@ public class driverthing extends OpMode {
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
+    }
+    void reverseIntake(){
+        intakeMotor.setPower(-1.0);
     }
 
     void move(){
