@@ -124,8 +124,8 @@ public class eocvTeamProp extends OpenCvPipeline {
             Integer counter = 0;
             for (int i = 0; i < redheights.size(); i++) {
                 counter += redheights.get(i);
-                if (i % 100 == 0) {
-                    red_sum_list.add(counter / 100);
+                if (i % 3 == 0) {
+                    red_sum_list.add(counter );
                     counter = 0;
                 }
             }
@@ -144,6 +144,8 @@ public class eocvTeamProp extends OpenCvPipeline {
 
             run = false;
             telemetry.addData("histogram", "" + red_sum_list);
+            telemetry.addData("test", "" );
+
             telemetry.update();
         }
         return input1; // Return the image that will be displayed in the viewport
