@@ -95,12 +95,12 @@ public class farAutoBlue extends LinearOpMode {
             turnleft(90);
             sleep(200);
 
-            extend_no_enc(0);
+            extender(30);
             rotateBox();
             open();
             close();
             unrotateBox();
-            extend_no_enc(1);
+            extender(2);
             //place stuff
             strafeleft(58);
             sleep(200);
@@ -111,6 +111,19 @@ public class farAutoBlue extends LinearOpMode {
             break;
         }
 
+    }
+    void extender(int pos) {
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+
+        linearextenderLeft.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9);
+
+        telemetry.addData("Slides to 9cm","0");
     }
     // this is only for dc motors
     void settargetpositioner(DcMotor motor, int position){

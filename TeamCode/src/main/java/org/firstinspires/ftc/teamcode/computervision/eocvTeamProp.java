@@ -13,16 +13,16 @@ import java.util.*;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
     double[] red = {255,0,0};
-    boolean run = false;
+    boolean run = true;
 
     double max_error = 90.0;
     int min = 25;
     double forward;
     double[] yellow = {240,180,30};
     String result = "";
-    Integer[] left = {};
-    Integer[] center = {};
-    Integer[] right = {};
+    Integer[] left = {1, 25, 21, 34, 79, 86, 17, 9, 9, 20, 14, 14, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 9, 10, 11, 11, 12, 13, 14, 13, 13};
+    Integer[] center = {0, 16, 15, 15, 15, 15, 15, 14, 14, 14, 14, 14, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 11, 12, 12, 12, 14, 14, 14, 14};
+    Integer[] right = {0, 17, 16, 17, 16, 15, 15, 14, 14, 15, 14, 14, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 10, 8, 0, 0, 0, 0, 0, 0, 4};
     // Telemetry telemetry;
     Telemetry telemetry;
     public eocvTeamProp (Telemetry telemetry){
@@ -36,6 +36,19 @@ public class eocvTeamProp extends OpenCvPipeline {
 
         //return new double[] {red, green, blue};
    // }
+        public boolean is_red(double[] l, Telemetry telemetry) {
+            double[] red = {255, 0, 0};
+            // telemetry.addData("color", "" + l[0]);
+            //double[] blue = {0,0,255};
+            if (l[1] > 60 && l[2] > 60){
+                if ((l[0] <= 30 || (l[0] > 115) && l[0] < 180)) {
+                    return true;
+                }
+            }
+            //telemetry.addData("color", l[0]  );
+
+            return false;
+        }
     public double[] RGBtoHSV(double r, double g, double b) {
 
         double h, s, v;
@@ -79,7 +92,7 @@ public class eocvTeamProp extends OpenCvPipeline {
     public double comparison(Integer[] vec1, Integer[] vec2) {
         double loss = 0;
         for (int i=0; i < vec1.length; i++) {
-            loss += (vec1[i] + vec2[i]) *  (vec1[i] + vec2[i]);
+            loss += Math.abs(vec1[i] + vec2[i]);
         }
         return loss;
     }
@@ -110,11 +123,11 @@ public class eocvTeamProp extends OpenCvPipeline {
         Mat input1 = input.clone();
         if (run) {
             ArrayList<Integer> redheights = new ArrayList<Integer>();
-            for (int x = 0; x < input1.height(); x++) {
+            for (int y = 0; y < input1.width(); y++) {
                 int icounter = 0;
-                for (int y = 0; y < input1.width(); y++) {
+                for (int x = 0; x < input1.height(); x++) {
                     double[] i = input1.get(x, y);
-                    if (mae(i, telemetry)) {
+                    if (is_red(RGBtoHSV(i[0], i[1], i[2]), telemetry)) {
                         icounter++;
                     }
                 }
@@ -122,29 +135,36 @@ public class eocvTeamProp extends OpenCvPipeline {
             }
             ArrayList<Integer> red_sum_list = new ArrayList<Integer>();
             Integer counter = 0;
+
             for (int i = 0; i < redheights.size(); i++) {
                 counter += redheights.get(i);
-                if (i % 3 == 0) {
-                    red_sum_list.add(counter );
+                if (i % 200 == 0) {
+                    red_sum_list.add(counter/200 );
                     counter = 0;
                 }
             }
             Integer[] red_frequency = red_sum_list.toArray(new Integer[0]);
+
             double left_comp = comparison(red_frequency, left);
             double center_comp = comparison(red_frequency, center);
             double right_comp = comparison(red_frequency, right);
-
-            if (left_comp > center_comp && left_comp > center_comp) {
+            double m = Math.min(left_comp, Math.min(center_comp, right_comp));
+            if (left_comp == m) {
                 result = "left";
-            } else if (right_comp > center_comp && right_comp > center_comp) {
+            } else if (m == right_comp) {
                 result = "right";
             } else {
                 result ="center";
             }
 
-            run = false;
-            telemetry.addData("histogram", "" + red_sum_list);
-            telemetry.addData("test", "" );
+            run = true;
+            telemetry.addData("histogram", "" + result);
+
+            telemetry.addData("test", red_sum_list );
+
+            telemetry.addData("l", left_comp );
+            telemetry.addData("r", right_comp );
+            telemetry.addData("c", center_comp );
 
             telemetry.update();
         }

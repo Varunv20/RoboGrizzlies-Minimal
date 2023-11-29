@@ -94,14 +94,14 @@ public class eocvTeamPropCalibration extends OpenCvPipeline {
         double[] red = {255, 0, 0};
         // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
-        if (l[1] > 90 && l[2] > 90){
-            if (l[0] <= 30 || (l[0] > 115 && l[0] < 180)) {
-                return false;
+        if (l[1] > 60 && l[2] > 60){
+            if ((l[0] <= 30 || (l[0] > 115) && l[0] < 180)) {
+                return true;
             }
         }
-        //telemetry.addData("color", "red" +l[0] );
+        //telemetry.addData("color", l[0]  );
 
-        return true;
+        return false;
     }
 
 
@@ -112,11 +112,11 @@ public class eocvTeamPropCalibration extends OpenCvPipeline {
         Mat input1 = input.clone();
         if (true) {
             ArrayList<Integer> redheights = new ArrayList<Integer>();
-            for (int x = 0; x < input1.height(); x++) {
+            for (int y = 0; y < input1.width(); y++) {
                 int icounter = 0;
-                for (int y = 0; y < input1.width(); y++) {
+                for (int x = 0; x < input1.height(); x++) {
                     double[] i = input1.get(x, y);
-                    if (is_red(i, telemetry)) {
+                    if (is_red(RGBtoHSV(i[0], i[1], i[2]), telemetry)) {
                         icounter++;
                     }
                 }
@@ -124,10 +124,11 @@ public class eocvTeamPropCalibration extends OpenCvPipeline {
             }
             ArrayList<Integer> red_sum_list = new ArrayList<Integer>();
             Integer counter = 0;
+
             for (int i = 0; i < redheights.size(); i++) {
                 counter += redheights.get(i);
-                if (i % 100 == 0) {
-                    red_sum_list.add(counter/100 );
+                if (i % 200 == 0) {
+                    red_sum_list.add(counter/200 );
                     counter = 0;
                 }
             }
@@ -145,7 +146,7 @@ public class eocvTeamPropCalibration extends OpenCvPipeline {
                 result ="center";
             }
                             */
-            telemetry.addData("histogram", "" + red_sum_list);
+            telemetry.addData("", "" + red_sum_list);
             telemetry.update();
         }
         return input1; // Return the image that will be displayed in the viewport

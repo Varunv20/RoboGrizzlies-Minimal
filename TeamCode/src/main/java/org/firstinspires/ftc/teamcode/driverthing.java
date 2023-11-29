@@ -36,7 +36,7 @@ public class driverthing extends OpMode {
 
     DcMotor linearextenderLeft;
     DcMotor linearextenderRight;
-    //public Servo paperAirplane;
+     Servo paperAirplane;
     Servo extenderRotator;
     Servo extenderPlacer;
     Boolean intake_running = false;
@@ -54,6 +54,7 @@ public class driverthing extends OpMode {
         // paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
 
 
         fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -89,6 +90,7 @@ public class driverthing extends OpMode {
 
         final double MAX_SLIDE_HEIGHT = 50;
         unrotate();
+        setPlane();
     }
 
     // Declare OpMode members.
@@ -131,12 +133,7 @@ public class driverthing extends OpMode {
 //           // startIntake();
 //            intakeMotor.setPower(0.75);
 //            }
-        if (gamepad1.dpad_up) {
-            intakeMotor.setPower(-0.75);
-        }
-        if (gamepad1.dpad_down) {
-            telemetry.addData("beans","0");
-        }
+
         if (gamepad1.y) {
             linearextenderLeft.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
             linearextenderRight.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
@@ -150,8 +147,8 @@ public class driverthing extends OpMode {
          }
         else if (gamepad1.b) {
             //open();
-            linearextenderLeft.setTargetPosition((int) (0));
-            linearextenderRight.setTargetPosition((int) (0));
+            linearextenderLeft.setTargetPosition((int) (-5*TICKS_PER_CENTIMETER));
+            linearextenderRight.setTargetPosition((int) (-5*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setPower(0.9);
@@ -214,6 +211,20 @@ public class driverthing extends OpMode {
                 stopIntake();
 
         }
+        if(gamepad1.dpad_right ) {
+            // toggles intake
+            open();
+
+        }if(gamepad1.dpad_left) {
+            // toggles intake
+            close();
+
+        }
+        if (gamepad1.dpad_up) {
+            launchPlane();
+        }
+
+
 
 
 /*
@@ -260,6 +271,19 @@ public class driverthing extends OpMode {
             telemetry.update();
 
         }
+    void extender(int pos) {
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+
+        linearextenderLeft.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9);
+
+        telemetry.addData("Slides to 9cm","0");
+    }
 
        /* void slidesToHeight (double heightCM, double power){
             linearextenderRight.setTargetPosition((int) (heightCM * TICKS_PER_CENTIMETER));
@@ -288,6 +312,14 @@ public class driverthing extends OpMode {
    void close(){
         extenderPlacer.setPosition(0.0);
    //    sleep(100);
+    }
+    void setPlane(){
+        extenderPlacer.setPosition(-0.5);
+        //    sleep(100);
+    }
+    void launchPlane(){
+        extenderPlacer.setPosition(0.0);
+        //    sleep(100);
     }
 
    // void launch() {
@@ -360,6 +392,7 @@ public class driverthing extends OpMode {
     void reverseIntake(){
         intakeMotor.setPower(-1.0);
     }
+
 
     void move(){
         //intakeMotor.setPower(1.0);
