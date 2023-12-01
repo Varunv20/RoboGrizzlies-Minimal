@@ -5,9 +5,6 @@ package org.firstinspires.ftc.teamcode.computervision;
 import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import java.util.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -19,36 +16,36 @@ public class eocvTeamProp extends OpenCvPipeline {
     int min = 25;
     double forward;
     double[] yellow = {240,180,30};
-    String result = "";
-    Integer[] left = {1, 25, 21, 34, 79, 86, 17, 9, 9, 20, 14, 14, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 9, 10, 11, 11, 12, 13, 14, 13, 13};
-    Integer[] center = {0, 16, 15, 15, 15, 15, 15, 14, 14, 14, 14, 14, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 11, 12, 12, 12, 14, 14, 14, 14};
-    Integer[] right = {0, 17, 16, 17, 16, 15, 15, 14, 14, 15, 14, 14, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 10, 8, 0, 0, 0, 0, 0, 0, 4};
-    // Telemetry telemetry;
-    Telemetry telemetry;
-    public eocvTeamProp (Telemetry telemetry){
-        this.telemetry = telemetry;
-    }
+    public String result = "hello";
+    //etry telemetry;
+
+
     double[] hsv = new double[3];
+    double baseline_left = 0;
+    double baseline_center = 0;
+    double baseline_right = 0;
+    public double m1avg;
+    public double m2avg;
+    public double m3avg;
+
     //public double[] convertRGB(double[] rgb) {
-       //double[] red = (rgb[0] >> 16) & 0xFF;
-        //double[] green = (rgb >> 8) & 0xFF;
-       //double[] blue = rgb & 0xFF;
+    //double[] red = (rgb[0] >> 16) & 0xFF;
+    //double[] green = (rgb >> 8) & 0xFF;
+    //double[] blue = rgb & 0xFF;
 
-        //return new double[] {red, green, blue};
-   // }
-        public boolean is_red(double[] l, Telemetry telemetry) {
-            double[] red = {255, 0, 0};
-            // telemetry.addData("color", "" + l[0]);
-            //double[] blue = {0,0,255};
-            if (l[1] > 60 && l[2] > 60){
-                if ((l[0] <= 30 || (l[0] > 115) && l[0] < 180)) {
-                    return true;
-                }
-            }
-            //telemetry.addData("color", l[0]  );
-
-            return false;
+    //return new double[] {red, green, blue};
+    // }
+    public boolean is_red(double[] l) {
+        // telemetry.addData("color", "" + l[0]);
+        //double[] blue = {0,0,255};
+        if ((l[0] <= 30 || ((l[0] > 130) && l[0] < 180)) || ((l[0] > 100) && l[0] < 110)) {
+            return true;
         }
+
+        //telemetry.addData("color", l[0]  );
+
+        return false;
+    }
     public double[] RGBtoHSV(double r, double g, double b) {
 
         double h, s, v;
@@ -89,7 +86,7 @@ public class eocvTeamProp extends OpenCvPipeline {
         v = (v / 256.0) * 100.0;
         return new double[] { h, s, v };
     }
-    public double comparison(Integer[] vec1, Integer[] vec2) {
+    public double comparison(Double[] vec1, Double[] vec2) {
         double loss = 0;
         for (int i=0; i < vec1.length; i++) {
             loss += Math.abs(vec1[i] + vec2[i]);
@@ -103,9 +100,10 @@ public class eocvTeamProp extends OpenCvPipeline {
         int b = (hex & 0xFF);
         return new int[] {r,g,b};
     }
+
     public boolean mae(double[] l, Telemetry telemetry) {
         double[] red = {255, 0, 0};
-       // telemetry.addData("color", "" + l[0]);
+        // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
         if (l[0] <= 255 && l[0] >= 180 && l[1] <= 120 && l[1] >= 0 && l[2] <= 120 && l[2] >= 0)
         {
@@ -114,59 +112,83 @@ public class eocvTeamProp extends OpenCvPipeline {
         }
         return false;
     }
+    public double avg(Integer[] arr){
+        Integer sum = 0;
+        for (int i = 0; i < arr.length; i++){
+            sum += arr[i];
 
+        }
+        return sum/ arr.length;
+    }
+    public String getResult() {
+        return result;
+    }
+    public void setRun() {
+        run = true;
+    }
 
     @Override
-    public Mat processFrame(Mat input) {
+    public Mat processFrame(Mat input1) {
         // Executed every time a new frame is dispatched
 
-        Mat input1 = input.clone();
         if (run) {
-            ArrayList<Integer> redheights = new ArrayList<Integer>();
+
+            Integer[] redheights = new Integer[input1.width()];
+
             for (int y = 0; y < input1.width(); y++) {
                 int icounter = 0;
+                long s = System.nanoTime();
                 for (int x = 0; x < input1.height(); x++) {
                     double[] i = input1.get(x, y);
-                    if (is_red(RGBtoHSV(i[0], i[1], i[2]), telemetry)) {
+
+
+                    if (is_red(RGBtoHSV(i[0], i[1], i[2]))) {
                         icounter++;
                     }
+
                 }
-                redheights.add(icounter);
+                long e = System.nanoTime();
+                result = "" + (e - s);
+
+
+                redheights[y] = icounter;
+                result = "c24";
+
             }
+
             ArrayList<Integer> red_sum_list = new ArrayList<Integer>();
             Integer counter = 0;
 
-            for (int i = 0; i < redheights.size(); i++) {
-                counter += redheights.get(i);
-                if (i % 200 == 0) {
-                    red_sum_list.add(counter/200 );
+            for (int i = 0; i < redheights.length; i++) {
+                counter += redheights[i];
+                if (i % 50 == 0) {
+                    red_sum_list.add(counter);
                     counter = 0;
                 }
             }
-            Integer[] red_frequency = red_sum_list.toArray(new Integer[0]);
+            Integer[] arr = new Integer[red_sum_list.size()];
+            result = "c3";
 
-            double left_comp = comparison(red_frequency, left);
-            double center_comp = comparison(red_frequency, center);
-            double right_comp = comparison(red_frequency, right);
-            double m = Math.min(left_comp, Math.min(center_comp, right_comp));
-            if (left_comp == m) {
+            arr = red_sum_list.toArray(arr);
+            Integer[] m1 = Arrays.copyOfRange(arr, 0, (int) arr.length / 3);
+            Integer[] m2 = Arrays.copyOfRange(arr, arr.length / 3, (int) 2 * arr.length / 3);
+            ;
+            Integer[] m3 = Arrays.copyOfRange(arr, 2 * arr.length / 3, arr.length);
+            m1avg = avg(m1);
+            m2avg = avg(m2);
+            m3avg = avg(m3);
+
+
+            if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
                 result = "left";
-            } else if (m == right_comp) {
+            } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
                 result = "right";
             } else {
-                result ="center";
+                result = "center";
             }
 
-            run = true;
-            telemetry.addData("histogram", "" + result);
+            run = false;
 
-            telemetry.addData("test", red_sum_list );
-
-            telemetry.addData("l", left_comp );
-            telemetry.addData("r", right_comp );
-            telemetry.addData("c", center_comp );
-
-            telemetry.update();
         }
         return input1; // Return the image that will be displayed in the viewport
         // (In this case the input mat directly)

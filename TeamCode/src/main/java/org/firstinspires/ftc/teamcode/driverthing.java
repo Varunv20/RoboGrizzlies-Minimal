@@ -81,7 +81,6 @@ public class driverthing extends OpMode {
         br.setDirection(DcMotor.Direction.REVERSE);
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
-        linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
 
 
 
@@ -91,6 +90,7 @@ public class driverthing extends OpMode {
         final double MAX_SLIDE_HEIGHT = 50;
         unrotate();
         setPlane();
+        open();
     }
 
     // Declare OpMode members.
@@ -302,23 +302,23 @@ public class driverthing extends OpMode {
        // sleep(100);
     }
     void rotate(){
-        extenderRotator.setPosition(0.7);
+        extenderRotator.setPosition(0.5);
     //    sleep(100);
     }
     void open(){
-        extenderPlacer.setPosition(0.3);
+        extenderPlacer.setPosition(0.5);
    //     sleep(100);
     }
    void close(){
-        extenderPlacer.setPosition(0.0);
+        extenderPlacer.setPosition(0.9);
    //    sleep(100);
     }
     void setPlane(){
-        extenderPlacer.setPosition(-0.5);
+        extenderPlacer.setPosition(0.0);
         //    sleep(100);
     }
     void launchPlane(){
-        extenderPlacer.setPosition(0.0);
+        extenderPlacer.setPosition(0.6);
         //    sleep(100);
     }
 

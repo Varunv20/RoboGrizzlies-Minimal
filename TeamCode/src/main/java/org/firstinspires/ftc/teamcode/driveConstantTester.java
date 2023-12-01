@@ -56,9 +56,9 @@ public class driveConstantTester extends LinearOpMode {
     WebcamName webcamName;
     OpenCvWebcam webcam;
     OpenCvPipeline pipeline;
-    double turnconstant = 1;
-    double moveconstant = 1;
-    double strafeconstant = 1;
+    double turnconstant = 12.76;
+    double moveconstant = 1713;
+    double strafeconstant = 1990;
     Boolean intake_running = false;
 
     //final double MAX_LS_HEIGHT = 50;
@@ -152,8 +152,8 @@ public class driveConstantTester extends LinearOpMode {
 
             }
             if (gamepad1.dpad_up) {
-                moveforward(2.54*12* 3);
-                movebackward(2.54*12* 3);
+                moveforward(2.54*12);
+                movebackward(2.54*12);
 
             }
             if (gamepad1.right_bumper) {
@@ -178,8 +178,8 @@ public class driveConstantTester extends LinearOpMode {
 
             }
             if (gamepad1.y ) {
-                strafeleft(2.54*12* 3);
-                straferight(2.54*12* 3);
+                strafeleft(2.54*12);
+                straferight(2.54*12);
 
             }
             telemetry.addData("move", moveconstant);

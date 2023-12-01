@@ -26,7 +26,7 @@ public class closeAutoRedPush extends LinearOpMode {
     //public Servo extenderPlacer;
     //public DcMotor linearextenderLeft;
     //public DcMotor linearextenderRight;
-    double moveconstant = 1783 * (2/2.05); //WORKS
+    double moveconstant = 3900; //WORKS
     double motorrotation = 538; //WORKS
     double turnconstant = 11.3846625767; // per degree, so its rly small
     double strafeconstant = 1783* (1/0.84) * (1/1.08) * (1/0.95) * (2/2.05); //untested, need to test
@@ -79,12 +79,12 @@ public class closeAutoRedPush extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()) {
-            moveforward(15);
-            turnright(90);
+            moveforward(50*moveconstant);
+            turnright(90*turnconstant);
             sleep(100);
 
             //place spike mark stuff
-            moveforward(80);
+            moveforward(15*moveconstant);
             sleep(500);
 
            // straferight(60);
@@ -194,7 +194,7 @@ public class closeAutoRedPush extends LinearOpMode {
 
 
     }
-    void turnleft(int degrees){
+    void turnleft(double degrees){
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.FORWARD);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -211,7 +211,7 @@ public class closeAutoRedPush extends LinearOpMode {
         br.setPower(0);
 
     }
-    void turnright(int degrees){
+    void turnright(double degrees){
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.FORWARD);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
