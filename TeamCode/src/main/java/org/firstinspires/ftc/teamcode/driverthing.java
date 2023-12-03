@@ -135,18 +135,24 @@ public class driverthing extends OpMode {
 //            }
 
         if (gamepad1.y) {
-            linearextenderLeft.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
-            linearextenderRight.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
+            unrotate();
+
+            linearextenderLeft.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
+            linearextenderRight.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setPower(0.9);
             linearextenderLeft.setPower(0.9);
-            telemetry.addData("Slides to 50cm", "0");
+            telemetry.addData("Slides to 65cm", "0");
+            close();
+
 
 
          }
         else if (gamepad1.b) {
             //open();
+            unrotate();
+            open();
             linearextenderLeft.setTargetPosition((int) (-5*TICKS_PER_CENTIMETER));
             linearextenderRight.setTargetPosition((int) (-5*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -154,22 +160,25 @@ public class driverthing extends OpMode {
             linearextenderRight.setPower(0.9);
             linearextenderLeft.setPower(0.9);
             telemetry.addData("Slides to 0cm","0");
+
         }
         else if (gamepad1.x) {
             //close();
-            linearextenderLeft.setTargetPosition((int) (25*TICKS_PER_CENTIMETER));
-            linearextenderRight.setTargetPosition((int) (25*TICKS_PER_CENTIMETER));
+            linearextenderLeft.setTargetPosition((int) (35*TICKS_PER_CENTIMETER));
+            linearextenderRight.setTargetPosition((int) (35*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setPower(0.9);
             linearextenderLeft.setPower(0.9);
             telemetry.addData("Slides to 0cm", "0");
+            extenderRotator.setPosition(0.1);
+            close();
         }
         else if (gamepad1.a) {
             //telemetry.addData("accessed: lin_ex2", "0");
 
-            linearextenderLeft.setTargetPosition((int) (12*TICKS_PER_CENTIMETER));
-            linearextenderRight.setTargetPosition((int) (12*TICKS_PER_CENTIMETER));
+            linearextenderLeft.setTargetPosition((int) (10*TICKS_PER_CENTIMETER));
+            linearextenderRight.setTargetPosition((int) (10*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -177,6 +186,8 @@ public class driverthing extends OpMode {
             linearextenderLeft.setPower(0.9);
 
             telemetry.addData("Slides to 9cm","0");
+            extenderRotator.setPosition(0.1);
+            close();
 
        //     linearextenderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       //      linearextenderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -205,6 +216,7 @@ public class driverthing extends OpMode {
 
                 startIntake();
 
+
         }
         if(gamepad1.left_trigger > 0.5) {
             // toggles intake
@@ -215,15 +227,17 @@ public class driverthing extends OpMode {
             // toggles intake
             open();
 
-        }if(gamepad1.dpad_left) {
+        }
+        if(gamepad1.dpad_left) {
             // toggles intake
             close();
-
         }
-        if (gamepad1.dpad_up) {
+        if (gamepad1.dpad_down) {
             launchPlane();
         }
-
+        if (gamepad1.dpad_down) {
+            reload();
+        }
 
 
 
@@ -297,20 +311,23 @@ public class driverthing extends OpMode {
         }*/
     //}
 
+    void reload() {
+        paperAirplane.setPosition(1.0);
+    }
     void unrotate(){
         extenderRotator.setPosition(0.15);
        // sleep(100);
     }
     void rotate(){
-        extenderRotator.setPosition(0.5);
+        extenderRotator.setPosition(0.45);
     //    sleep(100);
     }
     void open(){
-        extenderPlacer.setPosition(0.5);
+        extenderPlacer.setPosition(0.0);
    //     sleep(100);
     }
    void close(){
-        extenderPlacer.setPosition(0.9);
+        extenderPlacer.setPosition(0.489);
    //    sleep(100);
     }
     void setPlane(){
@@ -318,7 +335,7 @@ public class driverthing extends OpMode {
         //    sleep(100);
     }
     void launchPlane(){
-        extenderPlacer.setPosition(0.6);
+        paperAirplane.setPosition(0.3);
         //    sleep(100);
     }
 
@@ -385,9 +402,11 @@ public class driverthing extends OpMode {
    */
     void startIntake(){
         intakeMotor.setPower(1.0);
+        extenderRotator.setPosition(0.18);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
+        extenderRotator.setPosition(0.15);
     }
     void reverseIntake(){
         intakeMotor.setPower(-1.0);

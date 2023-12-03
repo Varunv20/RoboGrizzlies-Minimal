@@ -9,8 +9,7 @@ import java.util.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
-    double[] red = {255,0,0};
-    boolean run = true;
+    boolean run = false;
 
     double max_error = 90.0;
     int min = 25;
@@ -19,7 +18,7 @@ public class eocvTeamProp extends OpenCvPipeline {
     public String result = "hello";
     //etry telemetry;
 
-
+public boolean red = false;
     double[] hsv = new double[3];
     double baseline_left = 0;
     double baseline_center = 0;
@@ -38,8 +37,10 @@ public class eocvTeamProp extends OpenCvPipeline {
     public boolean is_red(double[] l) {
         // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
-        if ((l[0] <= 30 || ((l[0] > 130) && l[0] < 180)) || ((l[0] > 100) && l[0] < 110)) {
-            return true;
+        if (l[2] > 10) {
+            if ((((l[0] > 150 && l[2] < 100)) && red) || ((l[0] < 100) && l[2] > 150)) {
+                return true;
+            }
         }
 
         //telemetry.addData("color", l[0]  );
@@ -142,7 +143,7 @@ public class eocvTeamProp extends OpenCvPipeline {
                     double[] i = input1.get(x, y);
 
 
-                    if (is_red(RGBtoHSV(i[0], i[1], i[2]))) {
+                    if (is_red(i)) {
                         icounter++;
                     }
 
@@ -172,20 +173,40 @@ public class eocvTeamProp extends OpenCvPipeline {
             arr = red_sum_list.toArray(arr);
             Integer[] m1 = Arrays.copyOfRange(arr, 0, (int) arr.length / 3);
             Integer[] m2 = Arrays.copyOfRange(arr, arr.length / 3, (int) 2 * arr.length / 3);
-            ;
+
             Integer[] m3 = Arrays.copyOfRange(arr, 2 * arr.length / 3, arr.length);
             m1avg = avg(m1);
             m2avg = avg(m2);
             m3avg = avg(m3);
 
-
-            if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
-                result = "left";
-            } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
-                result = "right";
-            } else {
-                result = "center";
-            }
+           // if (!red) {
+           //     m1avg -= 2000;
+           // }
+            //if (red) {
+                if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
+                    result = "left";
+                } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
+                    result = "right";
+                } else {
+                    result = "center";
+                }
+           // } //m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2 else if
+           // else {
+                /*if (m1avg / m2avg < 1.1 && m3avg / m2avg < 1.1) {
+                    result = "center";
+                } else if (m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2) {
+                    result = "right";
+                } else {
+                    result = "left";
+                }*/
+           //     if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
+                   // result = "left";
+           //     } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
+                    //result = "right";
+          //      } else {
+          //          result = "center";
+           //     }
+           // }
 
             run = false;
 

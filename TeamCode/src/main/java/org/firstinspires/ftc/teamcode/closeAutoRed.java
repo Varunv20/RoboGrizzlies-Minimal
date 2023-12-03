@@ -2,17 +2,26 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.teamcode.computervision.eocvTeamProp;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 @Autonomous(name="closeAutoRed", group="Autonomous")
 public class closeAutoRed extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
+    double turnconstant = 12.76;
+    double moveconstant = 1713;
+    double strafeconstant = 1990;
     public Servo grabber;
 
     int position = 180;
@@ -26,10 +35,13 @@ public class closeAutoRed extends LinearOpMode {
     public Servo extenderPlacer;
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
-    double moveconstant = 1783 * (2/2.05); //WORKS
+    // double moveconstant = 1300; //WORKS
     double motorrotation = 538; //WORKS
-    double turnconstant = 11.3846625767; // per degree, so its rly small
-    double strafeconstant = 1783* (1/0.84) * (1/1.08) * (1/0.95) * (2/2.05); //untested, need to test
+    OpenCvWebcam webcam;
+
+
+    //  double turnconstant = 11.3846625767; // per degree, so its rly small
+    //  double strafeconstant = 1300; //untested, need to test
     String color = "";
 
     @Override
@@ -47,6 +59,8 @@ public class closeAutoRed extends LinearOpMode {
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
         linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
+        linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
+
         //E = hardwareMap.get(DcMotor.class, "E");
         //   color_sensor = hardwareMap.colorSensor.get("color_sensor");
 
@@ -75,38 +89,164 @@ public class closeAutoRed extends LinearOpMode {
         br.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // runs the moment robot is initialized
-        waitForStart();
         runtime.reset();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+
+        // OR...  Do Not Activate the Camera Monitor View
+        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
+
+        /*
+         * Specify the image processing pipeline we wish to invoke upon receipt
+         * of a frame from the camera. Note that switching pipelines on-the-fly
+         * (while a streaming session is in flight) *IS* supported.
+         */
+
+        eocvTeamProp pipeline = new eocvTeamProp();
+        pipeline.red = true;
+        webcam.setPipeline(pipeline);
+
+
+        /*
+         * Open the connection to the camera device. New in v1.4.0 is the ability
+         * to open the camera asynchronously, and this is now the recommended way
+         * to do it. The benefits of opening async include faster init time, and
+         * better behavior when pressing stop during init (i.e. less of a chance
+         * of tripping the stuck watchdog)
+         *
+         * If you really want to open synchronously, the old method is still available.
+         */
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+
+        {
+            @Override
+            public void onOpened()
+            {
+                /*
+                 * Tell the webcam to start streaming images to us! Note that you must make sure
+                 * the resolution you specify is supported by the camera. If it is not, an exception
+                 * will be thrown.
+                 *
+                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
+                 * supports streaming from the webcam in the uncompressed YUV image format. This means
+                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
+                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
+                 *
+                 * Also, we specify the rotation that the webcam is used in. This is so that the image
+                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
+                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
+                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
+                 * away from the user.
+                 */
+                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                telemetry.addData("S","STREAMING");
+                telemetry.update();
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+                telemetry.addData("e",errorCode);
+                telemetry.update();
+            }
+        });
+        waitForStart();
+        pipeline.setRun();
+
+        sleep(10000);
+        String r = pipeline.getResult();
+        telemetry.addData("rishi", r);
+        telemetry.addData("m1", pipeline.m1avg);
+        telemetry.addData("m2", pipeline.m2avg);
+        telemetry.addData("m3", pipeline.m3avg);
+
+
+        telemetry.update();
+
+        unrotate();
+        close();
+        // extender(5);
 
         while(opModeIsActive()) {
-            moveforward(12);
-            sleep(100);
+            //     extender(5);
 
-            //place spike mark stuff
-           // movebackward(54);
-            //sleep(300);
-            straferight(60);
-            sleep(1000);
-            moveforward(55.5);
-            sleep(300);
 
-            turnright(90);
-            sleep(300);
-            extend_no_enc(0);
-            rotateBox();
-            open();
-            close();
-            unrotateBox();
-            extend_no_enc(1);
-            //place stuff
-            straferight(58);
-            sleep(300);
-            moveforward(49);
-            sleep(300);
+
+            if (r== "right"){
+                extender(5);
+                straferight(32);
+                moveforward(60);
+                movebackward(20);
+                turnright(90);
+                moveforward(65);
+                strafeleft(15);
+                place();
+                straferight(37);
+                moveforward(20);
+
+
+            }
+            else if (r== "left"){
+                moveforward(50);
+                turnleft(40);
+                moveforward(20);
+                movebackward(28);
+                turnright(123);
+                moveforward(60);
+
+                strafeleft(29);
+                moveforward(28);
+                place();
+
+                straferight(72);
+                moveforward(20);
+            }
+            else {
+                moveforward(73);
+                sleep(300);
+                movebackward(7);
+                turnright(87);
+                moveforward(96);
+                //strafeleft(18);
+
+                place();
+                straferight(63.5);
+                moveforward(20);
+            }
 
             break;
         }
 
+    }
+    void place(){
+        extender(50);
+        sleep(1000);
+        rotate();
+        sleep(500);
+        open();
+        sleep(300);
+        unrotate();
+        close();
+        sleep(300);
+        extender(0);
+        sleep(500);
+    }
+
+    void extender(int pos) {
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+
+        linearextenderLeft.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9);
+
+        telemetry.addData("Slides to 9cm","0");
     }
     // this is only for dc motors
     void settargetpositioner(DcMotor motor, int position){
@@ -123,7 +263,7 @@ public class closeAutoRed extends LinearOpMode {
         fr.setDirection(DcMotorSimple.Direction.FORWARD);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.FORWARD);
-        int position = (int) (feet * 0.3048 * moveconstant)*-1;
+        int position = (int) ((feet/(2.54*12)) * 0.3048 * moveconstant)*-1;
         settargetpositioner(fl, position);
         settargetpositioner(fr, position);
         settargetpositioner(bl, position);
@@ -150,13 +290,14 @@ public class closeAutoRed extends LinearOpMode {
         fr.setPower(0);
         bl.setPower(0);
         br.setPower(0);}
+
     void movebackward(double feet){
         fl.setDirection(DcMotorSimple.Direction.FORWARD);
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.FORWARD);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        int position = (int) (feet * 0.3048 * moveconstant)*-1;
+        int position = (int) ((feet/(2.54*12)) * 0.3048 * moveconstant)*-1;
 
         settargetpositioner(fl, position);
         settargetpositioner(fr, position);
@@ -174,7 +315,7 @@ public class closeAutoRed extends LinearOpMode {
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         br.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        int position = (int) (feet * 0.3048 * strafeconstant)*-1;
+        int position = (int) ((feet/(2.54*12)) * 0.3048 * strafeconstant)*-1;
 
         settargetpositioner(fl, position);
         settargetpositioner(fr, position);
@@ -192,7 +333,7 @@ public class closeAutoRed extends LinearOpMode {
         bl.setDirection(DcMotorSimple.Direction.FORWARD);
         br.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        int position = (int) (feet * 0.3048 * strafeconstant)*-1;
+        int position = (int) ((feet/(2.54*12)) * 0.3048 * strafeconstant)*-1;
         settargetpositioner(fl, position);
         settargetpositioner(fr, position);
         settargetpositioner(bl, position);
@@ -206,7 +347,7 @@ public class closeAutoRed extends LinearOpMode {
 
 
     }
-    void turnleft(int degrees){
+    void turnright(int degrees){
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.FORWARD);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -223,7 +364,7 @@ public class closeAutoRed extends LinearOpMode {
         br.setPower(0);
 
     }
-    void turnright(int degrees){
+    void turnleft(int degrees){
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.FORWARD);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -241,24 +382,33 @@ public class closeAutoRed extends LinearOpMode {
         br.setPower(0);
 
     }
-    void rotateBox(){
-        extenderRotator.setPosition(0.3);
-        sleep(100);
+    void reload() {
+        paperAirplane.setPosition(1.0);
     }
-    void unrotateBox(){
-        extenderRotator.setPosition(0.7);
-        sleep(100);
+    void unrotate(){
+        extenderRotator.setPosition(0.15);
+        // sleep(100);
+    }
+    void rotate(){
+        extenderRotator.setPosition(0.45);
+        //    sleep(100);
     }
     void open(){
-        extenderPlacer.setPosition(0.3);
-        sleep(100);
+        extenderPlacer.setPosition(0.0);
+        //     sleep(100);
     }
     void close(){
-
-        extenderPlacer.setPosition(0.0);
-        sleep(100);
+        extenderPlacer.setPosition(0.489);
+        //    sleep(100);
     }
-
+    void setPlane(){
+        extenderPlacer.setPosition(0.0);
+        //    sleep(100);
+    }
+    void launchPlane(){
+        paperAirplane.setPosition(0.3);
+        //    sleep(100);
+    }
     //void launch() {
     //  paperAirplane.setPosition(.35);
     //  sleep(100);

@@ -35,13 +35,13 @@ public class farAutoRed extends LinearOpMode {
     public Servo extenderPlacer;
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
-   // double moveconstant = 1300; //WORKS
+    // double moveconstant = 1300; //WORKS
     double motorrotation = 538; //WORKS
     OpenCvWebcam webcam;
 
 
-  //  double turnconstant = 11.3846625767; // per degree, so its rly small
-  //  double strafeconstant = 1300; //untested, need to test
+    //  double turnconstant = 11.3846625767; // per degree, so its rly small
+    //  double strafeconstant = 1300; //untested, need to test
     String color = "";
 
     @Override
@@ -164,10 +164,10 @@ public class farAutoRed extends LinearOpMode {
         waitForStart();
         unrotate();
         close();
-       // extender(5);
+        // extender(5);
 
         while(opModeIsActive()) {
-       //     extender(5);
+            //     extender(5);
 
 
 
@@ -176,15 +176,7 @@ public class farAutoRed extends LinearOpMode {
                 moveforward(45);
                 turnright(40);
                 moveforward(23);
-                //movebackward(23);
-                turnleft(130);
-                moveforward(80);
-                extender(30);
-                rotate();
-                open();
-                unrotate();
-                close();
-                extender(5);
+
 
 
             }
@@ -192,24 +184,30 @@ public class farAutoRed extends LinearOpMode {
                 moveforward(45);
                 turnleft(40);
                 moveforward(23);
+
             }
             else {
                 moveforward(73);
-                sleep(300);
+
             }
 
             break;
         }
 
     }
-   /* void place(){
+    void place(){
         extender(30);
+        sleep(500);
         rotate();
+        sleep(500);
         open();
+        sleep(300);
         unrotate();
         close();
+        sleep(300);
         extender(5);
-    }*/
+        sleep(500);
+    }
 
     void extender(int pos) {
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
