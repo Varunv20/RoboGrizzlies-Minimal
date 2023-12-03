@@ -356,8 +356,11 @@ public class farAutoBlue extends LinearOpMode {
         br.setPower(0);
 
     }
+    void reload() {
+        paperAirplane.setPosition(1.0);
+    }
     void unrotate(){
-        extenderRotator.setPosition(0.15);
+        extenderRotator.setPosition(0.18);
         // sleep(100);
     }
     void rotate(){
@@ -365,11 +368,11 @@ public class farAutoBlue extends LinearOpMode {
         //    sleep(100);
     }
     void open(){
-        extenderPlacer.setPosition(0.5);
+        extenderPlacer.setPosition(0.0);
         //     sleep(100);
     }
     void close(){
-        extenderPlacer.setPosition(0.9);
+        extenderPlacer.setPosition(0.489);
         //    sleep(100);
     }
     void setPlane(){
@@ -377,7 +380,7 @@ public class farAutoBlue extends LinearOpMode {
         //    sleep(100);
     }
     void launchPlane(){
-        extenderPlacer.setPosition(0.6);
+        paperAirplane.setPosition(0.3);
         //    sleep(100);
     }
 

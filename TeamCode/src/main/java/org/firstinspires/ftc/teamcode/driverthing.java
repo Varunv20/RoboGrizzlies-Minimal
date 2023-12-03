@@ -95,10 +95,6 @@ public class driverthing extends OpMode {
 
     // Declare OpMode members.
 
-
-
-    //public DcMotor E;
-   // public ColorSensor color_sensor;
 /*
 
 
@@ -123,19 +119,9 @@ public class driverthing extends OpMode {
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
         final double CENTIMETERS_PER_TICK = 1 / TICKS_PER_CENTIMETER;
         move();
-//        if (gamepad1.dpad_left) {
-//            telemetry.addData("accessed: stopintake", "0");
-//          //  stopIntake();
-//            intakeMotor.setPower(0);
-//        }
-//        if (gamepad1.dpad_right) {
-//            telemetry.addData("accessed: startintake", "0");
-//           // startIntake();
-//            intakeMotor.setPower(0.75);
-//            }
 
         if (gamepad1.y) {
-            unrotate();
+            extenderRotator.setPosition(0.17);
 
             linearextenderLeft.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
             linearextenderRight.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
@@ -145,7 +131,7 @@ public class driverthing extends OpMode {
             linearextenderLeft.setPower(0.9);
             telemetry.addData("Slides to 65cm", "0");
             close();
-
+            unrotate();
 
 
          }
@@ -164,8 +150,9 @@ public class driverthing extends OpMode {
         }
         else if (gamepad1.x) {
             //close();
-            linearextenderLeft.setTargetPosition((int) (35*TICKS_PER_CENTIMETER));
-            linearextenderRight.setTargetPosition((int) (35*TICKS_PER_CENTIMETER));
+            extenderRotator.setPosition(0.17);
+            linearextenderLeft.setTargetPosition((int) (45*TICKS_PER_CENTIMETER));
+            linearextenderRight.setTargetPosition((int) (45*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setPower(0.9);
@@ -173,8 +160,10 @@ public class driverthing extends OpMode {
             telemetry.addData("Slides to 0cm", "0");
             extenderRotator.setPosition(0.1);
             close();
+            unrotate();
         }
         else if (gamepad1.a) {
+            unrotate();
             //telemetry.addData("accessed: lin_ex2", "0");
 
             linearextenderLeft.setTargetPosition((int) (10*TICKS_PER_CENTIMETER));
@@ -213,7 +202,6 @@ public class driverthing extends OpMode {
         }
         if (gamepad1.right_trigger > 0.5) {
             // toggles intake
-
                 startIntake();
 
 
@@ -221,6 +209,7 @@ public class driverthing extends OpMode {
         if(gamepad1.left_trigger > 0.5) {
             // toggles intake
                 stopIntake();
+                unrotate();
 
         }
         if(gamepad1.dpad_right ) {
@@ -315,11 +304,11 @@ public class driverthing extends OpMode {
         paperAirplane.setPosition(1.0);
     }
     void unrotate(){
-        extenderRotator.setPosition(0.15);
+        extenderRotator.setPosition(0.18);
        // sleep(100);
     }
     void rotate(){
-        extenderRotator.setPosition(0.45);
+        extenderRotator.setPosition(0.5);
     //    sleep(100);
     }
     void open(){
@@ -402,11 +391,10 @@ public class driverthing extends OpMode {
    */
     void startIntake(){
         intakeMotor.setPower(1.0);
-        extenderRotator.setPosition(0.18);
+        extenderRotator.setPosition(0.21);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
-        extenderRotator.setPosition(0.15);
     }
     void reverseIntake(){
         intakeMotor.setPower(-1.0);
@@ -415,10 +403,9 @@ public class driverthing extends OpMode {
 
     void move(){
         //intakeMotor.setPower(1.0);
-        double horizontal = gamepad1.left_stick_x*.5;   // this works so dont question it
+        double horizontal = gamepad1.left_stick_x*.5;   //the math behind this is cool. Look it up!
         double vertical =-gamepad1.left_stick_y*.5;
         double turn = -gamepad1.right_stick_x*2/3;
-        //  E.setPower(gamepad1.left_stick_y);
         fl.setPower((Range.clip((vertical + horizontal + turn), -1, 1))/**powersetterr*/);
         fr.setPower((Range.clip((vertical - horizontal - turn), -1, 1))/**powersetterr*/);
         bl.setPower((Range.clip((vertical - horizontal + turn), -1, 1))/**powersetterr*/);

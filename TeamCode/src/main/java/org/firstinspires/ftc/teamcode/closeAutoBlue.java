@@ -384,15 +384,12 @@ public class closeAutoBlue extends LinearOpMode {
         br.setPower(0);
 
     }
-    void reload() {
-        paperAirplane.setPosition(1.0);
-    }
     void unrotate(){
-        extenderRotator.setPosition(0.15);
+        extenderRotator.setPosition(0.18);
         // sleep(100);
     }
     void rotate(){
-        extenderRotator.setPosition(0.45);
+        extenderRotator.setPosition(0.5);
         //    sleep(100);
     }
     void open(){
