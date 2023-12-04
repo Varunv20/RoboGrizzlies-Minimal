@@ -121,7 +121,7 @@ public class driverthing extends OpMode {
         move();
 
         if (gamepad1.y) {
-            extenderRotator.setPosition(0.17);
+            extenderRotator.setPosition(0.15);
 
             linearextenderLeft.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
             linearextenderRight.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
@@ -131,7 +131,6 @@ public class driverthing extends OpMode {
             linearextenderLeft.setPower(0.9);
             telemetry.addData("Slides to 65cm", "0");
             close();
-            unrotate();
 
 
          }
@@ -139,8 +138,8 @@ public class driverthing extends OpMode {
             //open();
             unrotate();
             open();
-            linearextenderLeft.setTargetPosition((int) (-5*TICKS_PER_CENTIMETER));
-            linearextenderRight.setTargetPosition((int) (-5*TICKS_PER_CENTIMETER));
+            linearextenderLeft.setTargetPosition((int) (0*TICKS_PER_CENTIMETER));
+            linearextenderRight.setTargetPosition((int) (0*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setPower(0.9);
@@ -150,7 +149,7 @@ public class driverthing extends OpMode {
         }
         else if (gamepad1.x) {
             //close();
-            extenderRotator.setPosition(0.17);
+            extenderRotator.setPosition(0.15);
             linearextenderLeft.setTargetPosition((int) (45*TICKS_PER_CENTIMETER));
             linearextenderRight.setTargetPosition((int) (45*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -160,7 +159,6 @@ public class driverthing extends OpMode {
             telemetry.addData("Slides to 0cm", "0");
             extenderRotator.setPosition(0.1);
             close();
-            unrotate();
         }
         else if (gamepad1.a) {
             unrotate();
