@@ -121,7 +121,7 @@ public class driverthing extends OpMode {
         move();
 
         if (gamepad1.y) {
-            extenderRotator.setPosition(0.15);
+            extenderRotator.setPosition(0.14);
 
             linearextenderLeft.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
             linearextenderRight.setTargetPosition((int) (65*TICKS_PER_CENTIMETER));
@@ -149,14 +149,14 @@ public class driverthing extends OpMode {
         }
         else if (gamepad1.x) {
             //close();
-            extenderRotator.setPosition(0.15);
-            linearextenderLeft.setTargetPosition((int) (45*TICKS_PER_CENTIMETER));
-            linearextenderRight.setTargetPosition((int) (45*TICKS_PER_CENTIMETER));
+            extenderRotator.setPosition(0.14);
+            linearextenderLeft.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
+            linearextenderRight.setTargetPosition((int) (50*TICKS_PER_CENTIMETER));
             linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             linearextenderRight.setPower(0.9);
             linearextenderLeft.setPower(0.9);
-            telemetry.addData("Slides to 0cm", "0");
+            telemetry.addData("Slides to 50cm", "0");
             extenderRotator.setPosition(0.1);
             close();
         }
@@ -172,7 +172,7 @@ public class driverthing extends OpMode {
             linearextenderRight.setPower(0.9);
             linearextenderLeft.setPower(0.9);
 
-            telemetry.addData("Slides to 9cm","0");
+            telemetry.addData("Slides to 10cm","0");
             extenderRotator.setPosition(0.1);
             close();
 
@@ -404,10 +404,10 @@ public class driverthing extends OpMode {
         double horizontal = gamepad1.left_stick_x*.5;   //the math behind this is cool. Look it up!
         double vertical =-gamepad1.left_stick_y*.5;
         double turn = -gamepad1.right_stick_x*2/3;
-        fl.setPower((Range.clip((vertical + horizontal + turn), -1, 1))/**powersetterr*/);
-        fr.setPower((Range.clip((vertical - horizontal - turn), -1, 1))/**powersetterr*/);
-        bl.setPower((Range.clip((vertical - horizontal + turn), -1, 1))/**powersetterr*/);
-        br.setPower((Range.clip((vertical + horizontal - turn), -1, 1))/**powersetterr*/);
+        fl.setPower((Range.clip((vertical + horizontal + turn), -1, 1))/* *powersetterr*/);
+        fr.setPower((Range.clip((vertical - horizontal - turn), -1, 1))/* *powersetterr*/);
+        bl.setPower((Range.clip((vertical - horizontal + turn), -1, 1))/* *powersetterr*/);
+        br.setPower((Range.clip((vertical + horizontal - turn), -1, 1))/* *powersetterr*/);
     }
 
 }
