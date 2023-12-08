@@ -9,7 +9,7 @@ import java.util.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
-    boolean run = false;
+    boolean run = true;
 
     double max_error = 90.0;
     int min = 25;
@@ -38,7 +38,7 @@ public boolean red = false;
         // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
         if (l[2] > 10) {
-            if ((((l[0] > 150 && l[2] < 100)) && red) || ((l[0] < 100) && l[2] > 150)) {
+            if ((((l[0] > 170 && l[2] < 100) && l[1] < 100 ) && red) || ((l[0] < 100) && l[1] < 100 && l[2] > 170)) {
                 return true;
             }
         }

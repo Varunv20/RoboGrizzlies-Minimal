@@ -26,6 +26,7 @@ public class closeAutoRed extends LinearOpMode {
 
     int position = 180;
     double constanter = 0.0;
+    public DcMotor intakeMotor;
     public DcMotor fl;
     public DcMotor fr;
     public DcMotor bl;
@@ -53,6 +54,8 @@ public class closeAutoRed extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "FR");
         bl = hardwareMap.get(DcMotor.class, "BL");
         br = hardwareMap.get(DcMotor.class, "BR");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+
 
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
@@ -138,7 +141,7 @@ public class closeAutoRed extends LinearOpMode {
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
                 telemetry.addData("S","STREAMING");
                 telemetry.update();
             }
@@ -156,7 +159,7 @@ public class closeAutoRed extends LinearOpMode {
         waitForStart();
         pipeline.setRun();
 
-        sleep(10000);
+        sleep(7000);
         String r = pipeline.getResult();
         telemetry.addData("rishi", r);
         telemetry.addData("m1", pipeline.m1avg);
@@ -184,6 +187,13 @@ public class closeAutoRed extends LinearOpMode {
                 moveforward(65);
                 strafeleft(15);
                 place();
+                strafeleft(10);
+                movebackward(280);
+                intake();
+                turnright(45);
+                intakeOff();
+                turnleft(45);
+                moveforward(280);
                 straferight(37);
                 moveforward(20);
 
@@ -201,6 +211,15 @@ public class closeAutoRed extends LinearOpMode {
                 moveforward(28);
                 place();
 
+                straferight(10);
+                movebackward(280);
+                intake();
+                turnright(45);
+                intakeOff();
+                turnleft(45);
+                moveforward(280);
+
+
                 straferight(72);
                 moveforward(20);
             }
@@ -213,6 +232,13 @@ public class closeAutoRed extends LinearOpMode {
                 //strafeleft(18);
 
                 place();
+                straferight(10);
+                movebackward(280);
+                intake();
+                turnright(45);
+                intakeOff();
+                turnleft(45);
+                moveforward(280);
                 straferight(63.5);
                 moveforward(20);
             }
@@ -235,6 +261,14 @@ public class closeAutoRed extends LinearOpMode {
         sleep(500);
     }
 
+    void intake() {
+        intakeMotor.setPower(1.0);
+        sleep(500);
+    }
+    void intakeOff() {
+        intakeMotor.setPower(0);
+        sleep(500);
+    }
     void extender(int pos) {
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
 
