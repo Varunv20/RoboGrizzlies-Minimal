@@ -45,9 +45,6 @@ public class driverpush extends LinearOpMode {
 
 
 
-    //public DcMotor E;
-    // public ColorSensor color_sensor;
-
 
 
 
