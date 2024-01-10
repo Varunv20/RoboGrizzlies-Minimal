@@ -18,7 +18,7 @@ public class eocvTeamProp extends OpenCvPipeline {
     public String result = "hello";
     //etry telemetry;
 
-public boolean red = false;
+    public boolean red = false;
     double[] hsv = new double[3];
     double baseline_left = 0;
     double baseline_center = 0;
@@ -214,7 +214,4 @@ public boolean red = false;
         return input1; // Return the image that will be displayed in the viewport
         // (In this case the input mat directly)
     }
-
-
-
 }
