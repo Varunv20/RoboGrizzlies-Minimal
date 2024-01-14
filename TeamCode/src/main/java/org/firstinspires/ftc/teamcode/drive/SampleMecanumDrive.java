@@ -21,9 +21,11 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -54,8 +56,30 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    // functions copied from driverthing
+    void rotate(){
+        extenderRotator.setPosition(0.5);
+        //    sleep(100);
+    }
+    void unrotate(){
+        extenderRotator.setPosition(0.18);
+        // sleep(100);
+    }
+    void extender(int pos) {
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+
+        linearextenderLeft.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9);
+
+        //telemetry.addData("Slides to 9cm","0");
+    }
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(12, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(10, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -73,6 +97,10 @@ public class SampleMecanumDrive extends MecanumDrive {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
 
+    DcMotor linearextenderLeft;
+    DcMotor linearextenderRight;
+    Servo extenderRotator;
+    Servo extenderPlacer;
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
@@ -123,7 +151,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightRear.setDirection(DcMotor.Direction.REVERSE);
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 

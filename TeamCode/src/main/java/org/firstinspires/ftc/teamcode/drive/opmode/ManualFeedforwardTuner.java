@@ -19,6 +19,8 @@ import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -51,6 +53,10 @@ public class ManualFeedforwardTuner extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private SampleMecanumDrive drive;
+    DcMotor linearextenderLeft;
+    DcMotor linearextenderRight;
+    Servo extenderRotator;
+    Servo extenderPlacer;
 
     enum Mode {
         DRIVER_MODE,
@@ -67,6 +73,16 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+        /*
+        linearextenderLeft.setTargetPosition((int) (0*TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (0*TICKS_PER_CENTIMETER));
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9);
+        telemetry.addData("Slides to 0cm","0");
+*/
         if (RUN_USING_ENCODER) {
             RobotLog.setGlobalErrorMsg("Feedforward constants usually don't need to be tuned " +
                     "when using the built-in drive motor velocity PID.");
