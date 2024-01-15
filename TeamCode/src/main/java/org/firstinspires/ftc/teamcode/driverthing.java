@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.hardware.Sensor;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -25,6 +29,7 @@ public class driverthing extends OpMode {
      Servo paperAirplane;
     Servo extenderRotator;
     Servo extenderPlacer;
+    ColorSensor pixelSensor;
     Boolean intake_running = false;
     double i = 0;
     @Override
@@ -42,6 +47,7 @@ public class driverthing extends OpMode {
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
 
+        pixelSensor = hardwareMap.get(ColorRangeSensor.class,"pixelSensor");
 
         fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -105,6 +111,10 @@ public class driverthing extends OpMode {
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
         final double CENTIMETERS_PER_TICK = 1 / TICKS_PER_CENTIMETER;
         move();
+
+        telemetry.addData("Red: ", pixelSensor.red());
+        telemetry.addData("Green: ", pixelSensor.green());
+        telemetry.addData("Blue: ", pixelSensor.blue());
 
         if (gamepad1.y) {
             extenderRotator.setPosition(0.14);
@@ -261,8 +271,8 @@ public class driverthing extends OpMode {
     void extender(int pos) {
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
 
-        linearextenderLeft.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
+        linearextenderLeft.setTargetPosition((int) (-pos*TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (-pos*TICKS_PER_CENTIMETER));
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
