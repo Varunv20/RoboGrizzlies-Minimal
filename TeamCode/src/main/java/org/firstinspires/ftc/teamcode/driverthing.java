@@ -87,21 +87,6 @@ public class driverthing extends OpMode {
 
     // Declare OpMode members.
 
-/*
-
-
-
-
-    public static final String TAG = "Vuforia VuMark Sample";
-    WebcamName webcamName;
-    OpenCvWebcam webcam;
-    OpenCvPipeline pipeline;
-
- */
-
-  //  Boolean intake_running = false;
-
-     //final double MAX_LS_HEIGHT = 50;
     @Override
     public void loop() {
 
