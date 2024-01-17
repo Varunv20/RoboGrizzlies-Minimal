@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -39,6 +41,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
+import java.lang.Math;
 
 /*
  * This OpMode illustrates the basics of AprilTag recognition and pose estimation, using
@@ -62,8 +65,37 @@ public class AprilTagAlignment extends LinearOpMode {
      */
     private VisionPortal visionPortal;
 
+    double turnconstant = 12.76;
+    double moveconstant = 1713;
+    double strafeconstant = 1990;
+
+    public DcMotor fl;
+    public DcMotor fr;
+    public DcMotor bl;
+    public DcMotor br;
+
     @Override
     public void runOpMode() {
+
+        fl = hardwareMap.get(DcMotor.class, "FL");
+        fr = hardwareMap.get(DcMotor.class, "FR");
+        bl = hardwareMap.get(DcMotor.class, "BL");
+        br = hardwareMap.get(DcMotor.class, "BR");
+
+        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fr.setDirection(DcMotorSimple.Direction.FORWARD);
+        bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        br.setDirection(DcMotorSimple.Direction.FORWARD);
 
         initAprilTag();
 
@@ -125,24 +157,146 @@ public class AprilTagAlignment extends LinearOpMode {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+        if (gamepad1.x){
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null && detection.ftcPose.yaw < 0) {
+                    turnright((int) Math.abs(detection.ftcPose.yaw));
+                    if (detection.ftcPose.x > 0){
+                        straferight(Math.abs(detection.ftcPose.x/12));
+                    }
+                    else {
+                        strafeleft(Math.abs(detection.ftcPose.x/12));
+                    }
+                } else if (detection.metadata != null && detection.ftcPose.yaw > 0) {
+                    turnleft((int) Math.abs(detection.ftcPose.yaw));
+                    if (detection.ftcPose.x > 0){
+                        straferight(Math.abs(detection.ftcPose.x/12));
+                    }
+                    else {
+                        strafeleft(Math.abs(detection.ftcPose.x/12));
+                    }
+                }
             }
-        }   // end for() loop
+        }
 
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
+//        // Step through the list of detections and display info for each one.
+//        for (AprilTagDetection detection : currentDetections) {
+//            if (detection.metadata != null) {
+//                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+//                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+//                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+//                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+//            } else {
+//                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+//                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+//            }
+//        }   // end for() loop
+//
+//        // Add "key" information to telemetry
+//        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+//        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+//        telemetry.addLine("RBE = Range, Bearing & Elevation");
 
     }   // end method telemetryAprilTag()
+
+    void settargetpositioner(DcMotor motor, int position){
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setTargetPosition(position);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setPower(.4);
+    }
+
+    void turnright(int degrees){
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fr.setDirection(DcMotorSimple.Direction.FORWARD);
+        bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        br.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        int position = (int) (degrees * turnconstant)*-1;
+        settargetpositioner(fl, -position);
+        settargetpositioner(bl, -position);
+        settargetpositioner(br, position);
+        settargetpositioner(fr, position);
+
+        while (fl.isBusy()){
+            sleep(1);
+        }
+
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+    }
+
+    void turnleft(int degrees){
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fr.setDirection(DcMotorSimple.Direction.FORWARD);
+        bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        br.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        int position = (int) (degrees * turnconstant)*-1;
+        settargetpositioner(fl, position);
+        settargetpositioner(bl, position);
+        settargetpositioner(br, -position);
+        settargetpositioner(fr, -position);
+
+        while (fl.isBusy()){
+            sleep(1);
+        }
+
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+    }
+
+    void strafeleft(double feet){
+        fl.setDirection(DcMotorSimple.Direction.FORWARD);
+        fr.setDirection(DcMotorSimple.Direction.FORWARD);
+        bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        br.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        int position = (int) ((feet/(2.54*12)) * 0.3048 * strafeconstant)*-1;
+
+        settargetpositioner(fl, position);
+        settargetpositioner(fr, position);
+        settargetpositioner(bl, position);
+        settargetpositioner(br, position);
+
+        while (fl.isBusy()){
+            sleep(1);
+        }
+
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+        sleep(100);
+    }
+
+    void straferight(double feet){
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fr.setDirection(DcMotorSimple.Direction.REVERSE);
+        bl.setDirection(DcMotorSimple.Direction.FORWARD);
+        br.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        int position = (int) ((feet/(2.54*12)) * 0.3048 * strafeconstant)*-1;
+
+        settargetpositioner(fl, position);
+        settargetpositioner(fr, position);
+        settargetpositioner(bl, position);
+        settargetpositioner(br, position);
+
+        while (fl.isBusy()){
+            sleep(1);
+        }
+
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+        sleep(100);
+    }
 
 }   // end class
