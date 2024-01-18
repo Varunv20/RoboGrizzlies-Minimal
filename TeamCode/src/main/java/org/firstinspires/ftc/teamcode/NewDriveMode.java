@@ -29,7 +29,7 @@ public class NewDriveMode extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         //no encoders, so we do this:
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //now we need to map each initalized motor to the name assigned in the hardware map
+        //now we need to map each initialized motor to the name assigned in the hardware map
         //which is just the config.
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
@@ -89,7 +89,7 @@ public class NewDriveMode extends LinearOpMode {
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
 
             if (gamepad1.y) {
-                //sends encoders to max up position. Also sets safeguard and tilts box.
+                //sends extenders to max up position. Also sets safeguard and tilts box.
                 dontTilt = false;
                 extenderRotator.setPosition(0.24);
 
@@ -123,7 +123,6 @@ public class NewDriveMode extends LinearOpMode {
                 telemetry.addData("Slides", "Zeroed");
 
             } else if (gamepad1.x) {
-                //close();
                 //medium. See above.
                 dontTilt = false;
                 extenderRotator.setPosition(0.24);
@@ -186,7 +185,7 @@ public class NewDriveMode extends LinearOpMode {
             }
             if (gamepad1.left_trigger > 0.5 && (dontTilt||safetyOverride/*DeMorgan's Laws W*/)) {
                 // toggles intake
-                //stop always works. The box auto stops when up.
+                //stop always works. The intake auto stops when up.
                 stopIntake();
                 unrotate();
             }
@@ -235,7 +234,6 @@ public class NewDriveMode extends LinearOpMode {
                 linearextenderLeft.setPower(0.9);
 
                 telemetry.addData("EMERGENCY DOWNSHIFT", "!!!!!");
-
             }
 
             telemetry.update();
