@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,68 +6,72 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
-
-@TeleOp(name="ExperimentalDrive", group="Driver OP")
+@TeleOp(name="DriverOP-CSM3", group="Driver OP")
 public class NewDriveMode extends LinearOpMode {
+    //initializing stuff. Adds every non-drive servo and motor.
+    // Drive motors are done on the sampleMecanumDrive opMode.
     DcMotor intakeMotor;
-
     DcMotor linearextenderLeft;
     DcMotor linearextenderRight;
     Servo paperAirplane;
     Servo extenderRotator;
     Servo extenderPlacer;
     ColorSensor pixelSensor;
-    double theta = 0; //For testing box positions. See Trigger functions.
-    boolean dontTilt = true;
-    boolean safetyOverride = false;
+    //double theta = 0; //For testing box positions. See Trigger functions.
+    boolean dontTilt = true; //safety feature. Prevents some unwanted actions, so Aiden doesn't break stuff again
+    boolean safetyOverride = false; //Benji Feature BC he doesn't make mistakes :)
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //sets up drive
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
+        //no encoders, so we do this:
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        //now we need to map each initalized motor to the name assigned in the hardware map
+        //which is just the config.
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
         linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
 
         linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        //Servos also need to be mapped!
         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
-
+        // and color sensors, too.
         pixelSensor = hardwareMap.get(ColorRangeSensor.class, "pixelSensor");
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
+        //controls what these do when not actively going somewhere. Usually extenders should be BRAKE.
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearextenderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearextenderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        //Now and then gobilda motors get reversed. It's a known bug and the inelegant solution is to reverse them here too.
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         linearextenderRight.setDirection(DcMotor.Direction.REVERSE);
 
-
+        /*This value corresponds encoder units to distance. Ticks per rotation is a function of a motor's
+        drive encoder. Find wheel radius and solve for ticks per unit distance.
+        I quite honestly have no idea if this is still correct. We arent using it meaningfully.
+         */
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
-        //final double CENTIMETERS_PER_TICK = 1 / TICKS_PER_CENTIMETER;
 
+        //moving on initialization - positions box, powers plane launcher, opens door.
         unrotate();
         setPlane();
         open();
-
-        waitForStart();
         //extenderRotator.setPosition(theta); //Testing holdover
-        //THIS IS WIZARDRY. Someone please figure it out.
+        waitForStart(); //THIS OPMODE IS CONFIGURED FOR LINEAROPMODE. If this line is erroring, that may be the issue. Look up opmode vs linearopmode.
+
+
         while (!isStopRequested()) {
+            //THIS IS WIZARDRY. Someone please figure it out.
             drive.setWeightedDrivePower(
                     new Pose2d(
                             gamepad1.left_stick_y,
@@ -79,58 +82,73 @@ public class NewDriveMode extends LinearOpMode {
 
             drive.update();
 
-
+            //telemetry for pixel sensor prototype. To be updated.
             telemetry.addData("Red: ", pixelSensor.red());
             telemetry.addData("Green: ", pixelSensor.green());
             telemetry.addData("Blue: ", pixelSensor.blue());
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
 
             if (gamepad1.y) {
+                //sends encoders to max up position. Also sets safeguard and tilts box.
                 dontTilt = false;
                 extenderRotator.setPosition(0.24);
 
                 linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
+
                 linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
                 linearextenderRight.setPower(0.9);
-                linearextenderLeft.setPower(0.9);
+                linearextenderLeft.setPower(0.9); //I think all 3 commands here (target, mode, power) are needed.
+
                 telemetry.addData("Slides", "HIGH");
                 close();
 
 
             } else if (gamepad1.b) {
-                //open();
+                //ground position. Should move box to prevent serious breaking issues.
                 dontTilt = true;
                 unrotate();
                 open();
-                linearextenderLeft.setTargetPosition((int) (0));
-                linearextenderRight.setTargetPosition((int) (0));
+
+                linearextenderLeft.setTargetPosition(0);
+                linearextenderRight.setTargetPosition(0);
+
                 linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
                 linearextenderRight.setPower(0.9);
                 linearextenderLeft.setPower(0.9);
                 telemetry.addData("Slides", "Zeroed");
 
             } else if (gamepad1.x) {
                 //close();
+                //medium. See above.
                 dontTilt = false;
                 extenderRotator.setPosition(0.24);
+
                 linearextenderLeft.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
+
                 linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
                 linearextenderRight.setPower(0.9);
                 linearextenderLeft.setPower(0.9);
+
                 telemetry.addData("Slides", "Medium");
                 unrotate();
                 close();
             } else if (gamepad1.a) {
+                //low. See above.
                 unrotate();
                 dontTilt = false;
-                extenderRotator.setPosition(0.24);
+                extenderRotator.setPosition(0.25);
+
                 linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+
                 linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -143,7 +161,7 @@ public class NewDriveMode extends LinearOpMode {
             }
 
 
-            if (gamepad1.right_bumper && !dontTilt) {
+            if (gamepad1.right_bumper && (!dontTilt || safetyOverride )) {
                 //theta+=0.001; //This code exists to recalibrate the box. Uncomment to use.
                 //extenderRotator.setPosition(theta);
                 //DontTilt is a boolean which is true when the box is on the ground.
@@ -157,11 +175,9 @@ public class NewDriveMode extends LinearOpMode {
             }
             if (gamepad1.right_trigger > 0.5&&(dontTilt||safetyOverride)){
                 // toggles intake.
-                //to avoid funny issues this ony works when box is down.
+                //to avoid funny issues this ony works when box is down. This also helps with power draw.
                 startIntake();
                 extenderRotator.setPosition(0.24);
-
-
             }
             if(gamepad1.right_trigger> 0.5 && gamepad1.guide &&(dontTilt||safetyOverride)){
                 //reverses intake if the XBOX button and activate trigger are pressed together.
@@ -173,12 +189,10 @@ public class NewDriveMode extends LinearOpMode {
                 //stop always works. The box auto stops when up.
                 stopIntake();
                 unrotate();
-
             }
             if (gamepad1.dpad_right){
                 // door control. Fairly intuitive.
                 open();
-
             }
             if (gamepad1.dpad_left && (!dontTilt||safetyOverride)) {
                 // also door control. Again Don'tTilt is used to prevent errors.
@@ -194,7 +208,7 @@ public class NewDriveMode extends LinearOpMode {
             }
             if (gamepad1.left_stick_button && gamepad1.right_stick_button){
                 safetyOverride = !safetyOverride;
-                //see below.
+                //Toggle switch for safeguard override. see below.
             }
             if(safetyOverride){
                 dontTilt = false;
@@ -204,14 +218,16 @@ public class NewDriveMode extends LinearOpMode {
             if(gamepad1.start){
                 linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
                 telemetry.addData("ENCODERS RESET", "!");
                 //Resets encoder zero position. Use when having issues.
             }
             if(gamepad1.back){
-                //lowers extenders. Meant to be used with above function. BE CAREFUL WHEN USING
+                //lowers extenders. Meant to be used with above function. BE CAREFUL WHEN USING.
                 unrotate();
                 linearextenderLeft.setTargetPosition((int) (linearextenderLeft.getTargetPosition()-1* TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (linearextenderRight.getTargetPosition()-1 * TICKS_PER_CENTIMETER));
+
                 linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -223,35 +239,32 @@ public class NewDriveMode extends LinearOpMode {
             }
 
             telemetry.update();
-        }
+        }//END OF DRIVEROP LOOP
     }
-
+    /*
+    methods. They are separate from the buttons because sometimes they are called in
+    multiple places, and to improve readability.
+     */
     void reload() {
         paperAirplane.setPosition(1.0);
     }
     void unrotate(){
-        extenderRotator.setPosition(0.214);
-        // sleep(100);
+        extenderRotator.setPosition(0.23);
     }
     void rotate(){
         extenderRotator.setPosition(0.52);
-        //    sleep(100);
     }
     void open(){
         extenderPlacer.setPosition(0.0);
-        //     sleep(100);
     }
     void close(){
         extenderPlacer.setPosition(0.489);
-        //    sleep(100);
     }
     void setPlane(){
         extenderPlacer.setPosition(0.0);
-        //    sleep(100);
     }
     void launchPlane(){
         paperAirplane.setPosition(0.3);
-        //    sleep(100);
     }
     void startIntake(){
         intakeMotor.setPower(1.0);
@@ -264,5 +277,3 @@ public class NewDriveMode extends LinearOpMode {
         intakeMotor.setPower(-1.0);
     }
 }
-
-

@@ -1,4 +1,6 @@
+
 package org.firstinspires.ftc.teamcode;
+
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -236,7 +238,7 @@ public class driverpush extends LinearOpMode {
     void move(){
         //intakeMotor.setPower(1.0);
         double horizontal = gamepad1.left_stick_x*.8;   // this works so dont question it
-        double vertical =-gamepad1.left_stick_y*.8;
+        double vertical =-gamepad1.left_stick_y*.8; //2024 Update: no longer works. Presently questioning.
         double turn = gamepad1.right_stick_x*2/3;
         //  E.setPower(gamepad1.left_stick_y);
         fl.setPower((Range.clip((vertical + horizontal + turn), -1, 1))/**powersetterr*/);

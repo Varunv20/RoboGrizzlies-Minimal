@@ -57,27 +57,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
     // functions copied from driverthing
-    void rotate(){
-        extenderRotator.setPosition(0.5);
-        //    sleep(100);
-    }
-    void unrotate(){
-        extenderRotator.setPosition(0.18);
-        // sleep(100);
-    }
-    void extender(int pos) {
-        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
-
-        linearextenderLeft.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (pos*TICKS_PER_CENTIMETER));
-        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        linearextenderRight.setPower(0.9);
-        linearextenderLeft.setPower(0.9);
-
-        //telemetry.addData("Slides to 9cm","0");
-    }
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(12, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(10, 0, 0);
 
