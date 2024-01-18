@@ -163,14 +163,19 @@ public class NewDriveMode extends LinearOpMode {
 
 
             }
-            if (gamepad1.left_trigger > 0.5 || (!dontTilt||safetyOverride/*DeMorgan's Laws W*/)) {
+            if(gamepad1.right_trigger> 0.5 && gamepad1.guide &&(dontTilt||safetyOverride)){
+                //reverses intake if the XBOX button and activate trigger are pressed together.
+                // This should help with jams.
+                reverseIntake();
+            }
+            if (gamepad1.left_trigger > 0.5 && (dontTilt||safetyOverride/*DeMorgan's Laws W*/)) {
                 // toggles intake
                 //stop always works. The box auto stops when up.
                 stopIntake();
                 unrotate();
 
             }
-            if (gamepad1.dpad_right || (dontTilt&&!safetyOverride)) {
+            if (gamepad1.dpad_right){
                 // door control. Fairly intuitive.
                 open();
 
@@ -255,9 +260,9 @@ public class NewDriveMode extends LinearOpMode {
     void stopIntake(){
         intakeMotor.setPower(0.0);
     }
-    /*void reverseIntake(){
+    void reverseIntake(){
         intakeMotor.setPower(-1.0);
-    }*/
+    }
 }
 
 
