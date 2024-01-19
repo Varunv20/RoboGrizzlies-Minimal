@@ -19,7 +19,7 @@ public class NewDriveMode extends LinearOpMode {
     Servo extenderRotator;
     Servo extenderPlacer;
     ColorSensor pixelSensor;
-    //double theta = 0; //For testing box positions. See Trigger functions.
+    double theta = 0.06; //For testing box positions. See Trigger functions.
     boolean dontTilt = true; //safety feature. Prevents some unwanted actions, so Aiden doesn't break stuff again
     boolean safetyOverride = false; //Benji Feature BC he doesn't make mistakes :)
 
@@ -66,11 +66,11 @@ public class NewDriveMode extends LinearOpMode {
         unrotate();
         setPlane();
         open();
-        //extenderRotator.setPosition(theta); //Testing holdover
         waitForStart(); //THIS OPMODE IS CONFIGURED FOR LINEAROPMODE. If this line is erroring, that may be the issue. Look up opmode vs linearopmode.
 
 
         while (!isStopRequested()) {
+            unrotate();
             //THIS IS WIZARDRY. Someone please figure it out.
             drive.setWeightedDrivePower(
                     new Pose2d(
@@ -87,11 +87,12 @@ public class NewDriveMode extends LinearOpMode {
             telemetry.addData("Green: ", pixelSensor.green());
             telemetry.addData("Blue: ", pixelSensor.blue());
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
+            telemetry.addData("theta: ", theta);
 
             if (gamepad1.y) {
                 //sends extenders to max up position. Also sets safeguard and tilts box.
                 dontTilt = false;
-                extenderRotator.setPosition(0.24);
+                extenderRotator.setPosition(0.21);
 
                 linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
@@ -125,7 +126,7 @@ public class NewDriveMode extends LinearOpMode {
             } else if (gamepad1.x) {
                 //medium. See above.
                 dontTilt = false;
-                extenderRotator.setPosition(0.24);
+                extenderRotator.setPosition(0.21+theta);
 
                 linearextenderLeft.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
@@ -137,13 +138,11 @@ public class NewDriveMode extends LinearOpMode {
                 linearextenderLeft.setPower(0.9);
 
                 telemetry.addData("Slides", "Medium");
-                unrotate();
                 close();
             } else if (gamepad1.a) {
                 //low. See above.
                 unrotate();
                 dontTilt = false;
-                extenderRotator.setPosition(0.25);
 
                 linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
@@ -161,14 +160,10 @@ public class NewDriveMode extends LinearOpMode {
 
 
             if (gamepad1.right_bumper && (!dontTilt || safetyOverride )) {
-                //theta+=0.001; //This code exists to recalibrate the box. Uncomment to use.
-                //extenderRotator.setPosition(theta);
-                //DontTilt is a boolean which is true when the box is on the ground.
                 rotate();
             }
             if (gamepad1.left_bumper) {
-                //theta+=0.01; //This code exists to recalibrate the box. Uncomment to use.
-                //extenderRotator.setPosition(theta);
+
                 unrotate();
 
             }
@@ -176,7 +171,7 @@ public class NewDriveMode extends LinearOpMode {
                 // toggles intake.
                 //to avoid funny issues this ony works when box is down. This also helps with power draw.
                 startIntake();
-                extenderRotator.setPosition(0.24);
+                extenderRotator.setPosition(0.24+theta);
             }
             if(gamepad1.right_trigger> 0.5 && gamepad1.guide &&(dontTilt||safetyOverride)){
                 //reverses intake if the XBOX button and activate trigger are pressed together.
@@ -202,8 +197,8 @@ public class NewDriveMode extends LinearOpMode {
                 //Self Explanatory, no? this is the benefit of not naming everything beans.
             }
             if (gamepad1.dpad_down) {
-                reload();
-                //This will never matter in game (probably). It's for practice only.
+                extenderRotator.setPosition(0.1+theta);
+              //tilt up for pixel stuck issue
             }
             if (gamepad1.left_stick_button && gamepad1.right_stick_button){
                 safetyOverride = !safetyOverride;
@@ -235,10 +230,18 @@ public class NewDriveMode extends LinearOpMode {
 
                 telemetry.addData("EMERGENCY DOWNSHIFT", "!!!!!");
             }
-
+            if(gamepad1.right_bumper && gamepad1.guide) {
+                theta+=0.01; //This code exists to recalibrate the box. Uncomment to use.
+                extenderRotator.setPosition(theta);
+            }
+            if(gamepad1.left_bumper && gamepad1.guide) {
+                theta+=0.001; //This code exists to recalibrate the box. Uncomment to use.
+                extenderRotator.setPosition(theta);
+            }
             telemetry.update();
         }//END OF DRIVEROP LOOP
     }
+
     /*
     methods. They are separate from the buttons because sometimes they are called in
     multiple places, and to improve readability.
@@ -247,10 +250,10 @@ public class NewDriveMode extends LinearOpMode {
         paperAirplane.setPosition(1.0);
     }
     void unrotate(){
-        extenderRotator.setPosition(0.23);
+        extenderRotator.setPosition(0.23+theta);
     }
     void rotate(){
-        extenderRotator.setPosition(0.52);
+        extenderRotator.setPosition(0.52+theta);
     }
     void open(){
         extenderPlacer.setPosition(0.0);
@@ -266,10 +269,11 @@ public class NewDriveMode extends LinearOpMode {
     }
     void startIntake(){
         intakeMotor.setPower(1.0);
-        extenderRotator.setPosition(0.195);
+        extenderRotator.setPosition(0.15);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
+        unrotate();
     }
     void reverseIntake(){
         intakeMotor.setPower(-1.0);
