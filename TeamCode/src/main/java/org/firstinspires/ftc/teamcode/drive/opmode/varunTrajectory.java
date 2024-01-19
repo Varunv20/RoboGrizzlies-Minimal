@@ -87,7 +87,7 @@ public class varunTrajectory extends LinearOpMode {
                 // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
                 // .followTrajectorySequence(drive ->
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(12, -63.25, Math.toRadians(270)));
+        drive.setPoseEstimate(new Pose2d(12, 63.25, Math.toRadians(90)));
         // cv stuff
         // runtime.reset();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

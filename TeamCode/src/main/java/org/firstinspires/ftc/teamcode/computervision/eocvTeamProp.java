@@ -9,7 +9,7 @@ import java.util.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
-    public boolean run = true;
+    public boolean run = false;
 
     double max_error = 90.0;
     int min = 25;
@@ -18,7 +18,7 @@ public class eocvTeamProp extends OpenCvPipeline {
     public String result = "hello";
     //etry telemetry;
 
-public boolean red = false;
+    public boolean red = true;
     double[] hsv = new double[3];
     double baseline_left = 0;
     double baseline_center = 0;
@@ -34,11 +34,18 @@ public boolean red = false;
 
     //return new double[] {red, green, blue};
     // }
+    //Telemetry telemetry;
+
+   // public eocvTeamProp(Telemetry telemetry) {
+     //   this.telemetry = telemetry;
+    //}
+
     public boolean is_red(double[] l) {
         // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
         if (l[2] > 10) {
-            if ((((l[0] > 170 && l[2] < 100) && l[1] < 100 ) && red) || ((l[0] < 100) && l[1] < 100 && l[2] > 170)) {
+            if ((((l[0] > 110 && l[2] < 90) && l[1] < 100 ) && red) || ((l[0] < 100) && l[1] < 100 && l[2] > 170) && !red) {
+                //   telemetry.addData("r", "hellop;");
                 return true;
             }
         }
@@ -134,13 +141,13 @@ public boolean red = false;
 
         if (run) {
 
-            Integer[] redheights = new Integer[input1.width()];
+            Integer[] redheights = new Integer[input1.width()/3];
 
-            for (int y = 0; y < input1.width(); y++) {
+            for (int y = 0; y < input1.width()/3; y++) {
                 int icounter = 0;
                 long s = System.nanoTime();
-                for (int x = 0; x < input1.height(); x++) {
-                    double[] i = input1.get(x, y);
+                for (int x = input1.height()/4; x < input1.height()-input1.height()/4; x+=3) {
+                    double[] i = input1.get(x, y*3);
 
 
                     if (is_red(i)) {
@@ -179,19 +186,25 @@ public boolean red = false;
             m2avg = avg(m2);
             m3avg = avg(m3);
 
-           // if (!red) {
-           //     m1avg -= 2000;
-           // }
+            // if (!red) {
+            //     m1avg -= 2000;
+            // }
             //if (red) {
-                if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
-                    result = "left";
-                } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
-                    result = "right";
-                } else {
-                    result = "center";
-                }
-           // } //m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2 else if
-           // else {
+            if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
+                result = "left";
+            } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
+                result = "right";
+            } else {
+                result = "center";
+            }
+         /*   telemetry.addData("r", result);
+            telemetry.addData("m1", m1avg);
+            telemetry.addData("m2", m2avg);
+            telemetry.addData("m3", m3avg);
+            telemetry.update();*/
+
+            // } //m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2 else if
+            // else {
                 /*if (m1avg / m2avg < 1.1 && m3avg / m2avg < 1.1) {
                     result = "center";
                 } else if (m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2) {
@@ -199,22 +212,20 @@ public boolean red = false;
                 } else {
                     result = "left";
                 }*/
-           //     if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
-                   // result = "left";
-           //     } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
-                    //result = "right";
-          //      } else {
-          //          result = "center";
-           //     }
-           // }
+            //     if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
+            // result = "left";
+            //     } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
+            //result = "right";
+            //      } else {
+            //          result = "center";
+            //     }
+            // }
 
-            run = false;
+              run = false;
 
         }
         return input1; // Return the image that will be displayed in the viewport
         // (In this case the input mat directly)
     }
-
-
-
 }
+
