@@ -9,7 +9,7 @@ import java.util.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
-    boolean run = true;
+    public boolean run = true;
 
     double max_error = 90.0;
     int min = 25;

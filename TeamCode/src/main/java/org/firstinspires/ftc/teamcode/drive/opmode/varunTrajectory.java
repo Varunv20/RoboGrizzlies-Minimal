@@ -54,6 +54,7 @@ public class varunTrajectory extends LinearOpMode {
     public Servo extenderPlacer;
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
+    public DcMotor intakeMotor;
     OpenCvWebcam webcam;
     public void onOpened()
     {
@@ -86,6 +87,7 @@ public class varunTrajectory extends LinearOpMode {
                 // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
                 // .followTrajectorySequence(drive ->
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(new Pose2d(12, -63.25, Math.toRadians(270)));
         // cv stuff
         // runtime.reset();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -131,5 +133,81 @@ public class varunTrajectory extends LinearOpMode {
                 .start();
 
          */
+    }
+    void unrotate(){
+        extenderRotator.setPosition(0.23);
+    }
+    void rotate(){
+        extenderRotator.setPosition(0.52);
+    }
+    void open(){
+        extenderPlacer.setPosition(0.0);
+    }
+    void close(){
+        extenderPlacer.setPosition(0.489);
+    }
+    void stopIntake(){
+        intakeMotor.setPower(0.0);
+    }
+    void reverseIntake(){
+        intakeMotor.setPower(-1.0);
+    }
+
+    // for the extenders
+    final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+    void maxHeight() {
+        //sends extenders to max up position. Also sets safeguard and tilts box.
+        // I commented this safety feature out. What could go wrong?
+        //dontTilt = false;
+        extenderRotator.setPosition(0.24);
+
+        linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9); //I think all 3 commands here (target, mode, power) are needed.
+
+        telemetry.addData("Slides", "HIGH");
+        close();
+    }
+    void groundHeight() {
+        //ground position. Should move box to prevent serious breaking issues.
+        // I commented this safety feature out. What could go wrong?
+        // dontTilt = true;
+        unrotate();
+        open();
+
+        linearextenderLeft.setTargetPosition(0);
+        linearextenderRight.setTargetPosition(0);
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9);
+        telemetry.addData("Slides", "Zeroed");
+    }
+    void lowHeight() {
+        //low. See above.
+        unrotate();
+        // I commented this safety feature out. What could go wrong?
+        //dontTilt = false;
+        extenderRotator.setPosition(0.25);
+
+        linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9);
+
+        telemetry.addData("Slides", "Low");
+        unrotate();
+        close();
     }
 }
