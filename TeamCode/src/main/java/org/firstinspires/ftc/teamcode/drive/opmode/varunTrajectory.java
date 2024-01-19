@@ -56,6 +56,16 @@ public class varunTrajectory extends LinearOpMode {
     public DcMotor linearextenderRight;
     public DcMotor intakeMotor;
     OpenCvWebcam webcam;
+    enum State {
+        traj1,
+        traj2,
+        traj3,
+        traj4,
+        traj5,
+        Idle
+
+    }
+    State currentState = State.Idle;
     public void onOpened()
     {
         /*
@@ -87,7 +97,8 @@ public class varunTrajectory extends LinearOpMode {
                 // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
                 // .followTrajectorySequence(drive ->
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(12, 63.25, Math.toRadians(90)));
+        Pose2d startpos = new Pose2d(12, 63.25, Math.toRadians(90));
+        drive.setPoseEstimate(startpos);
         // cv stuff
         // runtime.reset();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -122,8 +133,64 @@ public class varunTrajectory extends LinearOpMode {
                                 // .splineTo(new Vector2d(53, 30), Math.toRadians(0))
         waitForStart();
         if(isStopRequested()) return;
+        currentState = State.traj1;
+        drive.followTrajectorySequence(traj1);
+        while (opModeIsActive() && !isStopRequested()) {
+            switch (currentState) {
+                case traj1:
 
-        drive.followTrajectorySequence(varunTrajectory);
+                    if (!drive.isBusy()) {
+                        currentState = State.traj2;
+                        drive.followTrajectorySequence(traj2);
+                        //do code
+                    }
+                    else {
+                        //raise extender
+                    }
+                case traj2:
+
+                    if (!drive.isBusy()) {
+                        currentState = State.traj3;
+                        drive.followTrajectorySequence(traj3);
+                        //do code
+                    }
+                    else {
+                        //open
+                    }
+                case traj3:
+
+                    if (!drive.isBusy()) {
+                        currentState = State.traj4;
+                        drive.followTrajectorySequence(traj4);
+                        //do code
+                    }
+                    else {
+                        //down
+                    }
+                case traj4:
+
+                    if (!drive.isBusy()) {
+                        currentState = State.traj5;
+                        drive.followTrajectorySequence(traj5);
+                        //do code
+                    }
+                    else {
+                        //intake
+                    }
+                case traj5:
+
+                    if (!drive.isBusy()) {
+                        currentState = State.Idle;
+                        //up+place+open
+                        //do code
+                    }
+                    else {
+                        //open
+                    }
+                case Idle:
+                    break;
+            }
+        }
                 //);
         /*
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
