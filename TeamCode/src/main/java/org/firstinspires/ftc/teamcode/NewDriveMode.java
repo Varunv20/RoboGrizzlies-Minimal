@@ -64,13 +64,13 @@ public class NewDriveMode extends LinearOpMode {
 
         //moving on initialization - positions box, powers plane launcher, opens door.
         unrotate();
-        setPlane();
+        theta = 0;
+        reload();
         open();
         waitForStart(); //THIS OPMODE IS CONFIGURED FOR LINEAROPMODE. If this line is erroring, that may be the issue. Look up opmode vs linearopmode.
 
 
         while (!isStopRequested()) {
-            unrotate();
             //THIS IS WIZARDRY. Someone please figure it out.
             drive.setWeightedDrivePower(
                     new Pose2d(
@@ -92,7 +92,7 @@ public class NewDriveMode extends LinearOpMode {
             if (gamepad1.y) {
                 //sends extenders to max up position. Also sets safeguard and tilts box.
                 dontTilt = false;
-                extenderRotator.setPosition(0.21);
+                extenderRotator.setPosition(0.19);//0.21+theta);
 
                 linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
@@ -126,7 +126,7 @@ public class NewDriveMode extends LinearOpMode {
             } else if (gamepad1.x) {
                 //medium. See above.
                 dontTilt = false;
-                extenderRotator.setPosition(0.21+theta);
+                extenderRotator.setPosition(0.19);//0.21+theta);
 
                 linearextenderLeft.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
                 linearextenderRight.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
@@ -171,7 +171,7 @@ public class NewDriveMode extends LinearOpMode {
                 // toggles intake.
                 //to avoid funny issues this ony works when box is down. This also helps with power draw.
                 startIntake();
-                extenderRotator.setPosition(0.24+theta);
+                extenderRotator.setPosition(0.215);//0.24+theta);
             }
             if(gamepad1.right_trigger> 0.5 && gamepad1.guide &&(dontTilt||safetyOverride)){
                 //reverses intake if the XBOX button and activate trigger are pressed together.
@@ -196,8 +196,8 @@ public class NewDriveMode extends LinearOpMode {
                 launchPlane();
                 //Self Explanatory, no? this is the benefit of not naming everything beans.
             }
-            if (gamepad1.dpad_down) {
-                extenderRotator.setPosition(0.1+theta);
+            if (gamepad1.dpad_up) {
+                extenderRotator.setPosition(0.15);//0.1+theta);
               //tilt up for pixel stuck issue
             }
             if (gamepad1.left_stick_button && gamepad1.right_stick_button){
@@ -230,14 +230,14 @@ public class NewDriveMode extends LinearOpMode {
 
                 telemetry.addData("EMERGENCY DOWNSHIFT", "!!!!!");
             }
-            if(gamepad1.right_bumper && gamepad1.guide) {
+            /*if(gamepad1.right_bumper && gamepad1.guide) {
                 theta+=0.01; //This code exists to recalibrate the box. Uncomment to use.
                 extenderRotator.setPosition(theta);
             }
             if(gamepad1.left_bumper && gamepad1.guide) {
                 theta+=0.001; //This code exists to recalibrate the box. Uncomment to use.
                 extenderRotator.setPosition(theta);
-            }
+            }*/
             telemetry.update();
         }//END OF DRIVEROP LOOP
     }
@@ -249,11 +249,11 @@ public class NewDriveMode extends LinearOpMode {
     void reload() {
         paperAirplane.setPosition(1.0);
     }
-    void unrotate(){
-        extenderRotator.setPosition(0.23+theta);
-    }
     void rotate(){
-        extenderRotator.setPosition(0.52+theta);
+        extenderRotator.setPosition(0.49);//0.23+theta);
+    }
+    void unrotate(){
+        extenderRotator.setPosition(0.2);//0.52+theta);
     }
     void open(){
         extenderPlacer.setPosition(0.0);
@@ -261,19 +261,19 @@ public class NewDriveMode extends LinearOpMode {
     void close(){
         extenderPlacer.setPosition(0.489);
     }
-    void setPlane(){
+    /*void setPlane(){
         extenderPlacer.setPosition(0.0);
-    }
+    }*/
     void launchPlane(){
         paperAirplane.setPosition(0.3);
     }
     void startIntake(){
         intakeMotor.setPower(1.0);
-        extenderRotator.setPosition(0.15);
+        //extenderRotator.setPosition(0.15);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
-        unrotate();
+        //unrotate();
     }
     void reverseIntake(){
         intakeMotor.setPower(-1.0);
