@@ -15,8 +15,8 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(0), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(12, 63.25, Math.toRadians(90)))
-                                .lineToLinearHeading(new Pose2d(0,28, Math.toRadians(90)))
-                                .forward(8)
+                                .lineToLinearHeading(new Pose2d(0,35, Math.toRadians(90)))
+                                .forward(4)
                                 .lineToLinearHeading(new Pose2d(53, 30, Math.toRadians(180)))
                                 //up pixel
                                 .forward(5)
@@ -45,19 +45,19 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 18)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(12, 63.25, Math.toRadians(90)))
-                                .lineToLinearHeading(new Pose2d(12,32.75, Math.toRadians(90)))
-                                .forward(8)
-                                .lineToLinearHeading(new Pose2d(53, 36, Math.toRadians(180)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-36, -63.25, Math.toRadians(270)))
+                                .lineToLinearHeading(new Pose2d(-36,-32.75, Math.toRadians(270)))
+                                .forward(4)
+                                .lineToLinearHeading(new Pose2d(53, -36, Math.toRadians(180)))
                                 //up pixel
                                 .forward(5)
                                 //  .splineTo(new Vector2d(0, 6), Math.toRadians(180))
-                                .splineTo(new Vector2d(10, 12), Math.toRadians(180))
-                                .splineTo(new Vector2d(-60, 12), Math.toRadians(180))
+                                .splineTo(new Vector2d(10, -12), Math.toRadians(180))
+                                .splineTo(new Vector2d(-55, -12), Math.toRadians(180))
                                 .back(6)
-                                .lineToLinearHeading(new Pose2d(-54, 60, Math.toRadians(180)))
-                                .lineToLinearHeading(new Pose2d(50, 60, Math.toRadians(180)))
-                                .lineToLinearHeading(new Pose2d(50, 40, Math.toRadians(180)))
+                               .lineToLinearHeading(new Pose2d(-54, -60, Math.toRadians(180)))
+                                .lineToLinearHeading(new Pose2d(50, -60, Math.toRadians(180)))
+                                .lineToLinearHeading(new Pose2d(50, -40, Math.toRadians(180)))
                                 .back(5)
 
 
@@ -77,8 +77,8 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(12, 63.25, Math.toRadians(90)))
-                                .lineToLinearHeading(new Pose2d(24,32.75, Math.toRadians(90)))
-                                .forward(8)
+                                .lineToLinearHeading(new Pose2d(24,35, Math.toRadians(90)))
+                                .forward(6)
                                 .lineToLinearHeading(new Pose2d(53, 41, Math.toRadians(180)))
                                 //up pixel
                                 .forward(5)

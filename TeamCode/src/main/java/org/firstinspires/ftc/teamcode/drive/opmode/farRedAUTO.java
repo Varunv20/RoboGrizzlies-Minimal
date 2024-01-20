@@ -4,26 +4,6 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
-import com.acmerobotics.roadrunner.drive.DriveSignal;
-import com.acmerobotics.roadrunner.drive.MecanumDrive;
-import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower;
-import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.profile.MotionProfile;
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
-import com.acmerobotics.roadrunner.profile.MotionState;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
-import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.acmerobotics.roadrunner.util.NanoClock;
-
 //import com.noahbres.meepmeep.MeepMeep;
 //import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 //import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -45,10 +25,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous
-public class varunTrajectory extends LinearOpMode {
+public class farRedAUTO extends LinearOpMode {
     public Servo paperAirplane;
     public Servo extenderRotator;
     public Servo extenderPlacer;
@@ -62,12 +41,13 @@ public class varunTrajectory extends LinearOpMode {
         traj3,
         traj4,
         traj5,
+        traj6,
+        traj7,
+        traj8,
+        traj9,
         Idle
 
     }
-    boolean extender_up = false;
-    boolean box_open = true;
-    boolean box_rotated = false;
 
 
     State currentState = State.Idle;
@@ -98,45 +78,113 @@ public class varunTrajectory extends LinearOpMode {
         //MeepMeep meepMeep = new MeepMeep(800);
 
         // RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
-                // .followTrajectorySequence(drive ->
+        // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+        // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
+        // .followTrajectorySequence(drive ->
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startpos = new Pose2d(12, 63.25, Math.toRadians(90));
+        Pose2d startpos = new Pose2d(-36, -63.25, Math.toRadians(270));
         drive.setPoseEstimate(startpos);
         // cv stuff
         // runtime.reset();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-        // end cv stuff
-        TrajectorySequence varunTrajectory = drive.trajectorySequenceBuilder(new Pose2d(12, 63, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(0,25, Math.toRadians(90)))
-                //.addDisplacementMarker(() -> {
-                //})
-                .lineToLinearHeading(new Pose2d(0, 36, Math.toRadians(180)))
+        eocvTeamProp pipeline = new eocvTeamProp();
+        webcam.setPipeline(pipeline);
+        TrajectorySequence  traj1;
+        TrajectorySequence  traj2;
+        TrajectorySequence  traj3;
+        TrajectorySequence  traj4;
+        TrajectorySequence  traj5;
+        TrajectorySequence  traj6;
+        TrajectorySequence  traj7;
+        TrajectorySequence  traj8;
+        TrajectorySequence  traj9;
 
-                .lineTo(new Vector2d(53, 30))
 
-                //up pixel
+        /*
+         * Open the connection to the camera device. New in v1.4.0 is the ability
+         * to open the camera asynchronously, and this is now the recommended way
+         * to do it. The benefits of opening async include faster init time, and
+         * better behavior when pressing stop during init (i.e. less of a chance
+         * of tripping the stuck watchdog)
+         *
+         * If you really want to open synchronously, the old method is still available.
+         */
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+
+        {
+            @Override
+            public void onOpened()
+            {
+
+                webcam.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+                telemetry.addData("S","STREAMING");
+                telemetry.update();
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+                telemetry.addData("e",errorCode);
+                telemetry.update();
+            }
+        });
+        pipeline.red = true;
+        waitForStart();
+        pipeline.setRun();
+        while (pipeline.run) {
+            sleep(100);
+        }
+        String result = pipeline.getResult();
+        if (result == "right") {
+            traj1 = drive.trajectorySequenceBuilder(startpos)
+                    .lineToLinearHeading(new Pose2d(-48,-35, Math.toRadians(270)))
+                    .forward(4)
+                    .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
+                    .build();
+
+        }
+        else if (result == "left") {
+            traj1 = drive.trajectorySequenceBuilder(startpos)
+                    .lineToLinearHeading(new Pose2d(-24,-32.75, Math.toRadians(90)))
+                    .forward(4)
+                    .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
+                    .build();
+        }
+        else {
+            traj1 = drive.trajectorySequenceBuilder(startpos)
+                    .lineToLinearHeading(new Pose2d(-36,-32.75, Math.toRadians(90)))
+                    .forward(4)
+                    .lineToLinearHeading(new Pose2d(43, -36, Math.toRadians(180)))
+                    .build();
+        }
+        traj2 =  drive.trajectorySequenceBuilder(traj1.end())
                 .forward(5)
-                //  .splineTo(new Vector2d(0, 6), Math.toRadians(180))
-                .splineTo(new Vector2d(10, 12), Math.toRadians(180))
-                .splineTo(new Vector2d(-60, 12), Math.toRadians(180))
-                .back(6)
-                .lineToLinearHeading(new Pose2d(-54, 60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, 60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, 40, Math.toRadians(180)))
+                .build();
+        traj3 =  drive.trajectorySequenceBuilder(traj1.end())
                 .back(5)
                 .build();
 
+        traj4 =  drive.trajectorySequenceBuilder(traj2.end())
+                .splineTo(new Vector2d(10, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-55, -12), Math.toRadians(180))
+                .build();
+        traj5 =  drive.trajectorySequenceBuilder(traj2.end())
+                .forward(5)
+                .build();
+        traj6 =  drive.trajectorySequenceBuilder(traj2.end())
+                .back(5)
+                .build();
+        traj7 = drive.trajectorySequenceBuilder(traj2.end())
+                .lineToLinearHeading(new Pose2d(-54, -60, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(50, -60, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(50, -43, Math.toRadians(180)))
+                .build();
+        traj8 = traj2;
 
-                                // .back(5)
-                                //intake
-                                // .forward(5)
-                                // .splineTo(new Vector2d(0, 6), Math.toRadians(180))
-
-                                // .splineTo(new Vector2d(53, 30), Math.toRadians(0))
-        waitForStart();
         if(isStopRequested()) return;
         currentState = State.traj1;
         drive.followTrajectorySequence(traj1);
@@ -146,7 +194,8 @@ public class varunTrajectory extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         currentState = State.traj2;
-                        extender_up = true;
+                        maxHeight();
+                        close();
                         drive.followTrajectorySequence(traj2);
                         //do code
                     }
@@ -154,8 +203,11 @@ public class varunTrajectory extends LinearOpMode {
                 case traj2:
 
                     if (!drive.isBusy()) {
-                        box_open = false;
-                        box_rotated = true;
+                        rotate();
+                        open();
+                        sleep(1000);
+                        unrotate();
+                        groundHeight();
                         currentState = State.traj3;
                         drive.followTrajectorySequence(traj3);
                         //do code
@@ -165,59 +217,74 @@ public class varunTrajectory extends LinearOpMode {
 
 
                     if (!drive.isBusy()) {
-                        box_open = true;
-                        box_rotated = false;
-                        extender_up = false;
+
                         currentState = State.traj4;
                         drive.followTrajectorySequence(traj4);
                         //do code
                     }
-                    else {
-                        //down
-                    }
+                    break;
                 case traj4:
 
                     if (!drive.isBusy()) {
+                        startIntake();
                         currentState = State.traj5;
                         drive.followTrajectorySequence(traj5);
                         //do code
                     }
-                    else {
-                        //intake
-                    }
+                    break;
                 case traj5:
 
                     if (!drive.isBusy()) {
-                        currentState = State.Idle;
+                        stopIntake();
+                        currentState = State.traj6;
+                        drive.followTrajectorySequence(traj6);
+
                         //up+place+open
                         //do code
                     }
-                    else {
-                        //open
+                    break;
+
+                case traj6:
+
+                    if (!drive.isBusy()) {
+                        currentState = State.traj7;
+                        drive.followTrajectorySequence(traj7);
+
+                        //up+place+open
+                        //do code
                     }
+                    break;
+                case traj7:
+
+                    if (!drive.isBusy()) {
+                        close();
+                        maxHeight();
+                        currentState = State.traj8;
+                        drive.followTrajectorySequence(traj8);
+
+                        //up+place+open
+                        //do code
+                    }
+                    break;
+                case traj8:
+
+                    if (!drive.isBusy()) {
+                        rotate();
+                        open();
+                        currentState = State.Idle;
+
+                        //up+place+open
+                        //do code
+                    }
+                    break;
+
                 case Idle:
                     break;
             }
-            if (extender_up) {
-                close();
-                maxHeight();
-            }
-            else{
-                open();
-                groundHeight();
-            }
-            if (box_open) {
-                rotate();
-            }
-            else {
-                unrotate();
-            }
-            if (box_open) {
-                open();
-            }
+
         }
 
-                //);
+        //);
         /*
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
@@ -238,6 +305,10 @@ public class varunTrajectory extends LinearOpMode {
     }
     void close(){
         extenderPlacer.setPosition(0.489);
+    }
+    void startIntake(){
+        intakeMotor.setPower(1.0);
+        extenderRotator.setPosition(0.15);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
