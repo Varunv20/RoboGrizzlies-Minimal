@@ -198,7 +198,7 @@ public class NewDriveMode extends LinearOpMode {
             }
             if (gamepad1.dpad_up) {
                 extenderRotator.setPosition(0.15);//0.1+theta);
-              //tilt up for pixel stuck issue
+                //tilt up for pixel stuck issue
             }
             if (gamepad1.left_stick_button && gamepad1.right_stick_button){
                 safetyOverride = !safetyOverride;

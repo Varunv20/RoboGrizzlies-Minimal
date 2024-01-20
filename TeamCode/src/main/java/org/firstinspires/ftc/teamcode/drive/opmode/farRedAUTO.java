@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -81,6 +82,36 @@ public class farRedAUTO extends LinearOpMode {
         // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
         // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
         // .followTrajectorySequence(drive ->
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
+        linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
+
+        linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //Servos also need to be mapped!
+        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
+        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+        // and color sensors, too.
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //controls what these do when not actively going somewhere. Usually extenders should be BRAKE.
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearextenderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearextenderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //Now and then gobilda motors get reversed. It's a known bug and the inelegant solution is to reverse them here too.
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        linearextenderRight.setDirection(DcMotor.Direction.REVERSE);
+
+        /*This value corresponds encoder units to distance. Ticks per rotation is a function of a motor's
+        drive encoder. Find wheel radius and solve for ticks per unit distance.
+        I quite honestly have no idea if this is still correct. We arent using it meaningfully.
+         */
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startpos = new Pose2d(-36, -63.25, Math.toRadians(270));
         drive.setPoseEstimate(startpos);
@@ -133,36 +164,52 @@ public class farRedAUTO extends LinearOpMode {
             }
         });
         pipeline.red = true;
+        unrotate();
         waitForStart();
         pipeline.setRun();
         while (pipeline.run) {
             sleep(100);
         }
         String result = pipeline.getResult();
-        if (result == "right") {
+        telemetry.addData("rishi", result);
+        telemetry.addData("m1", pipeline.m1avg);
+        telemetry.addData("m2", pipeline.m2avg);
+        telemetry.addData("m3", pipeline.m3avg);
+
+
+        telemetry.update();
+        unrotate();
+
+        if (result == "left") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
                     .lineToLinearHeading(new Pose2d(-48,-35, Math.toRadians(270)))
                     .forward(4)
-                    .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
+                    .lineToLinearHeading(new Pose2d(15, -40, Math.toRadians(270)))
+                    .lineToLinearHeading(new Pose2d(43, -40, Math.toRadians(180)))
                     .build();
 
         }
-        else if (result == "left") {
+        else if (result == "right") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(-24,-32.75, Math.toRadians(90)))
+                    .back(16)
+                    .lineToLinearHeading(new Pose2d(-24,-32.75, Math.toRadians(270)))
                     .forward(4)
+                    .lineToLinearHeading(new Pose2d(15, -30, Math.toRadians(270)))
                     .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
                     .build();
         }
         else {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(-36,-32.75, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(-36,-34.75, Math.toRadians(270)))
                     .forward(4)
+                    .lineToLinearHeading(new Pose2d(-36,-34.75, Math.toRadians(270)))
+
+                    .lineToLinearHeading(new Pose2d(15, -36, Math.toRadians(270)))
                     .lineToLinearHeading(new Pose2d(43, -36, Math.toRadians(180)))
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
-                .forward(5)
+                .back(5)
                 .build();
         traj3 =  drive.trajectorySequenceBuilder(traj1.end())
                 .back(5)
@@ -191,7 +238,7 @@ public class farRedAUTO extends LinearOpMode {
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState) {
                 case traj1:
-
+                    unrotate();
                     if (!drive.isBusy()) {
                         currentState = State.traj2;
                         maxHeight();
@@ -206,10 +253,10 @@ public class farRedAUTO extends LinearOpMode {
                         rotate();
                         open();
                         sleep(1000);
-                        unrotate();
-                        groundHeight();
-                        currentState = State.traj3;
-                        drive.followTrajectorySequence(traj3);
+                        //unrotate();
+                        //groundHeight();
+                        currentState = State.Idle;
+                        //drive.followTrajectorySequence(traj3);
                         //do code
                     }
                     break;
@@ -294,11 +341,12 @@ public class farRedAUTO extends LinearOpMode {
 
          */
     }
+
     void unrotate(){
-        extenderRotator.setPosition(0.23);
+        extenderRotator.setPosition(0.2);
     }
     void rotate(){
-        extenderRotator.setPosition(0.52);
+        extenderRotator.setPosition(0.5);
     }
     void open(){
         extenderPlacer.setPosition(0.0);

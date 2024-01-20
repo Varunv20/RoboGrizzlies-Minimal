@@ -44,7 +44,7 @@ public class eocvTeamProp extends OpenCvPipeline {
         // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
         if (l[2] > 10) {
-            if ((((l[0] > 110 && l[2] < 90) && l[1] < 100 ) && red) || ((l[0] < 90) && l[1] < 100 && l[2] > 110) && !red) {
+            if ((((l[0] > 110 && l[2] < 90) && l[1] < 100 ) && red) || ((l[0] < 90) && l[1] < 90 && l[2] > 90) && !red) {
                 //   telemetry.addData("r", "hellop;");
                 return true;
             }
@@ -190,9 +190,9 @@ public class eocvTeamProp extends OpenCvPipeline {
             //     m1avg -= 2000;
             // }
             //if (red) {
-            if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.1) {
+            if (m1avg / m2avg > 1.4 && m1avg / m3avg > 1.15) {
                 result = "left";
-            } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.1) {
+            } else if (m3avg / m2avg > 1.4 && m3avg / m1avg > 1.15) {
                 result = "right";
             } else {
                 result = "center";

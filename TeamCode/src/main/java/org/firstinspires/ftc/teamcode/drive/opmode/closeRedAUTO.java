@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -82,6 +83,36 @@ public class closeRedAUTO extends LinearOpMode {
         // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
         // .followTrajectorySequence(drive ->
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
+        linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
+
+        linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //Servos also need to be mapped!
+        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
+        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+        // and color sensors, too.
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //controls what these do when not actively going somewhere. Usually extenders should be BRAKE.
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearextenderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearextenderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //Now and then gobilda motors get reversed. It's a known bug and the inelegant solution is to reverse them here too.
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        linearextenderRight.setDirection(DcMotor.Direction.REVERSE);
+
+        /*This value corresponds encoder units to distance. Ticks per rotation is a function of a motor's
+        drive encoder. Find wheel radius and solve for ticks per unit distance.
+        I quite honestly have no idea if this is still correct. We arent using it meaningfully.
+         */
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+
         Pose2d startpos = new Pose2d(12, -63.25, Math.toRadians(270));
         drive.setPoseEstimate(startpos);
         // cv stuff
@@ -139,30 +170,38 @@ public class closeRedAUTO extends LinearOpMode {
             sleep(100);
         }
         String result = pipeline.getResult();
-        if (result == "right") {
+        telemetry.addData("rishi", result);
+        telemetry.addData("m1", pipeline.m1avg);
+        telemetry.addData("m2", pipeline.m2avg);
+        telemetry.addData("m3", pipeline.m3avg);
+
+
+        telemetry.update();
+        if (result == "left") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(0,-35, Math.toRadians(270)))
+                    .back(24)
+                    .lineToLinearHeading(new Pose2d(0,-37, Math.toRadians(270)))
                     .forward(4)
                     .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
                     .build();
 
         }
-        else if (result == "left") {
+        else if (result == "right") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(24,-32.75, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(24,-34.75, Math.toRadians(270)))
                     .forward(8)
-                    .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
+                    .lineToLinearHeading(new Pose2d(43, -42, Math.toRadians(180)))
                     .build();
         }
         else {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(12,-32.75, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(12,-34.75, Math.toRadians(270)))
                     .forward(8)
                     .lineToLinearHeading(new Pose2d(43, -36, Math.toRadians(180)))
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
-                .forward(5)
+                .back(5)
                 .build();
         traj3 =  drive.trajectorySequenceBuilder(traj2.end())
                 .back(5)
@@ -184,17 +223,17 @@ public class closeRedAUTO extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(50, -43, Math.toRadians(180)))
                 .build();
         traj8 = traj2;
-
+        boolean rotate = false;
         if(isStopRequested()) return;
         currentState = State.traj1;
         drive.followTrajectorySequence(traj1);
+        lowHeight();
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState) {
                 case traj1:
 
                     if (!drive.isBusy()) {
                         currentState = State.traj2;
-                        maxHeight();
                         close();
                         drive.followTrajectorySequence(traj2);
                         //do code
@@ -204,12 +243,19 @@ public class closeRedAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         rotate();
-                        open();
+                        rotate = true;
                         sleep(1000);
+                        open();
+                        sleep(3000);
                         unrotate();
-                        groundHeight();
-                        currentState = State.traj3;
-                        drive.followTrajectorySequence(traj3);
+                        //sleep(500);
+                        rotate = false;
+
+                      //  groundHeight();
+                        //unrotate();
+                        //groundHeight();
+                        currentState = State.Idle;
+                       // drive.followTrajectorySequence(traj3);
                         //do code
                     }
                     break;
@@ -280,6 +326,12 @@ public class closeRedAUTO extends LinearOpMode {
 
                 case Idle:
                     break;
+            }
+            if (rotate) {
+                rotate();
+            }
+            else {
+                unrotate();
             }
 
         }
@@ -361,8 +413,8 @@ public class closeRedAUTO extends LinearOpMode {
         //dontTilt = false;
         extenderRotator.setPosition(0.25);
 
-        linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+        linearextenderLeft.setTargetPosition((int) (30 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (30 * TICKS_PER_CENTIMETER));
 
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);

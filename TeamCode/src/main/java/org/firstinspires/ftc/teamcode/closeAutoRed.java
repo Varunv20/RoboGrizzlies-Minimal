@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.computervision.eocvTeamProp;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -49,47 +50,35 @@ public class closeAutoRed extends LinearOpMode {
     public void runOpMode() {
 
 
-
-        fl = hardwareMap.get(DcMotor.class, "FL");
-        fr = hardwareMap.get(DcMotor.class, "FR");
-        bl = hardwareMap.get(DcMotor.class, "BL");
-        br = hardwareMap.get(DcMotor.class, "BR");
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        //no encoders, so we do this:
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //now we need to map each initialized motor to the name assigned in the hardware map
+        //which is just the config.
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-
-
-        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
-        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
-        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
         linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
-        linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
 
-        //E = hardwareMap.get(DcMotor.class, "E");
-        //   color_sensor = hardwareMap.colorSensor.get("color_sensor");
-
-        // grabber = hardwareMap.get(Servo.class,"grab"); //THE SERVO IS IN PEROCENT, BW/ 1 OR 0. BASELINE IS .5
-
-        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //Servos also need to be mapped!
+        extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
+        extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
+        paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+        // and color sensors, too.
+        // pixelSensor = hardwareMap.get(ColorRangeSensor.class, "pixelSensor");
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // E.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //E.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //controls what these do when not actively going somewhere. Usually extenders should be BRAKE.
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearextenderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearextenderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        fl.setDirection(DcMotorSimple.Direction.REVERSE);
-        fr.setDirection(DcMotorSimple.Direction.FORWARD);
-        bl.setDirection(DcMotorSimple.Direction.REVERSE);
-        br.setDirection(DcMotorSimple.Direction.FORWARD);
+        //Now and then gobilda motors get reversed. It's a known bug and the inelegant solution is to reverse them here too.
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        linearextenderRight.setDirection(DcMotor.Direction.REVERSE);
 
         // runs the moment robot is initialized
         runtime.reset();
