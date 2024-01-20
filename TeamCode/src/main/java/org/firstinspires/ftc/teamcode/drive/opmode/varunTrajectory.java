@@ -65,6 +65,11 @@ public class varunTrajectory extends LinearOpMode {
         Idle
 
     }
+    boolean extender_up = false;
+    boolean box_open = true;
+    boolean box_rotated = false;
+
+
     State currentState = State.Idle;
     public void onOpened()
     {
@@ -141,25 +146,28 @@ public class varunTrajectory extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         currentState = State.traj2;
+                        extender_up = true;
                         drive.followTrajectorySequence(traj2);
                         //do code
                     }
-                    else {
-                        //raise extender
-                    }
+                    break;
                 case traj2:
 
                     if (!drive.isBusy()) {
+                        box_open = false;
+                        box_rotated = true;
                         currentState = State.traj3;
                         drive.followTrajectorySequence(traj3);
                         //do code
                     }
-                    else {
-                        //open
-                    }
+                    break;
                 case traj3:
 
+
                     if (!drive.isBusy()) {
+                        box_open = true;
+                        box_rotated = false;
+                        extender_up = false;
                         currentState = State.traj4;
                         drive.followTrajectorySequence(traj4);
                         //do code
@@ -190,7 +198,25 @@ public class varunTrajectory extends LinearOpMode {
                 case Idle:
                     break;
             }
+            if (extender_up) {
+                close();
+                maxHeight();
+            }
+            else{
+                open();
+                groundHeight();
+            }
+            if (box_open) {
+                rotate();
+            }
+            else {
+                unrotate();
+            }
+            if (box_open) {
+                open();
+            }
         }
+
                 //);
         /*
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
