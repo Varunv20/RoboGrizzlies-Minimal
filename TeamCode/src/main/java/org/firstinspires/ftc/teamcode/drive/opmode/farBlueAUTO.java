@@ -209,18 +209,17 @@ public class farBlueAUTO extends LinearOpMode {
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
-                .back(5)
+                .back(6.75)
                 .build();
         traj3 =  drive.trajectorySequenceBuilder(traj2.end())
-                .back(5)
+                .forward(5)
                 .build();
-
 
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-57, 12, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180)))
                 .build();
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
                 .forward(5)
@@ -232,9 +231,11 @@ public class farBlueAUTO extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
                 .lineToConstantHeading(new Vector2d(-36,60))
                 .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
-                .splineTo(new Vector2d(43,40), Math.toRadians(0))
+                .splineTo(new Vector2d(43,44), Math.toRadians(0))
                 .build();
-        traj8 = traj2;
+        traj8 = drive.trajectorySequenceBuilder(traj7.end())
+                .back(4)
+                .build();
 
         if(isStopRequested()) return;
         currentState = State.traj1;
@@ -259,7 +260,7 @@ public class farBlueAUTO extends LinearOpMode {
                         open();
                         sleep(1000);
 
-                        currentState = State.Idle;
+                        currentState = State.traj3;
                        // drive.followTrajectorySequence(traj3);
                         //do code
                     }
