@@ -180,8 +180,8 @@ public class closeBlueAUTO extends LinearOpMode {
         if (result == "right") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
                     .back(24)
-                    .lineToLinearHeading(new Pose2d(0,37, Math.toRadians(90)))
-                    .forward(4)
+                    .lineToLinearHeading(new Pose2d(0,36, Math.toRadians(90)))
+                    .forward(1.5)
                     .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
                     .build();
 
@@ -208,8 +208,10 @@ public class closeBlueAUTO extends LinearOpMode {
                 .build();
 
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
-                .splineTo(new Vector2d(10, 12), Math.toRadians(180))
-                .splineTo(new Vector2d(-55, 12), Math.toRadians(180))
+                .splineTo(new Vector2d(24,60), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
+                .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-57, 12, Math.toRadians(180)))
                 .build();
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
                 .forward(5)
@@ -218,9 +220,10 @@ public class closeBlueAUTO extends LinearOpMode {
                 .back(5)
                 .build();
         traj7 = drive.trajectorySequenceBuilder(traj6.end())
-                .lineToLinearHeading(new Pose2d(-54, 60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, 60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, 43, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(-36,60))
+                .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
+                .splineTo(new Vector2d(43,40), Math.toRadians(0))
                 .build();
         traj8 = traj2;
 

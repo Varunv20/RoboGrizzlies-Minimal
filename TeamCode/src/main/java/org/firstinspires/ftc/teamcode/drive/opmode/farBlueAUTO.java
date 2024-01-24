@@ -179,20 +179,25 @@ public class farBlueAUTO extends LinearOpMode {
         telemetry.update();
         if (result == "right") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(-48,35, Math.toRadians(90)))
-                    .forward(4)
-                    .lineToLinearHeading(new Pose2d(20, 30, Math.toRadians(90)))
+                    .back(10)
+                    .lineToLinearHeading(new Pose2d(-48,36, Math.toRadians(90)))
+                    .forward(2)
+                    .strafeRight(10)
+                    .lineToLinearHeading(new Pose2d(-36,60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(30, 60, Math.toRadians(90)))
                     .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
                     .build();
 
         }
         else if (result == "left") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .back(15)
-                    .lineToLinearHeading(new Pose2d(-24,32.75, Math.toRadians(90)))
-                    .forward(4)
-                    .lineToLinearHeading(new Pose2d(20, 40, Math.toRadians(90)))
-                    .lineToLinearHeading(new Pose2d(43, 40, Math.toRadians(180)))
+                    .back(24)
+                    .lineToLinearHeading(new Pose2d(-24,36, Math.toRadians(90)))
+                    .forward(2)
+                    .strafeLeft(10)
+                    .lineToLinearHeading(new Pose2d(-36,60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(30, 60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(43, 44.25, Math.toRadians(180)))
                     .build();
         }
         else {
@@ -210,20 +215,24 @@ public class farBlueAUTO extends LinearOpMode {
                 .back(5)
                 .build();
 
-        traj4 =  drive.trajectorySequenceBuilder(traj2.end())
-                .splineTo(new Vector2d(10, 12), Math.toRadians(180))
-                .splineTo(new Vector2d(-55, 12), Math.toRadians(180))
+
+        traj4 =  drive.trajectorySequenceBuilder(traj3.end())
+                .splineTo(new Vector2d(24,60), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
+                .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-57, 12, Math.toRadians(180)))
                 .build();
-        traj5 =  drive.trajectorySequenceBuilder(traj2.end())
+        traj5 =  drive.trajectorySequenceBuilder(traj4.end())
                 .forward(5)
                 .build();
-        traj6 =  drive.trajectorySequenceBuilder(traj2.end())
+        traj6 =  drive.trajectorySequenceBuilder(traj5.end())
                 .back(5)
                 .build();
-        traj7 = drive.trajectorySequenceBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(-54, 60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, 60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, 43, Math.toRadians(180)))
+        traj7 = drive.trajectorySequenceBuilder(traj6.end())
+                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(-36,60))
+                .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
+                .splineTo(new Vector2d(43,40), Math.toRadians(0))
                 .build();
         traj8 = traj2;
 

@@ -27,25 +27,12 @@ public class eocvTeamProp extends OpenCvPipeline {
     public double m2avg;
     public double m3avg;
 
-    //public double[] convertRGB(double[] rgb) {
-    //double[] red = (rgb[0] >> 16) & 0xFF;
-    //double[] green = (rgb >> 8) & 0xFF;
-    //double[] blue = rgb & 0xFF;
-
-    //return new double[] {red, green, blue};
-    // }
-    //Telemetry telemetry;
-
-   // public eocvTeamProp(Telemetry telemetry) {
-     //   this.telemetry = telemetry;
-    //}
 
     public boolean is_red(double[] l) {
         // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
         if (l[2] > 10) {
-            if ((((l[0] > 110 && l[2] < 90) && l[1] < 100 ) && red) || ((l[0] < 90) && l[1] < 90 && l[2] > 90) && !red) {
-                //   telemetry.addData("r", "hellop;");
+            if (((l[0]/l[1] > 1.2 && l[0]/l[2] > 1.2 ) && red) || ((l[2]/l[1] > 1.2 && l[2]/l[0] > 1.2)) && !red) {
                 return true;
             }
         }
@@ -54,72 +41,7 @@ public class eocvTeamProp extends OpenCvPipeline {
 
         return false;
     }
-    public double[] RGBtoHSV(double r, double g, double b) {
 
-        double h, s, v;
-
-        double min, max, delta;
-        min = Math.min(Math.min(r, g), b);
-        max = Math.max(Math.max(r, g), b);
-
-        // V/* www  .  j  a v a 2 s . co  m*/
-        v = max;
-
-        delta = max - min;
-
-        // S
-        if (max != 0)
-            s = delta / max;
-        else {
-            s = 0;
-            h = -1;
-            return new double[] { h, s, v };
-        }
-
-        // H
-        if (r == max)
-            h = (g - b) / delta; // between yellow & magenta
-        else if (g == max)
-            h = 2 + (b - r) / delta; // between cyan & yellow
-        else
-            h = 4 + (r - g) / delta; // between magenta & cyan
-
-        h *= 60; // degrees
-
-        if (h < 0)
-            h += 360;
-
-        h = h * 1.0;
-        s = s * 100.0;
-        v = (v / 256.0) * 100.0;
-        return new double[] { h, s, v };
-    }
-    public double comparison(Double[] vec1, Double[] vec2) {
-        double loss = 0;
-        for (int i=0; i < vec1.length; i++) {
-            loss += Math.abs(vec1[i] + vec2[i]);
-        }
-        return loss;
-    }
-    public static int[] decodehex(String color) {
-        int hex = Integer.parseInt(color);
-        int r = (hex & 0xFF0000) >> 16;
-        int g = (hex & 0xFF00) >> 8;
-        int b = (hex & 0xFF);
-        return new int[] {r,g,b};
-    }
-
-    public boolean mae(double[] l, Telemetry telemetry) {
-        double[] red = {255, 0, 0};
-        // telemetry.addData("color", "" + l[0]);
-        //double[] blue = {0,0,255};
-        if (l[0] <= 255 && l[0] >= 180 && l[1] <= 120 && l[1] >= 0 && l[2] <= 120 && l[2] >= 0)
-        {
-            //telemetry.addData("color", "red" );
-            return true;
-        }
-        return false;
-    }
     public double avg(Integer[] arr){
         Integer sum = 0;
         for (int i = 0; i < arr.length; i++){

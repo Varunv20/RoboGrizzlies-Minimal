@@ -45,20 +45,14 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 18)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-36, -63.25, Math.toRadians(270)))
-                                .lineToLinearHeading(new Pose2d(-36,-32.75, Math.toRadians(270)))
-                                .forward(4)
-                                .lineToLinearHeading(new Pose2d(53, -36, Math.toRadians(180)))
-                                //up pixel
-                                .forward(5)
-                                //  .splineTo(new Vector2d(0, 6), Math.toRadians(180))
-                                .splineTo(new Vector2d(10, -12), Math.toRadians(180))
-                                .splineTo(new Vector2d(-55, -12), Math.toRadians(180))
-                                .back(6)
-                               .lineToLinearHeading(new Pose2d(-54, -60, Math.toRadians(180)))
-                                .lineToLinearHeading(new Pose2d(50, -60, Math.toRadians(180)))
-                                .lineToLinearHeading(new Pose2d(50, -40, Math.toRadians(180)))
-                                .back(5)
+                        drive.trajectorySequenceBuilder(new Pose2d(-36, 63.25, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(-36,34.75, Math.toRadians(90)))
+
+                                .lineToLinearHeading(new Pose2d(-36,60, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(30, 60, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(43, 36, Math.toRadians(180)))
+
+
 
 
                                 // .back(5)
@@ -67,7 +61,6 @@ public class MeepMeepTesting {
                                 // .splineTo(new Vector2d(0, 6), Math.toRadians(180))
 
                                 // .splineTo(new Vector2d(53, 30), Math.toRadians(0))
-
 
 
                                 .build()
