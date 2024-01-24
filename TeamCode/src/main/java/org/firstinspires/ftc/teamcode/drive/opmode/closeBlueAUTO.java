@@ -345,10 +345,10 @@ public class closeBlueAUTO extends LinearOpMode {
          */
     }
     void unrotate(){
-        extenderRotator.setPosition(0.23);
+        extenderRotator.setPosition(0.2);
     }
     void rotate(){
-        extenderRotator.setPosition(0.52);
+        extenderRotator.setPosition(0.49);
     }
     void open(){
         extenderPlacer.setPosition(0.0);

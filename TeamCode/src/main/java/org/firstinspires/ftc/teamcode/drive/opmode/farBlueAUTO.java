@@ -349,7 +349,7 @@ public class farBlueAUTO extends LinearOpMode {
         extenderRotator.setPosition(0.2);
     }
     void rotate(){
-        extenderRotator.setPosition(0.4);
+        extenderRotator.setPosition(0.49);
     }
     void open(){
         extenderPlacer.setPosition(0.0);

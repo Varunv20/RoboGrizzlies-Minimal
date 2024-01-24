@@ -82,6 +82,7 @@ public class farRedAUTO extends LinearOpMode {
         // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
         // .setConstraints(85, 85, Math.toRadians(180), Math.toRadians(180), 15)
         // .followTrajectorySequence(drive ->
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
         linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
@@ -112,7 +113,6 @@ public class farRedAUTO extends LinearOpMode {
          */
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startpos = new Pose2d(-36, -63.25, Math.toRadians(270));
         drive.setPoseEstimate(startpos);
         // cv stuff
@@ -164,7 +164,6 @@ public class farRedAUTO extends LinearOpMode {
             }
         });
         pipeline.red = true;
-        unrotate();
         waitForStart();
         pipeline.setRun();
         while (pipeline.run) {
@@ -178,62 +177,68 @@ public class farRedAUTO extends LinearOpMode {
 
 
         telemetry.update();
-        unrotate();
-
         if (result == "left") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(-48,-35, Math.toRadians(270)))
-                    .forward(4)
-                    .lineToLinearHeading(new Pose2d(15, -40, Math.toRadians(270)))
-                    .lineToLinearHeading(new Pose2d(43, -40, Math.toRadians(180)))
+                    .back(10)
+                    .lineToLinearHeading(new Pose2d(-48,-36, Math.toRadians(270)))
+                    .forward(2)
+                    .strafeRight(10)
+                    .lineToLinearHeading(new Pose2d(-36,-60, Math.toRadians(270)))
+                    .lineToLinearHeading(new Pose2d(30, -60, Math.toRadians(270)))
+                    .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
                     .build();
 
         }
         else if (result == "right") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .back(16)
-                    .lineToLinearHeading(new Pose2d(-24,-32.75, Math.toRadians(270)))
-                    .forward(4)
-                    .lineToLinearHeading(new Pose2d(15, -30, Math.toRadians(270)))
-                    .lineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)))
+                    .back(24)
+                    .lineToLinearHeading(new Pose2d(-24,-36, Math.toRadians(270)))
+                    .forward(2)
+                    .strafeLeft(10)
+                    .lineToLinearHeading(new Pose2d(-36,-60, Math.toRadians(270)))
+                    .lineToLinearHeading(new Pose2d(30, -60, Math.toRadians(270)))
+                    .lineToLinearHeading(new Pose2d(43, -44.25, Math.toRadians(180)))
                     .build();
         }
         else {
             traj1 = drive.trajectorySequenceBuilder(startpos)
                     .lineToLinearHeading(new Pose2d(-36,-34.75, Math.toRadians(270)))
                     .forward(4)
-                    .lineToLinearHeading(new Pose2d(-36,-34.75, Math.toRadians(270)))
-
-                    .lineToLinearHeading(new Pose2d(15, -36, Math.toRadians(270)))
+                    .lineToLinearHeading(new Pose2d(20, -36, Math.toRadians(270)))
                     .lineToLinearHeading(new Pose2d(43, -36, Math.toRadians(180)))
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
                 .back(5)
                 .build();
-        traj3 =  drive.trajectorySequenceBuilder(traj1.end())
+        traj3 =  drive.trajectorySequenceBuilder(traj2.end())
                 .back(5)
                 .build();
 
-        traj4 =  drive.trajectorySequenceBuilder(traj2.end())
-                .splineTo(new Vector2d(10, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(-55, -12), Math.toRadians(180))
+
+        traj4 =  drive.trajectorySequenceBuilder(traj3.end())
+                .splineTo(new Vector2d(24,60), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
+                .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-57, 12, Math.toRadians(180)))
                 .build();
-        traj5 =  drive.trajectorySequenceBuilder(traj2.end())
+        traj5 =  drive.trajectorySequenceBuilder(traj4.end())
                 .forward(5)
                 .build();
-        traj6 =  drive.trajectorySequenceBuilder(traj2.end())
+        traj6 =  drive.trajectorySequenceBuilder(traj5.end())
                 .back(5)
                 .build();
-        traj7 = drive.trajectorySequenceBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(-54, -60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, -60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, -43, Math.toRadians(180)))
+        traj7 = drive.trajectorySequenceBuilder(traj6.end())
+                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(-36,60))
+                .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
+                .splineTo(new Vector2d(43,40), Math.toRadians(0))
                 .build();
         traj8 = traj2;
 
         if(isStopRequested()) return;
         currentState = State.traj1;
+        unrotate();
         drive.followTrajectorySequence(traj1);
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState) {
@@ -253,10 +258,9 @@ public class farRedAUTO extends LinearOpMode {
                         rotate();
                         open();
                         sleep(1000);
-                        //unrotate();
-                        //groundHeight();
+
                         currentState = State.Idle;
-                        //drive.followTrajectorySequence(traj3);
+                        // drive.followTrajectorySequence(traj3);
                         //do code
                     }
                     break;
@@ -266,7 +270,7 @@ public class farRedAUTO extends LinearOpMode {
                     if (!drive.isBusy()) {
 
                         currentState = State.traj4;
-                        drive.followTrajectorySequence(traj4);
+                        // drive.followTrajectorySequence(traj4);
                         //do code
                     }
                     break;
@@ -275,7 +279,7 @@ public class farRedAUTO extends LinearOpMode {
                     if (!drive.isBusy()) {
                         startIntake();
                         currentState = State.traj5;
-                        drive.followTrajectorySequence(traj5);
+                        // drive.followTrajectorySequence(traj5);
                         //do code
                     }
                     break;
@@ -284,7 +288,7 @@ public class farRedAUTO extends LinearOpMode {
                     if (!drive.isBusy()) {
                         stopIntake();
                         currentState = State.traj6;
-                        drive.followTrajectorySequence(traj6);
+                        // drive.followTrajectorySequence(traj6);
 
                         //up+place+open
                         //do code
@@ -295,7 +299,7 @@ public class farRedAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         currentState = State.traj7;
-                        drive.followTrajectorySequence(traj7);
+                        //drive.followTrajectorySequence(traj7);
 
                         //up+place+open
                         //do code
@@ -341,12 +345,11 @@ public class farRedAUTO extends LinearOpMode {
 
          */
     }
-
     void unrotate(){
         extenderRotator.setPosition(0.2);
     }
     void rotate(){
-        extenderRotator.setPosition(0.5);
+        extenderRotator.setPosition(0.49);
     }
     void open(){
         extenderPlacer.setPosition(0.0);
