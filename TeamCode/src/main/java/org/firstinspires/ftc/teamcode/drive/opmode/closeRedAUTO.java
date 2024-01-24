@@ -226,12 +226,12 @@ public class closeRedAUTO extends LinearOpMode {
         boolean rotate = false;
         if(isStopRequested()) return;
         currentState = State.traj1;
-        drive.followTrajectorySequence(traj1);
         lowHeight();
+        drive.followTrajectorySequence(traj1);
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState) {
                 case traj1:
-
+                    unrotate();
                     if (!drive.isBusy()) {
                         currentState = State.traj2;
                         close();
@@ -240,16 +240,18 @@ public class closeRedAUTO extends LinearOpMode {
                     }
                     break;
                 case traj2:
+                    unrotate();
 
                     if (!drive.isBusy()) {
+                 //       lowHeight();
                         rotate();
-                        rotate = true;
+                     //   rotate = true;
                         sleep(1000);
                         open();
                         sleep(3000);
                         unrotate();
                         //sleep(500);
-                        rotate = false;
+                    //    rotate = false;
 
                       //  groundHeight();
                         //unrotate();
@@ -327,12 +329,7 @@ public class closeRedAUTO extends LinearOpMode {
                 case Idle:
                     break;
             }
-            if (rotate) {
-                rotate();
-            }
-            else {
-                unrotate();
-            }
+
 
         }
 
@@ -413,8 +410,8 @@ public class closeRedAUTO extends LinearOpMode {
         //dontTilt = false;
         extenderRotator.setPosition(0.25);
 
-        linearextenderLeft.setTargetPosition((int) (30 * TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (30 * TICKS_PER_CENTIMETER));
+        linearextenderLeft.setTargetPosition((int) (36 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (36 * TICKS_PER_CENTIMETER));
 
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
