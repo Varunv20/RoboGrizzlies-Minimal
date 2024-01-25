@@ -35,6 +35,7 @@ public class closeBlueAUTO extends LinearOpMode {
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
     public DcMotor intakeMotor;
+    public Servo pixelStick;
     OpenCvWebcam webcam;
     enum State {
         traj1,
@@ -93,6 +94,7 @@ public class closeBlueAUTO extends LinearOpMode {
         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+        pixelStick = hardwareMap.get(Servo.class, "pixelStick");
         // and color sensors, too.
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -127,6 +129,8 @@ public class closeBlueAUTO extends LinearOpMode {
         TrajectorySequence  traj4;
         TrajectorySequence  traj5;
         TrajectorySequence  traj6;
+        TrajectorySequence  traj65;
+
         TrajectorySequence  traj7;
         TrajectorySequence  traj8;
         TrajectorySequence  traj9;
@@ -209,9 +213,14 @@ public class closeBlueAUTO extends LinearOpMode {
                 .build();
 
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
-                .splineTo(new Vector2d(24,60), Math.toRadians(180))
+             /*   .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180)))*/
+
+                .splineTo(new Vector2d(24,60), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
+                .splineToConstantHeading(new Vector2d(-63,36), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180)))
                 .build();
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
@@ -219,6 +228,9 @@ public class closeBlueAUTO extends LinearOpMode {
                 .build();
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
                 .back(5)
+                .build();
+        traj65  =  drive.trajectorySequenceBuilder(traj6.end())
+                .forward(4.5)
                 .build();
         traj7 = drive.trajectorySequenceBuilder(traj6.end())
                 .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
@@ -270,6 +282,7 @@ public class closeBlueAUTO extends LinearOpMode {
                     if (!drive.isBusy()) {
                         groundHeight();
 
+
                         currentState = State.traj4;
                         drive.followTrajectorySequence(traj4);
                         //do code
@@ -278,13 +291,26 @@ public class closeBlueAUTO extends LinearOpMode {
                 case traj4:
 
                     if (!drive.isBusy()) {
-                        startIntake();
+                        stickDown();
+                        sleep(800);
+
                         currentState = State.traj5;
                         drive.followTrajectorySequence(traj5);
                         //do code
                     }
                     break;
                 case traj5:
+
+                    if (!drive.isBusy()) {
+                        stopIntake();
+                        currentState = State.traj65;
+                        drive.followTrajectorySequence(traj65);
+
+                        //up+place+open
+                        //do code
+                    }
+                    break;
+                case traj65:
 
                     if (!drive.isBusy()) {
                         stopIntake();
@@ -295,7 +321,6 @@ public class closeBlueAUTO extends LinearOpMode {
                         //do code
                     }
                     break;
-
                 case traj6:
 
                     if (!drive.isBusy()) {
@@ -392,6 +417,12 @@ public class closeBlueAUTO extends LinearOpMode {
 
         telemetry.addData("Slides", "HIGH");
         close();
+    }
+    void stickUp() {
+        pixelStick.setPosition(0.6);
+    }
+    void stickDown() {
+        pixelStick.setPosition(1.0);
     }
     void groundHeight() {
         //ground position. Should move box to prevent serious breaking issues.

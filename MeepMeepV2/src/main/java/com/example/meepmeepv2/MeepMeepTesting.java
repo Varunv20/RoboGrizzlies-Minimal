@@ -50,6 +50,14 @@ public class MeepMeepTesting {
                                 .lineToLinearHeading(new Pose2d(4,35, Math.toRadians(45)))
                                 .forward(8)
                                 .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
+                                .splineTo(new Vector2d(24,60), Math.toRadians(180))
+                                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(135)))
+                                .splineToConstantHeading(new Vector2d(-63,36), Math.toRadians(135))
+                                .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(135)))
+                                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
+                                .lineToConstantHeading(new Vector2d(-36,60))
+                                .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
+                                .splineTo(new Vector2d(43,44), Math.toRadians(0))
 
 
 
