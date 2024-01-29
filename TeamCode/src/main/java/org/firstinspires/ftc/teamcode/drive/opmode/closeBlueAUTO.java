@@ -43,6 +43,7 @@ public class closeBlueAUTO extends LinearOpMode {
         traj3,
         traj4,
         traj5,
+        traj5B,
         traj6,
         traj65,
         traj7,
@@ -129,6 +130,7 @@ public class closeBlueAUTO extends LinearOpMode {
         TrajectorySequence  traj3;
         TrajectorySequence  traj4;
         TrajectorySequence  traj5;
+        TrajectorySequence traj5B;
         TrajectorySequence  traj6;
         TrajectorySequence  traj65;
 
@@ -217,7 +219,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-58.25, 42.2, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-58.25, 40, Math.toRadians(180)))
 /*   .
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
@@ -227,6 +229,10 @@ public class closeBlueAUTO extends LinearOpMode {
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
                 .back(6)
                 .build();
+        traj5B = drive.trajectorySequenceBuilder(traj4.end())
+                .lineToLinearHeading(new Pose2d(-57, 29, Math.toRadians(190)))
+                .build();
+
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
                 .strafeLeft(4.2)
                 .forward(6.95)
@@ -322,12 +328,18 @@ public class closeBlueAUTO extends LinearOpMode {
                         //do code
                     }
                     break;
+                case traj5B:
+                    if(!drive.isBusy()) {
+                        currentState = State.Idle;
+                    }
 
                 case traj6:
                     //rotatemore();
 
                     if (!drive.isBusy()) {
-                        rotatemore();
+                      //  rotatemore();
+                        unrotate();
+                        groundHeight();
                         sleep(300);
                         startIntake();
 
@@ -385,7 +397,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 case Idle:
                     break;
             }
-            //unrotate();
+            unrotate();
 
         }
         unrotate();
@@ -401,7 +413,7 @@ public class closeBlueAUTO extends LinearOpMode {
          */
     }
     void unrotate(){
-        extenderRotator.setPosition(0.2);
+        extenderRotator.setPosition(0.21);
     }
     void rotate(){
         extenderRotator.setPosition(0.49);

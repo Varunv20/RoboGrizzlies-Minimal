@@ -171,7 +171,7 @@ public class NewDriveMode extends LinearOpMode {
                 // toggles intake.
                 //to avoid funny issues this ony works when box is down. This also helps with power draw.
                 startIntake();
-                extenderRotator.setPosition(0.215);//0.24+theta);
+                //extenderRotator.setPosition(0.215);//0.24+theta);
             }
             if(gamepad1.right_trigger> 0.5 && gamepad1.guide &&(dontTilt||safetyOverride)){
                 //reverses intake if the XBOX button and activate trigger are pressed together.
