@@ -235,10 +235,10 @@ public class closeBlueAUTO extends LinearOpMode {
 
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
                 .strafeLeft(4.2)
-                .forward(6.95)
+                .forward(4.5)
                 .build();
         traj65 = drive.trajectorySequenceBuilder(traj6.end())
-                .forward(0.5)
+                .forward(1.7)
                 .build();
 
         traj7 = drive.trajectorySequenceBuilder(traj65.end())
@@ -319,7 +319,7 @@ public class closeBlueAUTO extends LinearOpMode {
                     if (!drive.isBusy()) {
                         //rotatemore();
                         //startIntake();
-                       // stickUp();
+                       stickUp();
                        // sleep(200);
                         currentState = State.traj6;
                         drive.followTrajectorySequence(traj6);
