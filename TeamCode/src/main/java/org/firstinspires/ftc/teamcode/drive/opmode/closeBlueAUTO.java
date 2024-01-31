@@ -413,7 +413,7 @@ public class closeBlueAUTO extends LinearOpMode {
          */
     }
     void unrotate(){
-        extenderRotator.setPosition(0.21);
+        extenderRotator.setPosition(0.1975); //0.21
     }
     void rotate(){
         extenderRotator.setPosition(0.49);
@@ -461,10 +461,12 @@ public class closeBlueAUTO extends LinearOpMode {
         close();
     }
     void stickUp() {
-        pixelStick.setPosition(0.6);
+        pixelStick.setPosition(1.4); //0.6
+        telemetry.addData("pixelStick",0.6);
     }
     void stickDown() {
-        pixelStick.setPosition(1.0);
+        pixelStick.setPosition(1.0); //1.0
+        telemetry.addData("pixelStick",1.0);
     }
     void groundHeight() {
         //ground position. Should move box to prevent serious breaking issues.
