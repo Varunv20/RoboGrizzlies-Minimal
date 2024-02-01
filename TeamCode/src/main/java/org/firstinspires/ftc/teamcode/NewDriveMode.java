@@ -253,7 +253,7 @@ public class NewDriveMode extends LinearOpMode {
         extenderRotator.setPosition(0.49);//0.23+theta);
     }
     void unrotate(){
-        extenderRotator.setPosition(0.1975);//0.52+theta);
+        extenderRotator.setPosition(0.21);//0.52+theta);
     }
     void open(){
         extenderPlacer.setPosition(0.0);

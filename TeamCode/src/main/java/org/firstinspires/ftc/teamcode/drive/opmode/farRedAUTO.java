@@ -177,7 +177,7 @@ public class farRedAUTO extends LinearOpMode {
 
 
         telemetry.update();
-        if (result == "left") {
+        if (result == "left") { 
             traj1 = drive.trajectorySequenceBuilder(startpos)
                     .back(10)
                     .lineToLinearHeading(new Pose2d(-48,-36, Math.toRadians(270)))

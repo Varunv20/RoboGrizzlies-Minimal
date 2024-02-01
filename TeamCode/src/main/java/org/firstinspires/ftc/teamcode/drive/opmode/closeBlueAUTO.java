@@ -219,7 +219,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-58.25, 40, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-58.25, 42.5, Math.toRadians(180)))
 /*   .
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
@@ -234,7 +234,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 .build();
 
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
-                .strafeLeft(4.2)
+                .strafeLeft(5.2)
                 .forward(4.5)
                 .build();
         traj65 = drive.trajectorySequenceBuilder(traj6.end())
@@ -253,6 +253,7 @@ public class closeBlueAUTO extends LinearOpMode {
 
         if(isStopRequested()) return;
         lowHeight();
+        stickUp();
         currentState = State.traj1;
         drive.followTrajectorySequence(traj1);
         while (opModeIsActive() && !isStopRequested()) {
@@ -271,9 +272,9 @@ public class closeBlueAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         rotate();
-                        sleep(1000);
+                        sleep(600);
                         open();
-                        sleep(3000);
+                        sleep(200);
                        // unrotate();
                       //  groundHeight();
 
@@ -305,7 +306,7 @@ public class closeBlueAUTO extends LinearOpMode {
                         groundHeight();
                         unrotate();
                         stickDown();
-                        sleep(1500);
+                        sleep(800);
 
 
                         currentState = State.traj5;
@@ -340,7 +341,7 @@ public class closeBlueAUTO extends LinearOpMode {
                       //  rotatemore();
                         unrotate();
                         groundHeight();
-                        sleep(300);
+                      //  sleep(300);
                         startIntake();
 
                         currentState = State.traj65;
@@ -356,7 +357,7 @@ public class closeBlueAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
 
-                        sleep(5000);
+                        sleep(1000);
                         stopIntake();
                         stickUp();
                         unrotate();
@@ -384,7 +385,7 @@ public class closeBlueAUTO extends LinearOpMode {
                     unrotate();
                     if (!drive.isBusy()) {
                         rotate();
-                        sleep(100);
+                        sleep(600);
                         open();
                         sleep(3000);
                         currentState = State.Idle;
@@ -413,7 +414,7 @@ public class closeBlueAUTO extends LinearOpMode {
          */
     }
     void unrotate(){
-        extenderRotator.setPosition(0.1975); //0.21
+        extenderRotator.setPosition(0.21); //0.21
     }
     void rotate(){
         extenderRotator.setPosition(0.49);
@@ -431,7 +432,7 @@ public class closeBlueAUTO extends LinearOpMode {
     }
     void startIntake(){
         intakeMotor.setPower(1.0);
-        extenderRotator.setPosition(0.15);
+        extenderRotator.setPosition(0.2);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
@@ -461,11 +462,11 @@ public class closeBlueAUTO extends LinearOpMode {
         close();
     }
     void stickUp() {
-        pixelStick.setPosition(1.4); //0.6
+        pixelStick.setPosition(0.4); //0.6
         telemetry.addData("pixelStick",0.6);
     }
     void stickDown() {
-        pixelStick.setPosition(1.0); //1.0
+        pixelStick.setPosition(0.0); //1.0
         telemetry.addData("pixelStick",1.0);
     }
     void groundHeight() {
