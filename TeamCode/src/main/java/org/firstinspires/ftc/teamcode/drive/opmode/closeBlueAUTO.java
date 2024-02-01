@@ -205,7 +205,7 @@ public class closeBlueAUTO extends LinearOpMode {
             traj1 = drive.trajectorySequenceBuilder(startpos)
                     .lineToLinearHeading(new Pose2d(12,34.75, Math.toRadians(90)))
                     .forward(8)
-                    .lineToLinearHeading(new Pose2d(43, 36, Math.toRadians(180)))
+                    .lineToLinearHeading(new Pose2d(46, 36, Math.toRadians(180)))
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
@@ -242,10 +242,17 @@ public class closeBlueAUTO extends LinearOpMode {
                 .build();
 
         traj7 = drive.trajectorySequenceBuilder(traj65.end())
-                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
+                /*.lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
                 .lineToConstantHeading(new Vector2d(-36,60))
                 .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
-                .splineTo(new Vector2d(43,44), Math.toRadians(0))
+                .splineTo(new Vector2d(43,44), Math.toRadians(0))*/
+                .splineToConstantHeading(new Vector2d(-36,60), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-30, 60), Math.toRadians(0))
+
+                .splineToConstantHeading(new Vector2d(24,60), Math.toRadians(0))
+                //   .back(1)
+                //  .splineToConstantHeading(new Pose2d(24, 60), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(43,44), Math.toRadians(0))
                 .build();
         traj8 = drive.trajectorySequenceBuilder(traj7.end())
                 .back(4)
@@ -414,7 +421,7 @@ public class closeBlueAUTO extends LinearOpMode {
          */
     }
     void unrotate(){
-        extenderRotator.setPosition(0.21); //0.21
+        extenderRotator.setPosition(0.2); //0.21
     }
     void rotate(){
         extenderRotator.setPosition(0.49);
@@ -462,7 +469,7 @@ public class closeBlueAUTO extends LinearOpMode {
         close();
     }
     void stickUp() {
-        pixelStick.setPosition(0.4); //0.6
+        pixelStick.setPosition(0.6); //0.6
         telemetry.addData("pixelStick",0.6);
     }
     void stickDown() {

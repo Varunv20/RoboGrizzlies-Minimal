@@ -77,39 +77,28 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(12, 63.25, Math.toRadians(90)))
-                                .lineToLinearHeading(new Pose2d(24,34.75, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(12,34.75, Math.toRadians(90)))
                                 .forward(8)
-                                .lineToLinearHeading(new Pose2d(43, 44.25, Math.toRadians(180)))
-                                //traj2
+                                .lineToLinearHeading(new Pose2d(46, 36, Math.toRadians(180)))
                                 .back(6.9)
-                                //traj3
                                 .forward(5)
-                                //traj4
                                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
-                                //traj5B
-
-
-
-                                //.lineToLinearHeading(new Pose2d(-58.25, 42.2, Math.toRadians(180)))
-                                .lineToLinearHeading(new Pose2d(-57, 29, Math.toRadians(190)))
-                                /*
-                                //traj5
+                                .lineToLinearHeading(new Pose2d(-58.25, 42.5, Math.toRadians(180)))
                                 .back(6)
-                                //traj6
-                                .strafeLeft(4.2)
-                                .forward(6.95)
-                                //traj65
-                                .forward(0.5)
-                                //traj7
+                                .strafeLeft(5.2)
+                                .forward(4.5)
+                                .forward(1.7)
                                 .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
-                                .lineToConstantHeading(new Vector2d(-36,60))
-                                .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
-                                .splineTo(new Vector2d(43,44), Math.toRadians(0))
-                                //traj8
-                                .back(4)
+                                .splineToConstantHeading(new Vector2d(-36,60), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-30, 60), Math.toRadians(0))
 
+                                .splineToConstantHeading(new Vector2d(24,60), Math.toRadians(0))
+                             //   .back(1)
+                              //  .splineToConstantHeading(new Pose2d(24, 60), Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d(43,44), Math.toRadians(0))
+                                .back(4)
 
                                 // .back(5)
                                 //intake
@@ -117,8 +106,6 @@ public class MeepMeepTesting {
                                 // .splineTo(new Vector2d(0, 6), Math.toRadians(180))
 
                                 // .splineTo(new Vector2d(53, 30), Math.toRadians(0))
-
-                                */
 
                                 .build()
                 );
