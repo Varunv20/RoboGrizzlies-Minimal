@@ -220,7 +220,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-58.25, 42.5, Math.toRadians(180)))
-/*   .
+/*
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-63,36), Math.toRadians(180))
@@ -234,7 +234,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 .build();
 
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
-                .strafeLeft(5.2)
+                .strafeLeft(5.7)
                 .forward(4.5)
                 .build();
         traj65 = drive.trajectorySequenceBuilder(traj6.end())
@@ -246,6 +246,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(-36,60))
                 .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
                 .splineTo(new Vector2d(43,44), Math.toRadians(0))*/
+                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-36,60), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-30, 60), Math.toRadians(0))
 
@@ -279,9 +280,9 @@ public class closeBlueAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         rotate();
-                        sleep(600);
+                        sleep(500);
                         open();
-                        sleep(200);
+                        sleep(100);
                        // unrotate();
                       //  groundHeight();
 
@@ -313,7 +314,7 @@ public class closeBlueAUTO extends LinearOpMode {
                         groundHeight();
                         unrotate();
                         stickDown();
-                        sleep(800);
+                        sleep(600);
 
 
                         currentState = State.traj5;
@@ -324,11 +325,12 @@ public class closeBlueAUTO extends LinearOpMode {
                 case traj5:
                     unrotate();
                     stickDown();
+                    sleep(400);
                     if (!drive.isBusy()) {
                         //rotatemore();
                         //startIntake();
-                       stickUp();
-                       // sleep(200);
+                        stickUp();
+                        sleep(400);
                         currentState = State.traj6;
                         drive.followTrajectorySequence(traj6);
 
@@ -342,6 +344,7 @@ public class closeBlueAUTO extends LinearOpMode {
                     }
 
                 case traj6:
+                    stickUp();
                     //rotatemore();
 
                     if (!drive.isBusy()) {
@@ -364,7 +367,7 @@ public class closeBlueAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
 
-                        sleep(1000);
+                        sleep(700);
                         stopIntake();
                         stickUp();
                         unrotate();
