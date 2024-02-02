@@ -236,6 +236,7 @@ public class closeBlueAUTO extends LinearOpMode {
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
                 .strafeLeft(5.7)
                 .forward(4.5)
+              //  .splineToConstantHeading(new Vector2d(-61.5, 23.3), Math.toRadians(0))
                 .build();
         traj65 = drive.trajectorySequenceBuilder(traj6.end())
                 .forward(1.7)
@@ -269,8 +270,10 @@ public class closeBlueAUTO extends LinearOpMode {
                 case traj1:
                     unrotate();
                     if (!drive.isBusy()) {
+
                         currentState = State.traj2;
                         lowHeight();
+                        rotate();
                         close();
                         drive.followTrajectorySequence(traj2);
                         //do code

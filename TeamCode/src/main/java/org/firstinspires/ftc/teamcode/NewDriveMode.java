@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="DriverOP-CSM3", group="Driver OP")
+@TeleOp(name="DriverOP-CSCC", group="Driver OP")
 public class NewDriveMode extends LinearOpMode {
     //initializing stuff. Adds every non-drive servo and motor.
     // Drive motors are done on the sampleMecanumDrive opMode.
@@ -19,6 +19,7 @@ public class NewDriveMode extends LinearOpMode {
     Servo extenderRotator;
     Servo extenderPlacer;
     ColorSensor pixelSensor;
+    ColorSensor pixelSensor2;
     double theta = 0.06; //For testing box positions. See Trigger functions.
     boolean dontTilt = true; //safety feature. Prevents some unwanted actions, so Aiden doesn't break stuff again
     boolean safetyOverride = false; //Benji Feature BC he doesn't make mistakes :)
@@ -43,6 +44,7 @@ public class NewDriveMode extends LinearOpMode {
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
         // and color sensors, too.
         pixelSensor = hardwareMap.get(ColorRangeSensor.class, "pixelSensor");
+        pixelSensor2 = hardwareMap.get(ColorRangeSensor.class, "pixelSensor2");
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -83,9 +85,18 @@ public class NewDriveMode extends LinearOpMode {
             drive.update();
 
             //telemetry for pixel sensor prototype. To be updated.
-            telemetry.addData("Red: ", pixelSensor.red());
-            telemetry.addData("Green: ", pixelSensor.green());
-            telemetry.addData("Blue: ", pixelSensor.blue());
+
+            if(pixelSensor.green()+ pixelSensor.red()+pixelSensor.blue()> 500){
+                telemetry.addData("Pixel 1: ", "LOADED");}
+            else{
+                telemetry.addData("Pixel 1: ", "NONE");
+            }
+            if(pixelSensor2.green()+ pixelSensor2.red()+pixelSensor2.blue()> 500){
+                telemetry.addData("Pixel 2: ", "LOADED");}
+            else{
+                    telemetry.addData("Pixel 1: ", "NONE");
+            }
+
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
             telemetry.addData("theta: ", theta);
 
