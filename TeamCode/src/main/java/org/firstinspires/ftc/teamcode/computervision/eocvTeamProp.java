@@ -63,17 +63,22 @@ public class eocvTeamProp extends OpenCvPipeline {
 
         if (run) {
 
-            Integer[] redheights = new Integer[input1.width()/3];
-
+            Integer[] redheights = new Integer[3];
+            redheights[0] = 0;
+            redheights[1] = 0;
+            redheights[2] = 0;
+            int i1 = 0;
+            
             for (int y = 0; y < input1.width()/3; y++) {
-                int icounter = 0;
+                
+                i1 = (int) y/input1.width()*3;
                 long s = System.nanoTime();
-                for (int x = input1.height()/4; x < input1.height()-input1.height()/4; x+=3) {
+                for (int x = input1.height()/3; x < input1.height()-input1.height()/3; x+=3) {
                     double[] i = input1.get(x, y*3);
-
+                    
 
                     if (is_red(i)) {
-                        icounter++;
+                        redheights[i1]++;
                     }
 
                 }
@@ -86,27 +91,9 @@ public class eocvTeamProp extends OpenCvPipeline {
 
             }
 
-            ArrayList<Integer> red_sum_list = new ArrayList<Integer>();
-            Integer counter = 0;
-
-            for (int i = 0; i < redheights.length; i++) {
-                counter += redheights[i];
-                if (i % 50 == 0) {
-                    red_sum_list.add(counter);
-                    counter = 0;
-                }
-            }
-            Integer[] arr = new Integer[red_sum_list.size()];
-            result = "c3";
-
-            arr = red_sum_list.toArray(arr);
-            Integer[] m1 = Arrays.copyOfRange(arr, 0, (int) arr.length / 3);
-            Integer[] m2 = Arrays.copyOfRange(arr, arr.length / 3, (int) 2 * arr.length / 3);
-
-            Integer[] m3 = Arrays.copyOfRange(arr, 2 * arr.length / 3, arr.length);
-            m1avg = avg(m1);
-            m2avg = avg(m2);
-            m3avg = avg(m3);
+            m1avg = redheights[0];
+            m2avg = redheights[1];
+            m3avg = redheights[2];
 
             // if (!red) {
             //     m1avg -= 2000;
