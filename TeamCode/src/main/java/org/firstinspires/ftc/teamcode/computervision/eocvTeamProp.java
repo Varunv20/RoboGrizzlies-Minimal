@@ -10,7 +10,7 @@ import java.util.*;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
     public boolean run = false;
-
+    Telemetry telemetry;
     double max_error = 90.0;
     int min = 25;
     double forward;
@@ -56,25 +56,28 @@ public class eocvTeamProp extends OpenCvPipeline {
     public void setRun() {
         run = true;
     }
+    public void eocvTeamProp(Telemetry telemetry) {
+        telemetry = telemetry;
+    }
 
     @Override
     public Mat processFrame(Mat input1) {
         // Executed every time a new frame is dispatched
 
         if (run) {
-
+            int resize_factor = 3;
             Integer[] redheights = new Integer[3];
             redheights[0] = 0;
             redheights[1] = 0;
             redheights[2] = 0;
             int i1 = 0;
             
-            for (int y = 0; y < input1.width()/3; y++) {
+            for (int y = 0; y < input1.width()/resize_factor; y++) {
                 
-                i1 = (int) y/input1.width()*3;
+                i1 = (int) y/input1.width()*resize_factor;
                 long s = System.nanoTime();
-                for (int x = input1.height()/3; x < input1.height()-input1.height()/3; x+=3) {
-                    double[] i = input1.get(x, y*3);
+                for (int x = (int) input1.height()/3; x < input1.height()-input1.height()/3; x+=resize_factor) {
+                    double[] i = input1.get(x, y*resize_factor);
                     
 
                     if (is_red(i)) {
@@ -86,7 +89,6 @@ public class eocvTeamProp extends OpenCvPipeline {
                 result = "" + (e - s);
 
 
-                redheights[y] = icounter;
                 result = "c24";
 
             }
@@ -106,11 +108,11 @@ public class eocvTeamProp extends OpenCvPipeline {
             } else {
                 result = "center";
             }
-         /*   telemetry.addData("r", result);
+           telemetry.addData("r", result);
             telemetry.addData("m1", m1avg);
             telemetry.addData("m2", m2avg);
             telemetry.addData("m3", m3avg);
-            telemetry.update();*/
+            telemetry.update();
 
             // } //m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2 else if
             // else {
