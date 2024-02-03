@@ -3,15 +3,63 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.lang.Math;
 @TeleOp(name="DriverOP-CSCC", group="Driver OP")
 public class NewDriveMode extends LinearOpMode {
+    OpenCvCamera camera;
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
+    static final double FEET_PER_METER = 3.28084;
+
+    // Lens intrinsics
+    // UNITS ARE PIXELS
+    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // You will need to do your own calibration for other configurations!
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+
+    // UNITS ARE METERS
+    double tagsize = 0.166;
+
+    int numFramesWithoutDetection = 0;
+
+    final float DECIMATION_HIGH = 3;
+    final float DECIMATION_LOW = 2;
+    final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
+    final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
     //initializing stuff. Adds every non-drive servo and motor.
     // Drive motors are done on the sampleMecanumDrive opMode.
+    private AprilTagProcessor aprilTag;
+
+
+    private VisionPortal visionPortal;
     DcMotor intakeMotor;
     DcMotor linearextenderLeft;
     DcMotor linearextenderRight;
@@ -23,11 +71,11 @@ public class NewDriveMode extends LinearOpMode {
     double theta = 0.06; //For testing box positions. See Trigger functions.
     boolean dontTilt = true; //safety feature. Prevents some unwanted actions, so Aiden doesn't break stuff again
     boolean safetyOverride = false; //Benji Feature BC he doesn't make mistakes :)
-
+    public SampleMecanumDrive drive;
     @Override
     public void runOpMode() throws InterruptedException {
         //sets up drive
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
         //no encoders, so we do this:
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //now we need to map each initialized motor to the name assigned in the hardware map
@@ -63,15 +111,35 @@ public class NewDriveMode extends LinearOpMode {
         I quite honestly have no idea if this is still correct. We arent using it meaningfully.
          */
         final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
-
+        boolean streaming = true;
         //moving on initialization - positions box, powers plane launcher, opens door.
         unrotate();
         theta = 0;
         reload();
         open();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
+        camera.setPipeline(aprilTagDetectionPipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+// did you use the open cv april tag
+            }
+        });
         waitForStart(); //THIS OPMODE IS CONFIGURED FOR LINEAROPMODE. If this line is erroring, that may be the issue. Look up opmode vs linearopmode.
 
 
+        telemetry.setMsTransmissionInterval(50);
         while (!isStopRequested()) {
             //THIS IS WIZARDRY. Someone please figure it out.
             drive.setWeightedDrivePower(
@@ -96,6 +164,7 @@ public class NewDriveMode extends LinearOpMode {
             else{
                     telemetry.addData("Pixel 1: ", "NONE");
             }
+
 
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
             telemetry.addData("theta: ", theta);
@@ -208,8 +277,72 @@ public class NewDriveMode extends LinearOpMode {
                 //Self Explanatory, no? this is the benefit of not naming everything beans.
             }
             if (gamepad1.dpad_up) {
-                extenderRotator.setPosition(0.15);//0.1+theta);
+                ArrayList<org.openftc.apriltag.AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+                if(detections != null)
+                {
+                    telemetry.addData("FPS", camera.getFps());
+                    telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
+                    telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
+
+                    // If we don't see any tags
+                    if(detections.size() == 0)
+                    {
+                        numFramesWithoutDetection++;
+
+                        // If we haven't seen a tag for a few frames, lower the decimation
+                        // so we can hopefully pick one up if we're e.g. far back
+                        if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
+                        {
+                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                        }
+                    }
+                    // We do see tags!
+                    else
+                    {
+                        numFramesWithoutDetection = 0;
+
+                        // If the target is within 1 meter, turn on high decimation to
+                        // increase the frame rate
+                        if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
+                        {
+                            aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                        }
+
+                        for(org.openftc.apriltag.AprilTagDetection detection : detections)
+                        {
+                            Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+                            if (rot.firstAngle < 0) {
+                                turnright((int) Math.abs(rot.firstAngle));
+                                if ( detection.pose.x*FEET_PER_METER > 0){
+                                    straferight(Math.abs( detection.pose.x*FEET_PER_METER/12));
+                                }
+                                else {
+                                    strafeleft(Math.abs( detection.pose.x*FEET_PER_METER/12));
+                                }
+                            } else if (rot.firstAngle > 0) {
+                                turnleft((int) Math.abs(rot.firstAngle));
+                                if (detection.pose.x*FEET_PER_METER > 0){
+                                    straferight(Math.abs(detection.pose.x*FEET_PER_METER/12));
+                                }
+                                else {
+                                    strafeleft(Math.abs(detection.pose.x*FEET_PER_METER/12));
+                                }
+                            }
+                            telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+                            telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+                            telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+                            telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+                            telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
+                            telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
+                        }
+                    }
+                    telemetry.addData("frames w/o det", numFramesWithoutDetection);
+
+                    telemetry.update();
+                }
                 //tilt up for pixel stuck issue
+
             }
             if (gamepad1.left_stick_button && gamepad1.right_stick_button){
                 safetyOverride = !safetyOverride;
@@ -219,6 +352,18 @@ public class NewDriveMode extends LinearOpMode {
                 dontTilt = false;
                 telemetry.addData("SAFETY OVERRIDE", "ALL SAFEGUARDS DISABLED!!!");
                 //the "I KNOW WHAT I'M DOING" method. Use to override dontTilt and all associated safety features.
+            }
+            if (gamepad1.guide && gamepad1.dpad_up) {
+                if (streaming) {
+                    visionPortal.stopStreaming();
+                    streaming = false;
+                }
+                else {
+
+                    visionPortal.resumeStreaming();
+                    streaming = true;
+                }
+
             }
             if(gamepad1.start){
                 linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -252,11 +397,74 @@ public class NewDriveMode extends LinearOpMode {
             telemetry.update();
         }//END OF DRIVEROP LOOP
     }
+    private void initAprilTag() {
 
+        // Create the AprilTag processor the easy way.
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+        // Create the vision portal the easy way.
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                    hardwareMap.get(WebcamName.class, "webcam"), aprilTag);
+
+    }   // end method initAprilTag()
+
+    /**
+     * Add telemetry about AprilTag detections.
+     */
+    private void telemetryAprilTag() {
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+        telemetry.update();
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null && detection.ftcPose.yaw < 0) {
+                    turnright((int) Math.abs(detection.ftcPose.yaw));
+                    if (detection.ftcPose.x > 0){
+                        straferight(Math.abs(detection.ftcPose.x/12));
+                    }
+                    else {
+                        strafeleft(Math.abs(detection.ftcPose.x/12));
+                    }
+                } else if (detection.metadata != null && detection.ftcPose.yaw > 0) {
+                    turnleft((int) Math.abs(detection.ftcPose.yaw));
+                    if (detection.ftcPose.x > 0){
+                        straferight(Math.abs(detection.ftcPose.x/12));
+                    }
+                    else {
+                        strafeleft(Math.abs(detection.ftcPose.x/12));
+                    }
+                }
+            }
+
+    }
     /*
     methods. They are separate from the buttons because sometimes they are called in
     multiple places, and to improve readability.
      */
+
+    void turnright(int degrees){
+        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+                .turn(degrees)
+                .build();
+    }
+
+    void turnleft(int degrees){
+        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+                .turn(-degrees)
+                .build();
+    }
+
+    void strafeleft(double feet){
+        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+                .strafeLeft(feet)
+                .build();
+    }
+
+    void straferight(double feet){
+        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+                .strafeRight(feet)
+                .build();
+    }
     void reload() {
         paperAirplane.setPosition(1.0);
     }
