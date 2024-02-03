@@ -46,18 +46,38 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 18)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(12, 63.25, Math.toRadians(90)))
-                                .back(24)
-                                .lineToLinearHeading(new Pose2d(4,35, Math.toRadians(45)))
+                                .lineToLinearHeading(new Pose2d(24,34.75, Math.toRadians(90)))
                                 .forward(8)
-                                .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
+                                .lineToLinearHeading(new Pose2d(43, 44.25, Math.toRadians(180)))
+                                //traj2
+                                .back(4.9) //6.9
+                                //traj3
+                                .forward(3)
+                                //traj4
                                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
-                                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(135)))
-                                .splineToConstantHeading(new Vector2d(-63,36), Math.toRadians(135))
-                                .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(135)))
+                                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
+                                .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
+                                .lineToLinearHeading(new Pose2d(-58.25, 42.5, Math.toRadians(180)))
+                                //traj5
+                                .back(7)
+                                //traj5B
+                                .lineToLinearHeading(new Pose2d(-57, 29, Math.toRadians(190)))
+                                //traj6
+                                .strafeLeft(5.7)
+                                .forward(4.5)
+                                //traj65
+                                .forward(2.1)
+                                //traj7
                                 .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
-                                .lineToConstantHeading(new Vector2d(-36,60))
-                                .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
-                                .splineTo(new Vector2d(43,44), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-36,60), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-30, 60), Math.toRadians(0))
+
+                                .splineToConstantHeading(new Vector2d(24,60), Math.toRadians(0))
+                                //   .back(1)
+                                //  .splineToConstantHeading(new Pose2d(24, 60), Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d(43.25,44), Math.toRadians(0))
+                                //traj8
+                                .back(4)
 
 
 

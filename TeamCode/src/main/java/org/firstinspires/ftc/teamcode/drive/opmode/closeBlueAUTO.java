@@ -209,10 +209,10 @@ public class closeBlueAUTO extends LinearOpMode {
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
-                .back(6.9)
+                .back(3.9)
                 .build();
         traj3 =  drive.trajectorySequenceBuilder(traj2.end())
-                .forward(5)
+                .forward(2)
                 .build();
 
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
