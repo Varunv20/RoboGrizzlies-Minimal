@@ -77,14 +77,14 @@ public class eocvTeamProp extends OpenCvPipeline {
             
             for (int y = 0; y < input1.width()/resize_factor; y++) {
                 
-                i1 = (int) y/input1.width()*resize_factor;
+                i1 = (int) (y/input1.width()*resize_factor);
                 long s = System.nanoTime();
                 for (int x = (int) input1.height()/3; x < input1.height()-input1.height()/3; x+=resize_factor) {
                     double[] i = input1.get(x, y*resize_factor);
                     
 
                     if (is_red(i)) {
-                        redheights[i1]++;
+                        redheights[i1] = redheights[i1]+1;
                     }
 
                 }

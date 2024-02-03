@@ -227,7 +227,7 @@ public class closeBlueAUTO extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180)))*/
                 .build();
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
-                .back(6)
+                .back(7)
                 .build();
         traj5B = drive.trajectorySequenceBuilder(traj4.end())
                 .lineToLinearHeading(new Pose2d(-57, 29, Math.toRadians(190)))
@@ -239,7 +239,7 @@ public class closeBlueAUTO extends LinearOpMode {
               //  .splineToConstantHeading(new Vector2d(-61.5, 23.3), Math.toRadians(0))
                 .build();
         traj65 = drive.trajectorySequenceBuilder(traj6.end())
-                .forward(1.7)
+                .forward(3)
                 .build();
 
         traj7 = drive.trajectorySequenceBuilder(traj65.end())
