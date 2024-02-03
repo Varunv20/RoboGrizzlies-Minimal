@@ -32,7 +32,7 @@ public class eocvTeamProp extends OpenCvPipeline {
         // telemetry.addData("color", "" + l[0]);
         //double[] blue = {0,0,255};
         if (l[2] > 10) {
-            if (((l[0]/l[1] > 1.15 && l[0]/l[2] > 1.45 ) && red) || ((l[2]/l[1] > 1.15 && l[2]/l[0] > 1.45)) && !red) {
+            if (((l[0]/l[1] > 1.15 && l[0]/l[2] > 1.35 ) && red) || ((l[2]/l[1] > 1.15 && l[2]/l[0] > 1.35)) && !red) {
                 return true;
             }
         }
