@@ -7,10 +7,10 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.*;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
     public boolean run = false;
-    Telemetry telemetry;
+    //Telemetry telemetry;
     double max_error = 90.0;
     int min = 25;
     double forward;
@@ -56,9 +56,12 @@ public class eocvTeamProp extends OpenCvPipeline {
     public void setRun() {
         run = true;
     }
+    /*
     public void eocvTeamProp(Telemetry telemetry) {
         telemetry = telemetry;
     }
+
+     */
 
     @Override
     public Mat processFrame(Mat input1) {
@@ -108,11 +111,14 @@ public class eocvTeamProp extends OpenCvPipeline {
             } else {
                 result = "center";
             }
+            /*
            telemetry.addData("r", result);
             telemetry.addData("m1", m1avg);
             telemetry.addData("m2", m2avg);
             telemetry.addData("m3", m3avg);
             telemetry.update();
+
+             */
 
             // } //m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2 else if
             // else {
