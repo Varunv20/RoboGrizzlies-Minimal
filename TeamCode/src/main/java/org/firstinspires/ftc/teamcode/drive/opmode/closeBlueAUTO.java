@@ -239,7 +239,7 @@ public class closeBlueAUTO extends LinearOpMode {
               //  .splineToConstantHeading(new Vector2d(-61.5, 23.3), Math.toRadians(0))
                 .build();
         traj65 = drive.trajectorySequenceBuilder(traj6.end())
-                .forward(3)
+                .forward(2.65)
                 .build();
 
         traj7 = drive.trajectorySequenceBuilder(traj65.end())
@@ -372,6 +372,7 @@ public class closeBlueAUTO extends LinearOpMode {
 
                         sleep(700);
                         stopIntake();
+                        reverseIntake();
                         stickUp();
                         unrotate();
                         groundHeight();
@@ -384,6 +385,7 @@ public class closeBlueAUTO extends LinearOpMode {
                     break;
                 case traj7:
                     unrotate();
+                    stopIntake();
                     if (!drive.isBusy()) {
                         close();
                         maxHeight();

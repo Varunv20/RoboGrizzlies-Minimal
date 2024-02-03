@@ -7,10 +7,10 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.*;
 
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class eocvTeamProp extends OpenCvPipeline {
     public boolean run = false;
-    //Telemetry telemetry;
+
     double max_error = 90.0;
     int min = 25;
     double forward;
@@ -56,35 +56,24 @@ public class eocvTeamProp extends OpenCvPipeline {
     public void setRun() {
         run = true;
     }
-    /*
-    public void eocvTeamProp(Telemetry telemetry) {
-        telemetry = telemetry;
-    }
-
-     */
 
     @Override
     public Mat processFrame(Mat input1) {
         // Executed every time a new frame is dispatched
 
         if (run) {
-            int resize_factor = 3;
-            Integer[] redheights = new Integer[3];
-            redheights[0] = 0;
-            redheights[1] = 0;
-            redheights[2] = 0;
-            int i1 = 0;
-            
-            for (int y = 0; y < input1.width()/resize_factor; y++) {
-                
-                i1 = (int) (y/input1.width()*resize_factor);
+
+            Integer[] redheights = new Integer[input1.width()/3];
+
+            for (int y = 0; y < input1.width()/3; y++) {
+                int icounter = 0;
                 long s = System.nanoTime();
-                for (int x = (int) input1.height()/3; x < input1.height()-input1.height()/3; x+=resize_factor) {
-                    double[] i = input1.get(x, y*resize_factor);
-                    
+                for (int x = input1.height()/4; x < input1.height()-input1.height()/4; x+=3) {
+                    double[] i = input1.get(x, y*3);
+
 
                     if (is_red(i)) {
-                        redheights[i1] = redheights[i1]+1;
+                        icounter++;
                     }
 
                 }
@@ -92,13 +81,32 @@ public class eocvTeamProp extends OpenCvPipeline {
                 result = "" + (e - s);
 
 
+                redheights[y] = icounter;
                 result = "c24";
 
             }
 
-            m1avg = redheights[0];
-            m2avg = redheights[1];
-            m3avg = redheights[2];
+            ArrayList<Integer> red_sum_list = new ArrayList<Integer>();
+            Integer counter = 0;
+
+            for (int i = 0; i < redheights.length; i++) {
+                counter += redheights[i];
+                if (i % 50 == 0) {
+                    red_sum_list.add(counter);
+                    counter = 0;
+                }
+            }
+            Integer[] arr = new Integer[red_sum_list.size()];
+            result = "c3";
+
+            arr = red_sum_list.toArray(arr);
+            Integer[] m1 = Arrays.copyOfRange(arr, 0, (int) arr.length / 3);
+            Integer[] m2 = Arrays.copyOfRange(arr, arr.length / 3, (int) 2 * arr.length / 3);
+
+            Integer[] m3 = Arrays.copyOfRange(arr, 2 * arr.length / 3, arr.length);
+            m1avg = avg(m1);
+            m2avg = avg(m2);
+            m3avg = avg(m3);
 
             // if (!red) {
             //     m1avg -= 2000;
@@ -111,14 +119,11 @@ public class eocvTeamProp extends OpenCvPipeline {
             } else {
                 result = "center";
             }
-            /*
-           telemetry.addData("r", result);
+         /*   telemetry.addData("r", result);
             telemetry.addData("m1", m1avg);
             telemetry.addData("m2", m2avg);
             telemetry.addData("m3", m3avg);
-            telemetry.update();
-
-             */
+            telemetry.update();*/
 
             // } //m3avg / m2avg > 1.17 && m3avg / m1avg > 1.2 else if
             // else {
@@ -138,11 +143,10 @@ public class eocvTeamProp extends OpenCvPipeline {
             //     }
             // }
 
-              run = false;
+            run = false;
 
         }
         return input1; // Return the image that will be displayed in the viewport
         // (In this case the input mat directly)
     }
 }
-
