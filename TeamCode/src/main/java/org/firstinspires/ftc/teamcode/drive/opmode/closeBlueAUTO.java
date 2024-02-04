@@ -186,17 +186,17 @@ public class closeBlueAUTO extends LinearOpMode {
         telemetry.update();
         if (result == "right") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .back(24)
-                    .lineToLinearHeading(new Pose2d(7,36, Math.toRadians(45)))
-                    .forward(1.5)
-                    .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
+                    .back(20)
+                    .lineToLinearHeading(new Pose2d(8.5,35, Math.toRadians(35)))
+                    .forward(3)
+                    .lineToLinearHeading(new Pose2d(43, 31.5, Math.toRadians(180)))
 
                     .build();
 
         }
         else if (result == "left") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(24,34.75, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(24,37.75, Math.toRadians(90)))
                     .forward(8)
                     .lineToLinearHeading(new Pose2d(43, 44.25, Math.toRadians(180)))
                     .build();
@@ -205,21 +205,21 @@ public class closeBlueAUTO extends LinearOpMode {
             traj1 = drive.trajectorySequenceBuilder(startpos)
                     .lineToLinearHeading(new Pose2d(12,34.75, Math.toRadians(90)))
                     .forward(8)
-                    .lineToLinearHeading(new Pose2d(46, 36, Math.toRadians(180)))
+                    .lineToLinearHeading(new Pose2d(43, 36, Math.toRadians(180)))
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
-                .back(3.9)
+                .back(8.7)
                 .build();
         traj3 =  drive.trajectorySequenceBuilder(traj2.end())
-                .forward(2)
+                .forward(6)
                 .build();
 
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-58.25, 42.5, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-57, 42.5, Math.toRadians(180)))
 /*
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
@@ -235,11 +235,11 @@ public class closeBlueAUTO extends LinearOpMode {
 
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
                 .strafeLeft(5.7)
-                .forward(4.5)
+                .forward(4.4)
               //  .splineToConstantHeading(new Vector2d(-61.5, 23.3), Math.toRadians(0))
                 .build();
         traj65 = drive.trajectorySequenceBuilder(traj6.end())
-                .forward(2.1)
+                .forward(3)
                 .build();
 
         traj7 = drive.trajectorySequenceBuilder(traj65.end())
@@ -283,9 +283,9 @@ public class closeBlueAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         rotate();
-                        sleep(500);
+                        sleep(600);
                         open();
-                        sleep(100);
+                        sleep(3000);
                        // unrotate();
                       //  groundHeight();
 
@@ -370,9 +370,9 @@ public class closeBlueAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
 
-                        sleep(1100);
+                        sleep(1000);
                         stopIntake();
-                        reverseIntake();
+                       // reverseIntake();
                         stickUp();
                         unrotate();
                         groundHeight();
@@ -481,7 +481,7 @@ public class closeBlueAUTO extends LinearOpMode {
         telemetry.addData("pixelStick",0.6);
     }
     void stickDown() {
-        pixelStick.setPosition(0.0); //1.0
+        pixelStick.setPosition(0.1); //1.0
         telemetry.addData("pixelStick",1.0);
     }
     void groundHeight() {
@@ -524,8 +524,8 @@ public class closeBlueAUTO extends LinearOpMode {
         //dontTilt = false;
         extenderRotator.setPosition(0.25);
 
-        linearextenderLeft.setTargetPosition((int) (36 * TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (36 * TICKS_PER_CENTIMETER));
+        linearextenderLeft.setTargetPosition((int) (38 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (38 * TICKS_PER_CENTIMETER));
 
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);

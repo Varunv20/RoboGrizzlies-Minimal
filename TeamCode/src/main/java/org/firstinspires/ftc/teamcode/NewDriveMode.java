@@ -66,6 +66,8 @@ public class NewDriveMode extends LinearOpMode {
     Servo paperAirplane;
     Servo extenderRotator;
     Servo extenderPlacer;
+    public Servo pixelStick;
+
     ColorSensor pixelSensor;
     ColorSensor pixelSensor2;
     double theta = 0.06; //For testing box positions. See Trigger functions.
@@ -90,6 +92,8 @@ public class NewDriveMode extends LinearOpMode {
         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+        pixelStick = hardwareMap.get(Servo.class, "pixelStick");
+
         // and color sensors, too.
         pixelSensor = hardwareMap.get(ColorRangeSensor.class, "pixelSensor");
         pixelSensor2 = hardwareMap.get(ColorRangeSensor.class, "pixelSensor2");
@@ -272,11 +276,43 @@ public class NewDriveMode extends LinearOpMode {
                 // also door control. Again Don'tTilt is used to prevent errors.
                 close();
             }
+            if (gamepad1.dpad_left && gamepad1.guide) {
+                stickUp();
+            }
+            if (gamepad1.dpad_right && gamepad1.guide) {
+                stickDown();
+            }
             if (gamepad1.dpad_down) {
                 launchPlane();
                 //Self Explanatory, no? this is the benefit of not naming everything beans.
             }
+
+            if (gamepad1.dpad_up&& gamepad1.guide) {
+                linearextenderLeft.setTargetPosition(0);
+                linearextenderRight.setTargetPosition(0);
+
+                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                linearextenderRight.setPower(0.9);
+                linearextenderLeft.setPower(0.9);
+                unrotate();
+
+            }
+
+
             if (gamepad1.dpad_up) {
+                linearextenderLeft.setTargetPosition((int)(1.3 * TICKS_PER_CENTIMETER));
+                linearextenderRight.setTargetPosition((int) (1.5  * TICKS_PER_CENTIMETER));
+
+                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                linearextenderRight.setPower(0.9);
+                linearextenderLeft.setPower(0.9);
+                unrotatemore();
+
+/*
                 ArrayList<org.openftc.apriltag.AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
                 if(detections != null)
                 {
@@ -341,6 +377,8 @@ public class NewDriveMode extends LinearOpMode {
 
                     telemetry.update();
                 }
+
+ */
                 //tilt up for pixel stuck issue
 
             }
@@ -353,6 +391,7 @@ public class NewDriveMode extends LinearOpMode {
                 telemetry.addData("SAFETY OVERRIDE", "ALL SAFEGUARDS DISABLED!!!");
                 //the "I KNOW WHAT I'M DOING" method. Use to override dontTilt and all associated safety features.
             }
+            /*
             if (gamepad1.guide && gamepad1.dpad_up) {
                 if (streaming) {
                     visionPortal.stopStreaming();
@@ -364,7 +403,7 @@ public class NewDriveMode extends LinearOpMode {
                     streaming = true;
                 }
 
-            }
+            }*/
             if(gamepad1.start){
                 linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -437,6 +476,14 @@ public class NewDriveMode extends LinearOpMode {
             }
 
     }
+    void stickUp() {
+        pixelStick.setPosition(0.6); //0.6
+        telemetry.addData("pixelStick",0.6);
+    }
+    void stickDown() {
+        pixelStick.setPosition(0.15); //1.0
+        telemetry.addData("pixelStick",1.0);
+    }
     /*
     methods. They are separate from the buttons because sometimes they are called in
     multiple places, and to improve readability.
@@ -474,8 +521,17 @@ public class NewDriveMode extends LinearOpMode {
     void unrotate(){
         extenderRotator.setPosition(0.21);//0.52+theta);
     }
+    void unrotatemore(){
+        extenderRotator.setPosition(0.26);//0.52+theta);
+
+    }
     void open(){
         extenderPlacer.setPosition(0.0);
+
+
+
+
+
     }
     void close(){
         extenderPlacer.setPosition(0.489);
