@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.drive.opmode.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -29,12 +31,34 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
+@Config
 @TeleOp(name="DriverOP-CSCC", group="Driver OP")
 public class NewDriveMode extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
     static final double FEET_PER_METER = 3.28084;
+    public static double reload_constant = 1.0;
+    public static double rotate_constant = 0.49;
+    public static double unrotate_constant = 0.21;
+    public static double unrotate_constant2 = 0.26;
+
+    public static double open_constant = 0.0;
+    public static double close_constant = 0.489;
+    public static double launch_constant = 0.3;
+    public static double up_constant = 1.3;
+
+    public static double leftChopstickP1 = 0.6;
+    public static double leftChopstickP2 = 0.0;
+    public static double rightChopstickP1 = 0.6;
+    public static double rightChopstickP2 = 0.0;
+
+    public static int chopstickSleep = 300;
+
+
+
+
+
 
     // Lens intrinsics
     // UNITS ARE PIXELS
@@ -62,10 +86,15 @@ public class NewDriveMode extends LinearOpMode {
     private VisionPortal visionPortal;
     DcMotor intakeMotor;
     DcMotor linearextenderLeft;
+    final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+
     DcMotor linearextenderRight;
     Servo paperAirplane;
     Servo extenderRotator;
     Servo extenderPlacer;
+    Servo leftChopstick;
+    Servo rightChopstick;
+
     ColorSensor pixelSensor;
     ColorSensor pixelSensor2;
     double theta = 0.06; //For testing box positions. See Trigger functions.
@@ -90,6 +119,8 @@ public class NewDriveMode extends LinearOpMode {
         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
+        leftChopstick = hardwareMap.get(Servo.class, "leftChopstick");
+        rightChopstick = hardwareMap.get(Servo.class, "rightChopstick");
         // and color sensors, too.
         pixelSensor = hardwareMap.get(ColorRangeSensor.class, "pixelSensor");
         pixelSensor2 = hardwareMap.get(ColorRangeSensor.class, "pixelSensor2");
@@ -110,7 +141,6 @@ public class NewDriveMode extends LinearOpMode {
         drive encoder. Find wheel radius and solve for ticks per unit distance.
         I quite honestly have no idea if this is still correct. We arent using it meaningfully.
          */
-        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
         boolean streaming = true;
         //moving on initialization - positions box, powers plane launcher, opens door.
         unrotate();
@@ -140,15 +170,28 @@ public class NewDriveMode extends LinearOpMode {
 
 
         telemetry.setMsTransmissionInterval(50);
+        float prev_ly = (float) 0.0;
+        float prev_lx = (float) 0.0;
+        float prev_rx = (float) 0.0;
+        boolean s = true;
         while (!isStopRequested()) {
             //THIS IS WIZARDRY. Someone please figure it out.
+            if (s) {
+                prev_ly =  gamepad1.left_stick_y;
+                prev_lx =  gamepad1.left_stick_x;
+                prev_rx =  gamepad1.right_stick_x;
+                s = false;
+            }
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            gamepad1.left_stick_y,
-                            gamepad1.left_stick_x,
-                            gamepad1.right_stick_x
+                            (gamepad1.left_stick_y + prev_ly)/2,
+                            (gamepad1.left_stick_x+ prev_lx)/2,
+                            (gamepad1.right_stick_x + prev_rx)/2
                     )
             );
+            prev_ly =  gamepad1.left_stick_y;
+            prev_lx =  gamepad1.left_stick_x;
+            prev_rx =  gamepad1.right_stick_x;
 
             drive.update();
 
@@ -171,71 +214,23 @@ public class NewDriveMode extends LinearOpMode {
 
             if (gamepad1.y) {
                 //sends extenders to max up position. Also sets safeguard and tilts box.
-                dontTilt = false;
-                extenderRotator.setPosition(0.19);//0.21+theta);
-
-                linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
-                linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
-
-                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                linearextenderRight.setPower(0.9);
-                linearextenderLeft.setPower(0.9); //I think all 3 commands here (target, mode, power) are needed.
-
-                telemetry.addData("Slides", "HIGH");
-                close();
+                maxHeight();
 
 
             } else if (gamepad1.b) {
                 //ground position. Should move box to prevent serious breaking issues.
-                dontTilt = true;
-                unrotate();
-                open();
-
-                linearextenderLeft.setTargetPosition(0);
-                linearextenderRight.setTargetPosition(0);
-
-                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                linearextenderRight.setPower(0.9);
-                linearextenderLeft.setPower(0.9);
+                groundHeight();
                 telemetry.addData("Slides", "Zeroed");
 
             } else if (gamepad1.x) {
                 //medium. See above.
-                dontTilt = false;
-                extenderRotator.setPosition(0.19);//0.21+theta);
 
-                linearextenderLeft.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
-                linearextenderRight.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
-
-                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                linearextenderRight.setPower(0.9);
-                linearextenderLeft.setPower(0.9);
 
                 telemetry.addData("Slides", "Medium");
                 close();
             } else if (gamepad1.a) {
                 //low. See above.
-                unrotate();
-                dontTilt = false;
-
-                linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
-                linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
-
-                linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                linearextenderRight.setPower(0.9);
-                linearextenderLeft.setPower(0.9);
-
-                telemetry.addData("Slides", "Low");
-                unrotate();
-                close();
+                lowHeight();
             }
 
 
@@ -247,18 +242,18 @@ public class NewDriveMode extends LinearOpMode {
                 unrotate();
 
             }
-            if (gamepad1.right_trigger > 0.5&&(dontTilt||safetyOverride)){
+            if (gamepad1.right_trigger > 0.5){
                 // toggles intake.
                 //to avoid funny issues this ony works when box is down. This also helps with power draw.
                 startIntake();
                 //extenderRotator.setPosition(0.215);//0.24+theta);
             }
-            if(gamepad1.right_trigger> 0.5 && gamepad1.guide &&(dontTilt||safetyOverride)){
+            if(gamepad1.right_trigger> 0.5 && gamepad1.guide){
                 //reverses intake if the XBOX button and activate trigger are pressed together.
                 // This should help with jams.
                 reverseIntake();
             }
-            if (gamepad1.left_trigger > 0.5 && (dontTilt||safetyOverride/*DeMorgan's Laws W*/)) {
+            if (gamepad1.left_trigger > 0.5 ) {
                 // toggles intake
                 //stop always works. The intake auto stops when up.
                 stopIntake();
@@ -276,7 +271,14 @@ public class NewDriveMode extends LinearOpMode {
                 launchPlane();
                 //Self Explanatory, no? this is the benefit of not naming everything beans.
             }
+            if (gamepad1.left_trigger > 0.3 && gamepad1.guide) {
+                eatPixels();
+            }
             if (gamepad1.dpad_up) {
+                unrotatemore();
+                cHeight();
+
+                /*
                 ArrayList<org.openftc.apriltag.AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
                 if(detections != null)
                 {
@@ -340,7 +342,7 @@ public class NewDriveMode extends LinearOpMode {
                     telemetry.addData("frames w/o det", numFramesWithoutDetection);
 
                     telemetry.update();
-                }
+                }*/
                 //tilt up for pixel stuck issue
 
             }
@@ -397,6 +399,9 @@ public class NewDriveMode extends LinearOpMode {
             telemetry.update();
         }//END OF DRIVEROP LOOP
     }
+    class movement {
+
+    }
     private void initAprilTag() {
 
         // Create the AprilTag processor the easy way.
@@ -411,6 +416,77 @@ public class NewDriveMode extends LinearOpMode {
     /**
      * Add telemetry about AprilTag detections.
      */
+    private void maxHeight() {
+        dontTilt = false;
+        extenderRotator.setPosition(0.19);//0.21+theta);
+
+        linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(0.9);
+        linearextenderLeft.setPower(0.9); //I think all 3 commands here (target, mode, power) are needed.
+
+        telemetry.addData("Slides", "HIGH");
+        close();
+    }
+    private void midHeight() {
+        dontTilt = false;
+        extenderRotator.setPosition(0.19);//0.21+theta);
+
+        linearextenderLeft.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(1.0);
+        linearextenderLeft.setPower(1.0);
+    }
+    private void cHeight() {
+        dontTilt = false;
+
+        linearextenderLeft.setTargetPosition((int) ( up_constant* TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (up_constant * TICKS_PER_CENTIMETER));
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(1.0);
+        linearextenderLeft.setPower(1.0);
+    }
+    private void lowHeight() {
+        unrotate();
+        dontTilt = false;
+
+        linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(1.0);
+        linearextenderLeft.setPower(1.0);
+
+        telemetry.addData("Slides", "Low");
+        unrotate();
+        close();
+    }
+    private void groundHeight() {
+        dontTilt = true;
+        unrotate();
+        open();
+        linearextenderLeft.setTargetPosition(0);
+        linearextenderRight.setTargetPosition(0);
+
+        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linearextenderRight.setPower(1.0);
+        linearextenderLeft.setPower(1.0);
+    }
     private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -443,21 +519,38 @@ public class NewDriveMode extends LinearOpMode {
      */
 
     void turnright(int degrees){
-        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(0,0))
                 .turn(degrees)
                 .build();
+        drive.followTrajectorySequence(traj1);
+
     }
 
     void turnleft(int degrees){
-        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(0,0))
                 .turn(-degrees)
                 .build();
+        drive.followTrajectorySequence(traj1);
+
     }
 
     void strafeleft(double feet){
-        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(0,0))
                 .strafeLeft(feet)
                 .build();
+        drive.followTrajectorySequence(traj1);
+    }
+    void openChopsticks() {
+        rightChopstick.setPosition(rightChopstickP1);
+        leftChopstick.setPosition(leftChopstickP1);
+
+    }
+    void eatPixels() {
+
+        rightChopstick.setPosition(rightChopstickP2);
+        leftChopstick.setPosition(leftChopstickP2);
+
+
     }
 
     void straferight(double feet){
@@ -466,25 +559,29 @@ public class NewDriveMode extends LinearOpMode {
                 .build();
     }
     void reload() {
-        paperAirplane.setPosition(1.0);
+        paperAirplane.setPosition(reload_constant);
     }
     void rotate(){
-        extenderRotator.setPosition(0.49);//0.23+theta);
+        extenderRotator.setPosition(rotate_constant);//0.23+theta);
     }
     void unrotate(){
-        extenderRotator.setPosition(0.21);//0.52+theta);
+        extenderRotator.setPosition(unrotate_constant);//0.52+theta);
     }
+    void unrotatemore(){
+        extenderRotator.setPosition(unrotate_constant2);//0.52+theta);
+    }
+
     void open(){
-        extenderPlacer.setPosition(0.0);
+        extenderPlacer.setPosition(open_constant);
     }
     void close(){
-        extenderPlacer.setPosition(0.489);
+        extenderPlacer.setPosition(close_constant);
     }
     /*void setPlane(){
         extenderPlacer.setPosition(0.0);
     }*/
     void launchPlane(){
-        paperAirplane.setPosition(0.3);
+        paperAirplane.setPosition(launch_constant);
     }
     void startIntake(){
         intakeMotor.setPower(1.0);

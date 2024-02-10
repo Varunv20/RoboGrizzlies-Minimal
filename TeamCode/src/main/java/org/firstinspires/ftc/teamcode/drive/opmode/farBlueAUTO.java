@@ -190,14 +190,14 @@ public class farBlueAUTO extends LinearOpMode {
 
         }
         else if (result == "left") {
-            traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .back(24)
-                    .lineToLinearHeading(new Pose2d(-24,36, Math.toRadians(90)))
+            traj1 =  drive.trajectorySequenceBuilder(startpos)
+                    .back(10)
+                    .lineToLinearHeading(new Pose2d(-48,36, Math.toRadians(90)))
                     .forward(2)
-                    .strafeLeft(10)
+                    .strafeRight(10)
                     .lineToLinearHeading(new Pose2d(-36,60, Math.toRadians(90)))
                     .lineToLinearHeading(new Pose2d(30, 60, Math.toRadians(90)))
-                    .lineToLinearHeading(new Pose2d(43, 44.25, Math.toRadians(180)))
+                    .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
                     .build();
         }
         else {
