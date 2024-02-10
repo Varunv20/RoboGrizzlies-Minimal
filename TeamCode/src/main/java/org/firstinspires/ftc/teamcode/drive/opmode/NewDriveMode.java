@@ -251,7 +251,8 @@ public class NewDriveMode extends LinearOpMode {
             if(gamepad1.right_trigger> 0.5 && gamepad1.guide){
                 //reverses intake if the XBOX button and activate trigger are pressed together.
                 // This should help with jams.
-                reverseIntake();
+               // reverseIntake();
+                openChopsticks();
             }
             if (gamepad1.left_trigger > 0.5 ) {
                 // toggles intake
