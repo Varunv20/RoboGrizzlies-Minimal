@@ -48,10 +48,10 @@ public class NewDriveMode extends LinearOpMode {
     public static double launch_constant = 0.3;
     public static double up_constant = 1.3;
 
-    public static double leftChopstickP1 = 0.6;
+    public static double leftChopstickP1 = 0.7;
     public static double leftChopstickP2 = 0.0;
     public static double rightChopstickP1 = 0.0;
-    public static double rightChopstickP2 = 0.6;
+    public static double rightChopstickP2 = 0.7;
 
     public static int chopstickSleep = 300;
 
