@@ -41,7 +41,7 @@ public class AutoMachine  {
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
     public DcMotor intakeMotor;
-    public Servo pixelStick;
+
     public Servo claws;
     public static double reload_constant = 1.0;
     public static double rotate_constant = 0.49;
@@ -100,8 +100,7 @@ public class AutoMachine  {
             extenderRotator = l.hardwareMap.get(Servo.class, "extenderRotator");
             extenderPlacer = l.hardwareMap.get(Servo.class, "extenderPlacer");
             paperAirplane = l.hardwareMap.get(Servo.class, "paperAirplane");
-            pixelStick = l.hardwareMap.get(Servo.class, "pixelStick");
-            leftChopstick = l.hardwareMap.get(Servo.class, "leftChopstick");
+              leftChopstick = l.hardwareMap.get(Servo.class, "leftChopstick");
             rightChopstick = l.hardwareMap.get(Servo.class, "rightChopstick");
             // and color sensors, too.
             intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
