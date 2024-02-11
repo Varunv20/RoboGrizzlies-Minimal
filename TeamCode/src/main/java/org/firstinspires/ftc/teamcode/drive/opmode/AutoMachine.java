@@ -84,7 +84,7 @@ public class AutoMachine  {
         }
         State currentState = State.Idle;
         AutoTrajectories a;
-        SampleMecanumDrive drive;
+        
 
 
         public   void runAUTO(   LinearOpMode l , Boolean close, Boolean red, Boolean parkoutside, Boolean cycle){
