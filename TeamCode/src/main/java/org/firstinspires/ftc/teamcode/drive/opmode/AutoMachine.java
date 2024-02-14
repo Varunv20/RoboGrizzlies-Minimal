@@ -129,7 +129,7 @@ public class AutoMachine  {
 
             }
             a.setStartpos();
-            drive.setPoseEstimate(a.start2pos);
+            drive.setPoseEstimate(a.startpos);
             eocvTeamProp pipeline = new eocvTeamProp();
             webcam.setPipeline(pipeline);
             webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()

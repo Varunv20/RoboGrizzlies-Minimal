@@ -13,7 +13,7 @@ public class AutoTrajectories {
     public SampleMecanumDrive drive;
     private int red = 1;
     private boolean close = false;
-    private Pose2d startpos;
+    public Pose2d startpos;
     public boolean center = false;
     public boolean l = false;
     private TrajectorySequence traj1CR;
