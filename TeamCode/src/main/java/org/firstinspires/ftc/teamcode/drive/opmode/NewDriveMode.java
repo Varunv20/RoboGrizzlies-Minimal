@@ -209,6 +209,7 @@ public class NewDriveMode extends LinearOpMode {
             }
 
 
+
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
             telemetry.addData("theta: ", theta);
 
@@ -275,11 +276,11 @@ public class NewDriveMode extends LinearOpMode {
             if (gamepad1.left_trigger > 0.3 && gamepad1.guide) {
                 eatPixels();
             }
-            if (gamepad1.dpad_up) {
+            if (gamepad2.dpad_up){
                 unrotatemore();
                 cHeight();
-
-                /*
+            }
+            if (gamepad1.dpad_up) {
                 ArrayList<org.openftc.apriltag.AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
                 if(detections != null)
                 {
@@ -343,7 +344,7 @@ public class NewDriveMode extends LinearOpMode {
                     telemetry.addData("frames w/o det", numFramesWithoutDetection);
 
                     telemetry.update();
-                }*/
+                }
                 //tilt up for pixel stuck issue
 
             }
@@ -493,26 +494,25 @@ public class NewDriveMode extends LinearOpMode {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
         telemetry.update();
-            for (AprilTagDetection detection : currentDetections) {
-                if (detection.metadata != null && detection.ftcPose.yaw < 0) {
-                    turnright((int) Math.abs(detection.ftcPose.yaw));
-                    if (detection.ftcPose.x > 0){
-                        straferight(Math.abs(detection.ftcPose.x/12));
-                    }
-                    else {
-                        strafeleft(Math.abs(detection.ftcPose.x/12));
-                    }
-                } else if (detection.metadata != null && detection.ftcPose.yaw > 0) {
-                    turnleft((int) Math.abs(detection.ftcPose.yaw));
-                    if (detection.ftcPose.x > 0){
-                        straferight(Math.abs(detection.ftcPose.x/12));
-                    }
-                    else {
-                        strafeleft(Math.abs(detection.ftcPose.x/12));
-                    }
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null && detection.ftcPose.yaw < 0) {
+                turnright((int) Math.abs(detection.ftcPose.yaw));
+                if (detection.ftcPose.x > 0){
+                    straferight(Math.abs(detection.ftcPose.x/12));
+                }
+                else {
+                    strafeleft(Math.abs(detection.ftcPose.x/12));
+                }
+            } else if (detection.metadata != null && detection.ftcPose.yaw > 0) {
+                turnleft((int) Math.abs(detection.ftcPose.yaw));
+                if (detection.ftcPose.x > 0){
+                    straferight(Math.abs(detection.ftcPose.x/12));
+                }
+                else {
+                    strafeleft(Math.abs(detection.ftcPose.x/12));
                 }
             }
-
+        }
     }
     /*
     methods. They are separate from the buttons because sometimes they are called in

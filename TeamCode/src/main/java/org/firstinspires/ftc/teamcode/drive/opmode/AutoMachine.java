@@ -84,12 +84,12 @@ public class AutoMachine  {
         }
         State currentState = State.Idle;
         AutoTrajectories a;
-        
+    SampleMecanumDrive drive;
 
 
-        public   void runAUTO(   LinearOpMode l , Boolean close, Boolean red, Boolean parkoutside, Boolean cycle){
+    public   void runAUTO(   LinearOpMode l , Boolean close, Boolean red, Boolean parkoutside, Boolean cycle){
 
-            SampleMecanumDrive drive = new SampleMecanumDrive(l.hardwareMap);
+            drive = new SampleMecanumDrive(l.hardwareMap);
             intakeMotor = l.hardwareMap.get(DcMotor.class, "intakeMotor");
             linearextenderLeft = l.hardwareMap.get(DcMotor.class, "linearextenderLeft");
             linearextenderRight = l.hardwareMap.get(DcMotor.class, "linearextenderRight");
