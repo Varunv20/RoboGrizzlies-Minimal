@@ -8,12 +8,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.drive.opmode.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -25,15 +24,12 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
 @Config
-@TeleOp(name="DriverOP-CSCC", group="Driver OP")
-public class NewDriveMode extends LinearOpMode {
+@TeleOp(name="DriverOP-TWO", group="Driver OP")
+public class TwoDrive extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
@@ -205,7 +201,7 @@ public class NewDriveMode extends LinearOpMode {
             if(pixelSensor2.green()+ pixelSensor2.red()+pixelSensor2.blue()> 500){
                 telemetry.addData("Pixel 2: ", "LOADED");}
             else{
-                    telemetry.addData("Pixel 1: ", "NONE");
+                telemetry.addData("Pixel 1: ", "NONE");
             }
 
 
@@ -213,32 +209,33 @@ public class NewDriveMode extends LinearOpMode {
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
             telemetry.addData("theta: ", theta);
 
-            if (gamepad1.y) {
+            if (gamepad2.y) {
                 //sends extenders to max up position. Also sets safeguard and tilts box.
                 maxHeight();
 
 
-            } else if (gamepad1.b) {
+            } else if (gamepad2.a) {
                 //ground position. Should move box to prevent serious breaking issues.
                 groundHeight();
                 telemetry.addData("Slides", "Zeroed");
+                unrotate();
 
-            } else if (gamepad1.x) {
+            } else if (gamepad2.x) {
                 //medium. See above.
 
 
                 telemetry.addData("Slides", "Medium");
                 close();
-            } else if (gamepad1.a) {
+            } else if (gamepad2.b) {
                 //low. See above.
                 lowHeight();
             }
 
 
-            if (gamepad1.right_bumper && (!dontTilt || safetyOverride )) {
+            if (gamepad2.right_bumper && (!dontTilt || safetyOverride )) {
                 rotate();
             }
-            if (gamepad1.left_bumper) {
+            if (gamepad2.left_bumper) {
 
                 unrotate();
 
@@ -252,7 +249,7 @@ public class NewDriveMode extends LinearOpMode {
             if(gamepad1.right_trigger> 0.5 && gamepad1.guide){
                 //reverses intake if the XBOX button and activate trigger are pressed together.
                 // This should help with jams.
-               // reverseIntake();
+                // reverseIntake();
                 openChopsticks();
             }
             if (gamepad1.left_trigger > 0.5 ) {
@@ -261,11 +258,11 @@ public class NewDriveMode extends LinearOpMode {
                 stopIntake();
                 unrotate();
             }
-            if (gamepad1.dpad_right){
+            if (gamepad1.left_bumper){
                 // door control. Fairly intuitive.
                 open();
             }
-            if (gamepad1.dpad_left && (!dontTilt||safetyOverride)) {
+            if (gamepad1.right_bumper&& (!dontTilt||safetyOverride)) {
                 // also door control. Again Don'tTilt is used to prevent errors.
                 close();
             }
@@ -273,10 +270,10 @@ public class NewDriveMode extends LinearOpMode {
                 launchPlane();
                 //Self Explanatory, no? this is the benefit of not naming everything beans.
             }
-            if (gamepad1.left_trigger > 0.3 && gamepad1.guide) {
+            if (gamepad1.left_bumper) {
                 eatPixels();
             }
-            if (gamepad2.dpad_up){
+            if (gamepad1.dpad_up){
                 unrotatemore();
                 cHeight();
             }
@@ -316,7 +313,7 @@ public class NewDriveMode extends LinearOpMode {
                         {
                             Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
                             if (rot.firstAngle < 0) {
-                                turnright((int) Math.abs(rot.firstAngle));
+                                turnright( Math.toRadians(Math.abs(Math.abs(rot.firstAngle))));
                                 if ( detection.pose.x*FEET_PER_METER > 0){
                                     straferight(Math.abs( detection.pose.x*FEET_PER_METER/12));
                                 }
@@ -324,7 +321,7 @@ public class NewDriveMode extends LinearOpMode {
                                     strafeleft(Math.abs( detection.pose.x*FEET_PER_METER/12));
                                 }
                             } else if (rot.firstAngle > 0) {
-                                turnleft((int) Math.abs(rot.firstAngle));
+                                turnleft(Math.toRadians(Math.abs(rot.firstAngle)));
                                 if (detection.pose.x*FEET_PER_METER > 0){
                                     straferight(Math.abs(detection.pose.x*FEET_PER_METER/12));
                                 }
@@ -343,11 +340,12 @@ public class NewDriveMode extends LinearOpMode {
                     }
                     telemetry.addData("frames w/o det", numFramesWithoutDetection);
 
-                    telemetry.update();
                 }
                 //tilt up for pixel stuck issue
 
             }
+            telemetry.update();
+            
             if (gamepad1.left_stick_button && gamepad1.right_stick_button){
                 safetyOverride = !safetyOverride;
                 //Toggle switch for safeguard override. see below.
@@ -390,10 +388,9 @@ public class NewDriveMode extends LinearOpMode {
 
                 telemetry.addData("EMERGENCY DOWNSHIFT", "!!!!!");
             }
-            /*if(gamepad1.right_bumper && gamepad1.guide) {
-                theta+=0.01; //This code exists to recalibrate the box. Uncomment to use.
-                extenderRotator.setPosition(theta);
-            }
+            if(gamepad1.right_bumper) {
+              openChopsticks();
+            }/*
             if(gamepad1.left_bumper && gamepad1.guide) {
                 theta+=0.001; //This code exists to recalibrate the box. Uncomment to use.
                 extenderRotator.setPosition(theta);
@@ -410,8 +407,8 @@ public class NewDriveMode extends LinearOpMode {
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
 
         // Create the vision portal the easy way.
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, "webcam"), aprilTag);
+        visionPortal = VisionPortal.easyCreateWithDefaults(
+                hardwareMap.get(WebcamName.class, "webcam"), aprilTag);
 
     }   // end method initAprilTag()
 
@@ -519,16 +516,16 @@ public class NewDriveMode extends LinearOpMode {
     multiple places, and to improve readability.
      */
 
-    void turnright(int degrees){
-        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(0,0))
+    void turnright(double degrees){
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .turn(degrees)
                 .build();
         drive.followTrajectorySequence(traj1);
 
     }
 
-    void turnleft(int degrees){
-        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(0,0))
+    void turnleft(double degrees){
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .turn(-degrees)
                 .build();
         drive.followTrajectorySequence(traj1);
@@ -536,7 +533,7 @@ public class NewDriveMode extends LinearOpMode {
     }
 
     void strafeleft(double feet){
-        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(0,0))
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .strafeLeft(feet)
                 .build();
         drive.followTrajectorySequence(traj1);
@@ -555,7 +552,7 @@ public class NewDriveMode extends LinearOpMode {
     }
 
     void straferight(double feet){
-        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+        drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .strafeRight(feet)
                 .build();
     }

@@ -1,12 +1,9 @@
-package org.firstinspires.ftc.teamcode.computervision;
-
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
 
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
-
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.imgproc.Imgproc;
 
@@ -35,11 +32,9 @@ public class robotDetection extends OpenCvPipeline {
 
         if (run) {
             Mat dst = new Mat();
-            Imgproc.blur(input1, dst,new Size(5,5));
-            Imgproc.Canny(input1, dst,  70, 90, 3);
-            /*
-            for (int i = 0; i < dst.height(); i+=3){
-                for (int j = 0; j < dst.width(); j+=3){
+            Imgproc.Sobel(input1, dst, -1, 1, 0);
+            for (int i = 0; i < dst.height(); i++){
+                for (int j = 0; j < dst.width(); j++){
                     double[] array = dst.get(i, j);
 
                     if ((int) (j*3)/dst.height() ==0) {
@@ -69,9 +64,8 @@ public class robotDetection extends OpenCvPipeline {
             else if (center_edge > left_edge*2 && center_edge > right_edge*2) {
                 center = true;
             }
+            telemetry.addData("result", right);
             run = true;
-            */
-
             return dst;
         }
         return input1; // Return the image that will be displayed in the viewport
