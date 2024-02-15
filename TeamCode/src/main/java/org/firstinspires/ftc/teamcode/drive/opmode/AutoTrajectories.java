@@ -182,12 +182,24 @@ public class AutoTrajectories {
     }
     public TrajectorySequence getTraj4() {
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
-                .splineTo(new Vector2d(24,60* red), Math.toRadians(180* red))
-                .lineToLinearHeading(new Pose2d(-36, 60* red, Math.toRadians(180* red)))
-                .splineToConstantHeading(new Vector2d(-57,44* red), Math.toRadians(180* red))
-                .lineToLinearHeading(new Pose2d(-58.62, 36* red, Math.toRadians(180* red)))
+                .lineToLinearHeading(new Pose2d(-57, 30* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-36,12* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(-30, 12* red), Math.toRadians(0* red))
+
+                .splineToConstantHeading(new Vector2d(24,12* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
                 .build();
         return traj4;
+    }
+    public TrajectorySequence getTraj4Edge() {
+        return drive.trajectorySequenceBuilder(traj3.end())
+                .lineToLinearHeading(new Pose2d(-57, 42* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-36,60* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(-30, 60* red), Math.toRadians(0* red))
+
+                .splineToConstantHeading(new Vector2d(24,60* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
+                .build();
     }
 
     public TrajectorySequence getTraj5() {

@@ -182,12 +182,12 @@ public class DriveMode extends LinearOpMode {
                     new Pose2d(
                             (gamepad1.left_stick_y + prev_ly)/2,
                             (gamepad1.left_stick_x+ prev_lx)/2,
-                            (gamepad1.right_stick_x + prev_rx)/2
+                            (gamepad1.left_stick_x+ prev_rx)/2
                     )
             );
-            prev_ly =  gamepad1.left_stick_y;
-            prev_lx =  gamepad1.left_stick_x;
-            prev_rx =  gamepad1.right_stick_x;
+            prev_ly =  (gamepad1.left_stick_y + prev_ly)/2;
+            prev_lx =  (gamepad1.left_stick_x+ prev_lx)/2;
+            prev_rx =  (gamepad1.left_stick_x+ prev_lx)/2;
 
             drive.update();
 

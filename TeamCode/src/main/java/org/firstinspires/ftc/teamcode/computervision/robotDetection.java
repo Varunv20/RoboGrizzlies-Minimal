@@ -18,6 +18,7 @@ public class robotDetection extends OpenCvPipeline {
     public boolean right = false;
     public boolean center = false;
     public boolean left = false;
+
     public void setRun() {
         run = true;
     }
@@ -37,7 +38,7 @@ public class robotDetection extends OpenCvPipeline {
             Mat dst = new Mat();
             Imgproc.blur(input1, dst,new Size(5,5));
             Imgproc.Canny(input1, dst,  70, 90, 3);
-            /*
+
             for (int i = 0; i < dst.height(); i+=3){
                 for (int j = 0; j < dst.width(); j+=3){
                     double[] array = dst.get(i, j);
@@ -69,8 +70,8 @@ public class robotDetection extends OpenCvPipeline {
             else if (center_edge > left_edge*2 && center_edge > right_edge*2) {
                 center = true;
             }
-            run = true;
-            */
+            run = false;
+
 
             return dst;
         }

@@ -42,7 +42,7 @@ public class MeepMeepTesting {
 
                                 .build()
                 );
-        int red = -1;
+        int red = 1;
         RoadRunnerBotEntity blueCENTER = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(90, 90, Math.toRadians(180), Math.toRadians(180), 18)
@@ -52,11 +52,11 @@ public class MeepMeepTesting {
                                 .lineToLinearHeading(new Pose2d(-31,36 * red, Math.toRadians(135* red )))
                                 .forward(1.5)
                                 .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
-                                .lineToLinearHeading(new Pose2d(-57, 30* red, Math.toRadians(180* red)))
-                                .splineToConstantHeading(new Vector2d(-36,10* red), Math.toRadians(0* red))
-                                .splineToConstantHeading(new Vector2d(-30, 10* red), Math.toRadians(0* red))
+                                .lineToLinearHeading(new Pose2d(-57, 42* red, Math.toRadians(180* red)))
+                                .splineToConstantHeading(new Vector2d(-36,60* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(-30, 60* red), Math.toRadians(0* red))
 
-                                .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(24,60* red), Math.toRadians(0* red))
                                 .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
                                 .back(3.9)
                                 .forward(2)

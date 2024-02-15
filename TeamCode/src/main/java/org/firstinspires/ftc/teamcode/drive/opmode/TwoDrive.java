@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.computervision.robotDetection;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -143,6 +144,7 @@ public class TwoDrive extends LinearOpMode {
         theta = 0;
         reload();
         open();
+        robotDetection r = new robotDetection();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -229,6 +231,26 @@ public class TwoDrive extends LinearOpMode {
             } else if (gamepad2.b) {
                 //low. See above.
                 lowHeight();
+            }
+            if (gamepad2.dpad_down) {
+                camera.setPipeline(r);
+                r.run = true;
+                while (r.run) {
+                    sleep(100);
+                }
+                if (r.left) {
+                    telemetry.addData("CV", "left");
+                }
+                else if (r.center) {
+                    telemetry.addData("CV", "center");
+                }else if (r.right) {
+                    telemetry.addData("CV", "right");
+                }
+                else {
+                    telemetry.addData("CV", "no dev");
+
+                }
+
             }
 
 

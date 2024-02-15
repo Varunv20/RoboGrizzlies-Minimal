@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // openCV stuff
 import org.firstinspires.ftc.teamcode.computervision.eocvTeamProp;
+import org.firstinspires.ftc.teamcode.computervision.robotDetection;
+
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -131,7 +133,9 @@ public class AutoMachine  {
             a.setStartpos();
             drive.setPoseEstimate(a.startpos);
             eocvTeamProp pipeline = new eocvTeamProp();
+            robotDetection r = new robotDetection();
             webcam.setPipeline(pipeline);
+
             webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
 
             {
@@ -160,13 +164,15 @@ public class AutoMachine  {
                 l.sleep(100);
             }
             String result = pipeline.getResult();
+            webcam.setPipeline( r);
+
 
             TrajectorySequence traj1;
             TrajectorySequence  traj2;
             TrajectorySequence  traj3;
             TrajectorySequence  traj4;
             TrajectorySequence  traj5;
-            TrajectorySequence traj5B;
+            TrajectorySequence traj4e;
             TrajectorySequence  traj6;
             TrajectorySequence  traj65;
 
@@ -179,6 +185,7 @@ public class AutoMachine  {
             traj2 = a.getTraj2();
             traj3 = a.getTraj3();
             traj4 = a.getTraj4();
+            traj4e = a.getTraj4Edge();
             traj5 = a.getTraj5();
             traj6 = a.getTraj6();
             traj65 = a.getTraj65();
@@ -247,7 +254,18 @@ public class AutoMachine  {
 
                             if (cycle) {
                                 currentState = State.traj4;
-                                drive.followTrajectorySequence(traj4);
+
+                                r.run = true;
+                                while (r.run) {
+                                    l.sleep(100);
+                                }
+                                if (r.center) {
+                                    drive.followTrajectorySequence(traj4);
+
+                                }
+                                else {
+                                    drive.followTrajectorySequence(traj4e);
+                                }
 
                             }
                             else {
