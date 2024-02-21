@@ -178,6 +178,8 @@ public class AutoMachine  {
 
             TrajectorySequence  traj7;
             TrajectorySequence  traj8;
+
+           TrajectorySequence  traj7c;
             TrajectorySequence  traj9;
             TrajectorySequence  park;
 
@@ -190,6 +192,8 @@ public class AutoMachine  {
             traj6 = a.getTraj6();
             traj65 = a.getTraj65();
             traj7 = a.getTraj7();
+            traj7c = a.getTraj7Middle();
+
             traj8 = a.getTraj8();
             if (parkoutside) {
                 park = a.getParkOutside();
@@ -240,6 +244,8 @@ public class AutoMachine  {
 
                             //  unrotate();
                             // groundHeight();
+                            r.run = true;
+
                             currentState = State.traj3;
                             drive.followTrajectorySequence(traj3);
                             //do code
@@ -255,11 +261,10 @@ public class AutoMachine  {
                             if (cycle) {
                                 currentState = State.traj4;
 
-                                r.run = true;
                                 while (r.run) {
                                     l.sleep(100);
                                 }
-                                if (r.center) {
+                                if (r.right) {
                                     drive.followTrajectorySequence(traj4);
 
                                 }
@@ -279,14 +284,26 @@ public class AutoMachine  {
                         unrotate();
                         groundHeight();
                         if (!drive.isBusy()) {
+                            r.run = true;
                             startIntake();
                             eatPixels();
                             l.sleep(400);
                             openChopsticks();
                             eatPixels();
+                            r.reset();
+
+                            while (r.run) {
+                                l.sleep(100);
+                            }
+                            if (r.right) {
+                                drive.followTrajectorySequence(traj7);
+
+                            }
+                            else {
+                                drive.followTrajectorySequence(traj7c);
+                            }
 
                             currentState = State.traj7;
-                            drive.followTrajectorySequence(traj7);
                             //do code
                         }
                         break;

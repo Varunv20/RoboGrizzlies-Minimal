@@ -12,10 +12,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class AutoTrajectories {
     public SampleMecanumDrive drive;
     private int red = 1;
+
     private boolean close = false;
     public Pose2d startpos;
     public boolean center = false;
     public boolean l = false;
+    public double forward = 0.0;
+    public double forward2 = 0.0;
+
+    public double left = 0.0;
+
     private TrajectorySequence traj1CR;
     private TrajectorySequence  traj1CL;
     private TrajectorySequence  traj1CC;
@@ -156,7 +162,7 @@ public class AutoTrajectories {
     }
     public TrajectorySequence getTraj2() {
         traj2 =  drive.trajectorySequenceBuilder(start2pos)
-                .back(3.9)
+                .back(3.9 + forward)
                 .build();
         return traj2;
     }
@@ -182,29 +188,25 @@ public class AutoTrajectories {
     }
     public TrajectorySequence getTraj4() {
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
-                .lineToLinearHeading(new Pose2d(-57, 30* red, Math.toRadians(180* red)))
-                .splineToConstantHeading(new Vector2d(-36,12* red), Math.toRadians(0* red))
-                .splineToConstantHeading(new Vector2d(-30, 12* red), Math.toRadians(0* red))
-
-                .splineToConstantHeading(new Vector2d(24,12* red), Math.toRadians(0* red))
-                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
+                .splineTo(new Vector2d(24,60* red), Math.toRadians(180* red))
+                .lineToLinearHeading(new Pose2d(-36, 60* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-57,36* red), Math.toRadians(180* red))
+                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
                 .build();
         return traj4;
     }
     public TrajectorySequence getTraj4Edge() {
         return drive.trajectorySequenceBuilder(traj3.end())
-                .lineToLinearHeading(new Pose2d(-57, 42* red, Math.toRadians(180* red)))
-                .splineToConstantHeading(new Vector2d(-36,60* red), Math.toRadians(0* red))
-                .splineToConstantHeading(new Vector2d(-30, 60* red), Math.toRadians(0* red))
-
-                .splineToConstantHeading(new Vector2d(24,60* red), Math.toRadians(0* red))
-                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
+                .splineTo(new Vector2d(24,12* red), Math.toRadians(180* red))
+                .lineToLinearHeading(new Pose2d(-36, 12* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-57,36* red), Math.toRadians(180* red))
+                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
                 .build();
     }
 
     public TrajectorySequence getTraj5() {
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
-                .back(7)
+                .back(7 + forward2)
                 .build();
         return traj5;
     }
@@ -238,11 +240,11 @@ public class AutoTrajectories {
     public TrajectorySequence getTraj7Middle() {
         traj7 = drive.trajectorySequenceBuilder(traj65.end())
 
-                .lineToLinearHeading(new Pose2d(-57, 44* red, Math.toRadians(180* red)))
-                .splineToConstantHeading(new Vector2d(-36,60* red), Math.toRadians(0* red))
-                .splineToConstantHeading(new Vector2d(-30, 60* red), Math.toRadians(0* red))
+                .lineToLinearHeading(new Pose2d(-57, 28* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-36,12* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(-30, 12* red), Math.toRadians(0* red))
 
-                .splineToConstantHeading(new Vector2d(24,60* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(24,12* red), Math.toRadians(0* red))
                 .splineToConstantHeading(new Vector2d(43.25,44* red), Math.toRadians(0* red))
                 .build();
         return traj7;
