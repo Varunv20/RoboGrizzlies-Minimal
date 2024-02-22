@@ -77,17 +77,25 @@ public class AutoTrajectories {
                 .back(24)
                 .lineToLinearHeading(new Pose2d(7,36 * red, Math.toRadians(45* red)))
                 .forward(1.5)
-                .lineToLinearHeading(new Pose2d(43, 30* red, Math.toRadians(180* red)))
+                .lineToLinearHeading(new Pose2d(43 + forward, 30* red, Math.toRadians(180* red)))
                 .build();
         traj1CL = drive.trajectorySequenceBuilder(startpos)
                 .lineToLinearHeading(new Pose2d(24,34.75* red, Math.toRadians(90* red)))
                 .forward(8)
-                .lineToLinearHeading(new Pose2d(43, 44.25* red, Math.toRadians(180* red)))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
+
+                })
+                .lineToLinearHeading(new Pose2d(43 + forward, 44.25* red, Math.toRadians(180* red)))
                 .build();
         traj1CC = drive.trajectorySequenceBuilder(startpos)
                 .lineToLinearHeading(new Pose2d(12,34.75* red, Math.toRadians(90* red)))
                 .forward(8)
-                .lineToLinearHeading(new Pose2d(46, 36* red, Math.toRadians(180* red)))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
+
+                })
+                .lineToLinearHeading(new Pose2d(43 +  forward, 36* red, Math.toRadians(180* red)))
                 .build();
         traj1FR =  drive.trajectorySequenceBuilder(startpos)
                 .back(10)
@@ -105,7 +113,11 @@ public class AutoTrajectories {
                 .splineToConstantHeading(new Vector2d(-30, 10* red), Math.toRadians(0* red))
 
                 .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
-                .splineToConstantHeading(new Vector2d(43.25,32* red), Math.toRadians(0* red))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
+
+                })
+                .splineToConstantHeading(new Vector2d(43  + forward ,32* red), Math.toRadians(0* red))
                 .build();
         traj1FL =  drive.trajectorySequenceBuilder(startpos)
                 .back(24)
@@ -121,15 +133,34 @@ public class AutoTrajectories {
                 .lineToLinearHeading(new Pose2d(-57, 30* red, Math.toRadians(180* red)))
                 .splineToConstantHeading(new Vector2d(-36,10* red), Math.toRadians(0* red))
                 .splineToConstantHeading(new Vector2d(-30, 10* red), Math.toRadians(0* red))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
 
+                })
                 .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
-                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
+
+                .splineToConstantHeading(new Vector2d(43  + forward,40* red), Math.toRadians(0* red))
                 .build();
         traj1FC =drive.trajectorySequenceBuilder(startpos)
-                .lineToLinearHeading(new Pose2d(-36,34.75* red, Math.toRadians(90* red)))
-                .forward(4)
-                .lineToLinearHeading(new Pose2d(20, 36* red, Math.toRadians(90* red)))
-                .lineToLinearHeading(new Pose2d(43, 36* red, Math.toRadians(180* red)))
+                .back(32)
+                .forward(1.5)
+                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
+                .addDisplacementMarker(() -> {
+                    op.openChopsticks();
+                    op.startIntake();
+                    op.eatPixels();
+
+                })
+                .lineToLinearHeading(new Pose2d(-57, 30* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-36,10* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(-30, 10* red), Math.toRadians(0* red))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
+
+                })
+                .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
+
+                .splineToConstantHeading(new Vector2d(43  + forward,40* red), Math.toRadians(0* red))
                 .build();
         if (close) {
             if (result == "center") {
@@ -191,7 +222,7 @@ public class AutoTrajectories {
                 .splineTo(new Vector2d(24,60* red), Math.toRadians(180* red))
                 .lineToLinearHeading(new Pose2d(-36, 60* red, Math.toRadians(180* red)))
                 .splineToConstantHeading(new Vector2d(-57,36* red), Math.toRadians(180* red))
-                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
+                .lineToLinearHeading(new Pose2d(-61 - forward2 , 36* red, Math.toRadians(180* red)))
                 .build();
         return traj4;
     }
@@ -200,13 +231,13 @@ public class AutoTrajectories {
                 .splineTo(new Vector2d(24,12* red), Math.toRadians(180* red))
                 .lineToLinearHeading(new Pose2d(-36, 12* red, Math.toRadians(180* red)))
                 .splineToConstantHeading(new Vector2d(-57,36* red), Math.toRadians(180* red))
-                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
+                .lineToLinearHeading(new Pose2d(-61 - forward2 , 36* red, Math.toRadians(180* red)))
                 .build();
     }
 
     public TrajectorySequence getTraj5() {
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
-                .back(7 + forward2)
+                .back(forward2)
                 .build();
         return traj5;
     }
@@ -231,7 +262,10 @@ public class AutoTrajectories {
                 .lineToLinearHeading(new Pose2d(-57, 44* red, Math.toRadians(180* red)))
                 .splineToConstantHeading(new Vector2d(-36,60* red), Math.toRadians(0* red))
                 .splineToConstantHeading(new Vector2d(-30, 60* red), Math.toRadians(0* red))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
 
+                })
                 .splineToConstantHeading(new Vector2d(24,60* red), Math.toRadians(0* red))
                 .splineToConstantHeading(new Vector2d(43.25,44* red), Math.toRadians(0* red))
                 .build();
@@ -243,7 +277,10 @@ public class AutoTrajectories {
                 .lineToLinearHeading(new Pose2d(-57, 28* red, Math.toRadians(180* red)))
                 .splineToConstantHeading(new Vector2d(-36,12* red), Math.toRadians(0* red))
                 .splineToConstantHeading(new Vector2d(-30, 12* red), Math.toRadians(0* red))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
 
+                })
                 .splineToConstantHeading(new Vector2d(24,12* red), Math.toRadians(0* red))
                 .splineToConstantHeading(new Vector2d(43.25,44* red), Math.toRadians(0* red))
                 .build();
@@ -256,6 +293,30 @@ public class AutoTrajectories {
                 .build();
         return traj8;
     }
+    public TrajectorySequence getTraj9() {
+        traj8 = drive.trajectorySequenceBuilder(traj7.end())
+                .splineTo(new Vector2d(24,12* red), Math.toRadians(180* red))
+                .lineToLinearHeading(new Pose2d(-36, 12* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-57,12* red), Math.toRadians(180* red))
+                .lineToLinearHeading(new Pose2d(-61 , 12* red, Math.toRadians(180* red)))
+                .build();
+        return traj8;
+    }
+    public TrajectorySequence getTraj10() {
+        traj8 = drive.trajectorySequenceBuilder(traj7.end())
+                .lineToLinearHeading(new Pose2d(-57, 12* red, Math.toRadians(180* red)))
+                .splineToConstantHeading(new Vector2d(-36,10* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(-30, 10* red), Math.toRadians(0* red))
+                .addDisplacementMarker(() -> {
+                    op.lift = true;
+
+                })
+                .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
+                .splineToConstantHeading(new Vector2d(43.25,32* red), Math.toRadians(0* red))
+                .build();
+        return traj8;
+    }
+
 
 
 

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
 @Config
-@TeleOp(name="DriverOP-TWO", group="Driver OP")
+@TeleOp(name="DriverOP-TWO", group="Driver OP 2/21")
 public class TwoDrive extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -216,13 +216,13 @@ public class TwoDrive extends LinearOpMode {
                 maxHeight();
 
 
-            } else if (gamepad2.a) {
+            } else if (gamepad1.a) {
                 //ground position. Should move box to prevent serious breaking issues.
                 groundHeight();
                 telemetry.addData("Slides", "Zeroed");
                 unrotate();
 
-            } else if (gamepad2.x) {
+            } else if (gamepad1.x) {
                 //medium. See above.
 
 

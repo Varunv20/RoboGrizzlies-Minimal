@@ -80,6 +80,7 @@ public class AutoMachine  {
             traj7,
             traj8,
             traj9,
+            traj10,
             park,
             Idle
 
@@ -87,6 +88,7 @@ public class AutoMachine  {
         State currentState = State.Idle;
         AutoTrajectories a;
     SampleMecanumDrive drive;
+    public boolean lift = false;
 
 
     public   void runAUTO(   LinearOpMode l , Boolean close, Boolean red, Boolean parkoutside, Boolean cycle){
@@ -181,6 +183,8 @@ public class AutoMachine  {
 
            TrajectorySequence  traj7c;
             TrajectorySequence  traj9;
+        TrajectorySequence  traj10;
+
             TrajectorySequence  park;
 
             traj1 = a.getTraj1(result);
@@ -195,6 +199,9 @@ public class AutoMachine  {
             traj7c = a.getTraj7Middle();
 
             traj8 = a.getTraj8();
+            traj9 = a.getTraj9();
+            traj10 = a.getTraj10();
+
             if (parkoutside) {
                 park = a.getParkOutside();
             }
@@ -216,19 +223,40 @@ public class AutoMachine  {
                 switch (currentState) {
 
                     case traj1:
-                        Long t2 = System.currentTimeMillis();
-                        if (t2-t > sleep1) {
-                            lowHeight();
+                        if (lift) {
+                            close();
+                            maxHeight();
+                            rotate();
+
                         }
 
-                        unrotate();
-                        if (!drive.isBusy()) {
 
+                        if (!drive.isBusy()) {
+                            r.run = true;
                             currentState = State.traj2;
-                            lowHeight();
-                            rotate();
-                            close();
-                            drive.followTrajectorySequence(traj2);
+                            open();
+                            while (r.run) {
+                                l.sleep(100);
+                            }
+                            if (cycle) {
+                                currentState = State.traj4;
+
+                                while (r.run) {
+                                    l.sleep(100);
+                                }
+                                if (r.right) {
+                                    drive.followTrajectorySequence(traj4);
+
+                                }
+                                else {
+                                    drive.followTrajectorySequence(traj4e);
+                                }
+
+                            }
+                            else {
+                                currentState= State.park;
+                                drive.followTrajectorySequence(park);
+                            }
                             //do code
                         }
                         break;
@@ -368,30 +396,59 @@ public class AutoMachine  {
                     case traj7:
                         unrotate();
                         stopIntake();
-                        if (!drive.isBusy()) {
+                        if (lift) {
                             close();
+
                             maxHeight();
-                            t = System.currentTimeMillis();
-                            currentState = State.traj8;
-                            drive.followTrajectorySequence(traj8);
+                            rotate();
+                        }
+                        if (!drive.isBusy()) {
+
+                            open();
+                            l.sleep(400);
+                            currentState = State.traj9;
+                            drive.followTrajectorySequence(traj9);
 
                             //up+place+open
                             //do code
                         }
                         break;
-                    case traj8:
-                        unrotate();
-                         t2 = System.currentTimeMillis();
-                         if (t2 - t > sleep3) {
-                             lowHeight();
-                             l.sleep(500);
-                             rotate();
 
-                         }
+                    case traj9:
+                        unrotate();
+                        groundHeight();
+                        openChopsticks();
+
                         if (!drive.isBusy()) {
                             open();
-                            l.sleep(1000);
+                            startIntake();
+                            eatPixels();
+                            l.sleep(400);
+                            openChopsticks();
+                            eatPixels();
+                            l.sleep(200);
+
+                            currentState = State.traj10;
+                            drive.followTrajectorySequence(traj10);
+
+                            //up+place+open
+                            //do code
+                        }
+                        break;
+                    case traj10:
+                        unrotate();
+                        stopIntake();
+                        if (lift) {
+                            close();
+
+                            maxHeight();
+                            rotate();
+                        }
+                        if (!drive.isBusy()) {
+                            open();
+                            l.sleep(400);
                             currentState = State.park;
+                            drive.followTrajectorySequence(park);
 
                             //up+place+open
                             //do code

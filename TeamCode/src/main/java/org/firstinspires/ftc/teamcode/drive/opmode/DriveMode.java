@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
 @Config
-@TeleOp(name="DriverOP-CSCC", group="Driver OP")
+@TeleOp(name="DriverOP2/21ONECONTROLLER", group="Driver OP")
 public class DriveMode extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -277,70 +277,7 @@ public class DriveMode extends LinearOpMode {
                 cHeight();
             }
             if (gamepad1.dpad_up) {
-                ArrayList<org.openftc.apriltag.AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
-                if(detections != null)
-                {
-                    telemetry.addData("FPS", camera.getFps());
-                    telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
-                    telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
-
-                    // If we don't see any tags
-                    if(detections.size() == 0)
-                    {
-                        numFramesWithoutDetection++;
-
-                        // If we haven't seen a tag for a few frames, lower the decimation
-                        // so we can hopefully pick one up if we're e.g. far back
-                        if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
-                        {
-                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
-                        }
-                    }
-                    // We do see tags!
-                    else
-                    {
-                        numFramesWithoutDetection = 0;
-
-                        // If the target is within 1 meter, turn on high decimation to
-                        // increase the frame rate
-                        if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
-                        {
-                            aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
-                        }
-
-                        for(org.openftc.apriltag.AprilTagDetection detection : detections)
-                        {
-                            Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            if (rot.firstAngle < 0) {
-                                turnright((int) Math.abs(rot.firstAngle));
-                                if ( detection.pose.x*FEET_PER_METER > 0){
-                                    straferight(Math.abs( detection.pose.x*FEET_PER_METER/12));
-                                }
-                                else {
-                                    strafeleft(Math.abs( detection.pose.x*FEET_PER_METER/12));
-                                }
-                            } else if (rot.firstAngle > 0) {
-                                turnleft((int) Math.abs(rot.firstAngle));
-                                if (detection.pose.x*FEET_PER_METER > 0){
-                                    straferight(Math.abs(detection.pose.x*FEET_PER_METER/12));
-                                }
-                                else {
-                                    strafeleft(Math.abs(detection.pose.x*FEET_PER_METER/12));
-                                }
-                            }
-                            telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-                            telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-                            telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-                            telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
-                            telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
-                            telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
-                        }
-                    }
-                    telemetry.addData("frames w/o det", numFramesWithoutDetection);
-
-                    telemetry.update();
-                }
+               apriltagstuff();
                 //tilt up for pixel stuck issue
 
             }
@@ -397,8 +334,70 @@ public class DriveMode extends LinearOpMode {
             telemetry.update();
         }//END OF DRIVEROP LOOP
     }
-    class movement {
+    public void apriltagstuff() {
+        ArrayList<org.openftc.apriltag.AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+        if(detections != null)
+        {
+            telemetry.addData("FPS", camera.getFps());
+            telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
+            telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
 
+            // If we don't see any tags
+            if(detections.size() == 0)
+            {
+                numFramesWithoutDetection++;
+
+                // If we haven't seen a tag for a few frames, lower the decimation
+                // so we can hopefully pick one up if we're e.g. far back
+                if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
+                {
+                    aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                }
+            }
+            // We do see tags!
+            else
+            {
+                numFramesWithoutDetection = 0;
+
+                // If the target is within 1 meter, turn on high decimation to
+                // increase the frame rate
+                if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
+                {
+                    aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                }
+
+                for(org.openftc.apriltag.AprilTagDetection detection : detections)
+                {
+                    Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+                    if (rot.firstAngle < 0) {
+                        turnright( Math.toRadians(Math.abs(Math.abs(rot.firstAngle))));
+                        if ( detection.pose.x*FEET_PER_METER > 0){
+                            straferight(Math.abs( detection.pose.x*FEET_PER_METER/12));
+                        }
+                        else {
+                            strafeleft(Math.abs( detection.pose.x*FEET_PER_METER/12));
+                        }
+                    } else if (rot.firstAngle > 0) {
+                        turnleft(Math.toRadians(Math.abs(rot.firstAngle)));
+                        if (detection.pose.x*FEET_PER_METER > 0){
+                            straferight(Math.abs(detection.pose.x*FEET_PER_METER/12));
+                        }
+                        else {
+                            strafeleft(Math.abs(detection.pose.x*FEET_PER_METER/12));
+                        }
+                    }
+                    telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+                    telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+                    telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+                    telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+                    telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+                    telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
+                    telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
+                }
+            }
+            telemetry.addData("frames w/o det", numFramesWithoutDetection);
+
+        }
     }
     private void initAprilTag() {
 
@@ -492,22 +491,20 @@ public class DriveMode extends LinearOpMode {
         telemetry.update();
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null && detection.ftcPose.yaw < 0) {
-                telemetry.addData("Yaw", detection.ftcPose.yaw);
                 turnright((int) Math.abs(detection.ftcPose.yaw));
                 if (detection.ftcPose.x > 0){
-                    straferight(Math.abs(detection.ftcPose.x));
+                    straferight(Math.abs(detection.ftcPose.x/12));
                 }
                 else {
-                    strafeleft(Math.abs(detection.ftcPose.x));
+                    strafeleft(Math.abs(detection.ftcPose.x/12));
                 }
             } else if (detection.metadata != null && detection.ftcPose.yaw > 0) {
-                telemetry.addData("Yaw", detection.ftcPose.yaw);
                 turnleft((int) Math.abs(detection.ftcPose.yaw));
                 if (detection.ftcPose.x > 0){
-                    straferight(Math.abs(detection.ftcPose.x));
+                    straferight(Math.abs(detection.ftcPose.x/12));
                 }
                 else {
-                    strafeleft(Math.abs(detection.ftcPose.x));
+                    strafeleft(Math.abs(detection.ftcPose.x/12));
                 }
             }
         }
@@ -517,7 +514,7 @@ public class DriveMode extends LinearOpMode {
     multiple places, and to improve readability.
      */
 
-    void turnright(int degrees){
+    void turnright(double degrees){
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .turn(degrees)
                 .build();
@@ -525,7 +522,7 @@ public class DriveMode extends LinearOpMode {
 
     }
 
-    void turnleft(int degrees){
+    void turnleft(double degrees){
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .turn(-degrees)
                 .build();
@@ -553,7 +550,7 @@ public class DriveMode extends LinearOpMode {
     }
 
     void straferight(double feet){
-        drive.trajectorySequenceBuilder(new Pose2d(0,0))
+        drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .strafeRight(feet)
                 .build();
     }
