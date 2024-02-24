@@ -35,7 +35,6 @@ public class farBlueAUTO extends LinearOpMode {
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
     public DcMotor intakeMotor;
-    public Servo pixelStick;
     OpenCvWebcam webcam;
     enum State {
         traj1,
@@ -43,9 +42,7 @@ public class farBlueAUTO extends LinearOpMode {
         traj3,
         traj4,
         traj5,
-        traj5B,
         traj6,
-        traj65,
         traj7,
         traj8,
         traj9,
@@ -96,7 +93,6 @@ public class farBlueAUTO extends LinearOpMode {
         extenderRotator = hardwareMap.get(Servo.class, "extenderRotator");
         extenderPlacer = hardwareMap.get(Servo.class, "extenderPlacer");
         paperAirplane = hardwareMap.get(Servo.class, "paperAirplane");
-        pixelStick = hardwareMap.get(Servo.class, "pixelStick");
         // and color sensors, too.
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -130,10 +126,7 @@ public class farBlueAUTO extends LinearOpMode {
         TrajectorySequence  traj3;
         TrajectorySequence  traj4;
         TrajectorySequence  traj5;
-        TrajectorySequence traj5B;
         TrajectorySequence  traj6;
-        TrajectorySequence  traj65;
-
         TrajectorySequence  traj7;
         TrajectorySequence  traj8;
         TrajectorySequence  traj9;
@@ -178,113 +171,79 @@ public class farBlueAUTO extends LinearOpMode {
         }
         String result = pipeline.getResult();
         telemetry.addData("rishi", result);
-        telemetry.addData("m1", pipeline.m1avg);
-        telemetry.addData("m2", pipeline.m2avg);
-        telemetry.addData("m3", pipeline.m3avg);
-
 
         telemetry.update();
         if (result == "right") {
             traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .lineToLinearHeading(new Pose2d(-48,34.75, Math.toRadians(90)))
-                    .forward(8)
-                    .lineToLinearHeading(new Pose2d(-43, 60, Math.toRadians(180)))
-                    .lineToLinearHeading(new Pose2d(36, 60, Math.toRadians(180)))
-
-                    .lineToLinearHeading(new Pose2d(43, 31, Math.toRadians(180)))
+                    .back(10)
+                    .lineToLinearHeading(new Pose2d(-48,36, Math.toRadians(90)))
+                    .forward(2)
+                    .strafeRight(10)
+                    .lineToLinearHeading(new Pose2d(-36,60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(30, 60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
                     .build();
 
         }
         else if (result == "left") {
-            traj1 = drive.trajectorySequenceBuilder(startpos)
-                    .back(24)
-                    .lineToLinearHeading(new Pose2d(31,36, Math.toRadians(45)))
-                    .forward(1.5)
-                    .lineToLinearHeading(new Pose2d(24, 31.5, Math.toRadians(180)))
-                    .back(3)
-                    .lineToLinearHeading(new Pose2d(-43, 60, Math.toRadians(180)))
-                    .lineToLinearHeading(new Pose2d(36, 60, Math.toRadians(180)))
-                    .lineToLinearHeading(new Pose2d(43, 49.5, Math.toRadians(180)))
-
-
+            traj1 =  drive.trajectorySequenceBuilder(startpos)
+                    .back(10)
+                    .lineToLinearHeading(new Pose2d(-48,36, Math.toRadians(90)))
+                    .forward(2)
+                    .strafeRight(10)
+                    .lineToLinearHeading(new Pose2d(-36,60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(30, 60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(43, 30, Math.toRadians(180)))
                     .build();
         }
         else {
             traj1 = drive.trajectorySequenceBuilder(startpos)
                     .lineToLinearHeading(new Pose2d(-36,34.75, Math.toRadians(90)))
                     .forward(4)
-                    .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(90)))
-
-                    .lineToLinearHeading(new Pose2d(35, 60, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(20, 36, Math.toRadians(90)))
                     .lineToLinearHeading(new Pose2d(43, 36, Math.toRadians(180)))
                     .build();
         }
         traj2 =  drive.trajectorySequenceBuilder(traj1.end())
-                .back(7.5)
+                .back(6.75)
                 .build();
         traj3 =  drive.trajectorySequenceBuilder(traj2.end())
-                .forward(6)
+                .forward(5)
                 .build();
 
         traj4 =  drive.trajectorySequenceBuilder(traj3.end())
                 .splineTo(new Vector2d(24,60), Math.toRadians(180))
                 .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-57,44), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-58.25, 42.5, Math.toRadians(180)))
-/*
-                .splineTo(new Vector2d(24,60), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
-                .splineToConstantHeading(new Vector2d(-63,36), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180)))*/
+                .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180)))
                 .build();
         traj5 =  drive.trajectorySequenceBuilder(traj4.end())
-                .back(7)
+                .forward(5)
                 .build();
-        traj5B = drive.trajectorySequenceBuilder(traj4.end())
-                .lineToLinearHeading(new Pose2d(-57, 29, Math.toRadians(190)))
-                .build();
-
         traj6 =  drive.trajectorySequenceBuilder(traj5.end())
-                .strafeLeft(5.7)
-                .forward(4.5)
-                //  .splineToConstantHeading(new Vector2d(-61.5, 23.3), Math.toRadians(0))
+                .back(5)
                 .build();
-        traj65 = drive.trajectorySequenceBuilder(traj6.end())
-                .forward(2.1)
-                .build();
-
-        traj7 = drive.trajectorySequenceBuilder(traj65.end())
-                /*.lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
+        traj7 = drive.trajectorySequenceBuilder(traj6.end())
+                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
                 .lineToConstantHeading(new Vector2d(-36,60))
                 .lineToLinearHeading(new Pose2d(24, 60, Math.toRadians(180)))
-                .splineTo(new Vector2d(43,44), Math.toRadians(0))*/
-                .lineToLinearHeading(new Pose2d(-57, 44, Math.toRadians(180)))
-                .splineToConstantHeading(new Vector2d(-36,60), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-30, 60), Math.toRadians(0))
-
-                .splineToConstantHeading(new Vector2d(24,60), Math.toRadians(0))
-                //   .back(1)
-                //  .splineToConstantHeading(new Pose2d(24, 60), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(43.25,44), Math.toRadians(0))
+                .splineTo(new Vector2d(43,44), Math.toRadians(0))
                 .build();
         traj8 = drive.trajectorySequenceBuilder(traj7.end())
                 .back(4)
                 .build();
 
         if(isStopRequested()) return;
-        groundHeight();
-        stickUp();
         currentState = State.traj1;
+        unrotate();
         drive.followTrajectorySequence(traj1);
         while (opModeIsActive() && !isStopRequested()) {
             switch (currentState) {
                 case traj1:
                     unrotate();
                     if (!drive.isBusy()) {
-
                         currentState = State.traj2;
-                        lowHeight();
-                        rotate();
+                        maxHeight();
                         close();
                         drive.followTrajectorySequence(traj2);
                         //do code
@@ -294,17 +253,11 @@ public class farBlueAUTO extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         rotate();
-                        sleep(500);
                         open();
-                        sleep(100);
-                        // unrotate();
-                        //  groundHeight();
+                        sleep(1000);
 
-
-                        //  unrotate();
-                        // groundHeight();
                         currentState = State.traj3;
-                        drive.followTrajectorySequence(traj3);
+                       // drive.followTrajectorySequence(traj3);
                         //do code
                     }
                     break;
@@ -312,91 +265,45 @@ public class farBlueAUTO extends LinearOpMode {
 
 
                     if (!drive.isBusy()) {
-                        groundHeight();
-
-
 
                         currentState = State.traj4;
-                        drive.followTrajectorySequence(traj4);
+                       // drive.followTrajectorySequence(traj4);
                         //do code
                     }
                     break;
                 case traj4:
-                    unrotate();
-                    groundHeight();
+
                     if (!drive.isBusy()) {
-                        groundHeight();
-                        unrotate();
-                        stickDown();
-                        sleep(600);
-
-
+                        startIntake();
                         currentState = State.traj5;
-                        drive.followTrajectorySequence(traj5);
+                       // drive.followTrajectorySequence(traj5);
                         //do code
                     }
                     break;
                 case traj5:
-                    unrotate();
-                    stickDown();
-                    sleep(400);
+
                     if (!drive.isBusy()) {
-                        //rotatemore();
-                        //startIntake();
-                        stickUp();
-                        sleep(400);
+                        stopIntake();
                         currentState = State.traj6;
-                        drive.followTrajectorySequence(traj6);
+                       // drive.followTrajectorySequence(traj6);
 
                         //up+place+open
                         //do code
                     }
                     break;
-                case traj5B:
-                    if(!drive.isBusy()) {
-                        currentState = State.Idle;
-                    }
 
                 case traj6:
-                    stickUp();
-                    //rotatemore();
 
                     if (!drive.isBusy()) {
-                        //  rotatemore();
-                        unrotate();
-                        groundHeight();
-                        //  sleep(300);
-                        startIntake();
-
-                        currentState = State.traj65;
-
-                        drive.followTrajectorySequence(traj65);
-
-                        //up+place+open
-                        //do code
-                    }
-                    break;
-                case traj65:
-                    //rotatemore();
-
-                    if (!drive.isBusy()) {
-
-                        sleep(1100);
-                        stopIntake();
-                        reverseIntake();
-                        stickUp();
-                        unrotate();
-                        groundHeight();
                         currentState = State.traj7;
-                        drive.followTrajectorySequence(traj7);
+                        //drive.followTrajectorySequence(traj7);
 
                         //up+place+open
                         //do code
                     }
                     break;
                 case traj7:
-                    unrotate();
-                    stopIntake();
+
                     if (!drive.isBusy()) {
                         close();
                         maxHeight();
@@ -408,12 +315,10 @@ public class farBlueAUTO extends LinearOpMode {
                     }
                     break;
                 case traj8:
-                    unrotate();
+
                     if (!drive.isBusy()) {
                         rotate();
-                        sleep(600);
                         open();
-                        sleep(3000);
                         currentState = State.Idle;
 
                         //up+place+open
@@ -424,10 +329,8 @@ public class farBlueAUTO extends LinearOpMode {
                 case Idle:
                     break;
             }
-            unrotate();
 
         }
-        unrotate();
 
         //);
         /*
@@ -440,16 +343,11 @@ public class farBlueAUTO extends LinearOpMode {
          */
     }
     void unrotate(){
-        extenderRotator.setPosition(0.2); //0.21
+        extenderRotator.setPosition(0.2);
     }
     void rotate(){
         extenderRotator.setPosition(0.49);
     }
-    void rotatemore(){
-        groundHeightv2();
-        extenderRotator.setPosition(0.4);
-    }
-
     void open(){
         extenderPlacer.setPosition(0.0);
     }
@@ -458,7 +356,7 @@ public class farBlueAUTO extends LinearOpMode {
     }
     void startIntake(){
         intakeMotor.setPower(1.0);
-        extenderRotator.setPosition(0.2);
+        extenderRotator.setPosition(0.15);
     }
     void stopIntake(){
         intakeMotor.setPower(0.0);
@@ -473,7 +371,7 @@ public class farBlueAUTO extends LinearOpMode {
         //sends extenders to max up position. Also sets safeguard and tilts box.
         // I commented this safety feature out. What could go wrong?
         //dontTilt = false;
-        close();
+        extenderRotator.setPosition(0.24);
 
         linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
         linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
@@ -487,35 +385,11 @@ public class farBlueAUTO extends LinearOpMode {
         telemetry.addData("Slides", "HIGH");
         close();
     }
-    void stickUp() {
-        pixelStick.setPosition(0.6); //0.6
-        telemetry.addData("pixelStick",0.6);
-    }
-    void stickDown() {
-        pixelStick.setPosition(0.0); //1.0
-        telemetry.addData("pixelStick",1.0);
-    }
     void groundHeight() {
         //ground position. Should move box to prevent serious breaking issues.
         // I commented this safety feature out. What could go wrong?
         // dontTilt = true;
         unrotate();
-        open();
-
-        linearextenderLeft.setTargetPosition(0);
-        linearextenderRight.setTargetPosition(0);
-
-        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        linearextenderRight.setPower(0.9);
-        linearextenderLeft.setPower(0.9);
-        telemetry.addData("Slides", "Zeroed");
-    }
-    void groundHeightv2() {
-        //ground position. Should move box to prevent serious breaking issues.
-        // I commented this safety feature out. What could go wrong?
-        // dontTilt = true;
         open();
 
         linearextenderLeft.setTargetPosition(0);
@@ -535,28 +409,8 @@ public class farBlueAUTO extends LinearOpMode {
         //dontTilt = false;
         extenderRotator.setPosition(0.25);
 
-        linearextenderLeft.setTargetPosition((int) (33 * TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (33 * TICKS_PER_CENTIMETER));
-
-        linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        linearextenderRight.setPower(0.9);
-        linearextenderLeft.setPower(0.9);
-
-        telemetry.addData("Slides", "Low");
-        unrotate();
-        close();
-    }
-    void lowlowHeight() {
-        //low. See above.
-        unrotate();
-        // I commented this safety feature out. What could go wrong?
-        //dontTilt = false;
-        extenderRotator.setPosition(0.25);
-
-        linearextenderLeft.setTargetPosition((int) (2 * TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (2 * TICKS_PER_CENTIMETER));
+        linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
 
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);

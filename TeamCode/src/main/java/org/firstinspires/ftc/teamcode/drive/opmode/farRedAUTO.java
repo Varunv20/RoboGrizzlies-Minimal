@@ -178,10 +178,6 @@ public class farRedAUTO extends LinearOpMode {
         }
         String result = pipeline.getResult();
         telemetry.addData("rishi", result);
-        telemetry.addData("m1", pipeline.m1avg);
-        telemetry.addData("m2", pipeline.m2avg);
-        telemetry.addData("m3", pipeline.m3avg);
-
 
         telemetry.update();
         if (result == "left") {

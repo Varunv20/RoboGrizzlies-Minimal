@@ -71,8 +71,7 @@ public class farAutoBlue extends LinearOpMode {
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //controls what these do when not actively going somewhere. Usually extenders should be BRAKE.
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //controls what these dotBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearextenderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearextenderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -147,10 +146,6 @@ public class farAutoBlue extends LinearOpMode {
         sleep(10000);
         String r = pipeline.getResult();
         telemetry.addData("rishi", r);
-        telemetry.addData("m1", pipeline.m1avg);
-        telemetry.addData("m2", pipeline.m2avg);
-        telemetry.addData("m3", pipeline.m3avg);
-
 
         telemetry.update();
         waitForStart();
