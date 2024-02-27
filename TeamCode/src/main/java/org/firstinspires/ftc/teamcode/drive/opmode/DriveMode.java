@@ -36,9 +36,9 @@ public class DriveMode extends LinearOpMode {
 
     static final double FEET_PER_METER = 3.28084;
     public static double reload_constant = 1.0;
-    public static double rotate_constant = 0.49;
-    public static double unrotate_constant = 0.21;
-    public static double unrotate_constant2 = 0.26;
+    public static double rotate_constant = 0.7;
+    public static double unrotate_constant = 0.1;
+    public static double unrotate_constant2 = 0.1;
 
     public static double open_constant = 0.0;
     public static double close_constant = 0.489;
@@ -132,7 +132,7 @@ public class DriveMode extends LinearOpMode {
 
         //Now and then gobilda motors get reversed. It's a known bug and the inelegant solution is to reverse them here too.
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        linearextenderRight.setDirection(DcMotor.Direction.REVERSE);
+        linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
 
         /*This value corresponds encoder units to distance. Ticks per rotation is a function of a motor's
         drive encoder. Find wheel radius and solve for ticks per unit distance.
@@ -182,12 +182,12 @@ public class DriveMode extends LinearOpMode {
                     new Pose2d(
                             (gamepad1.left_stick_y + prev_ly)/2,
                             (gamepad1.left_stick_x+ prev_lx)/2,
-                            (gamepad1.left_stick_x+ prev_rx)/2
+                            (gamepad1.right_stick_x+ prev_rx)/2
                     )
             );
             prev_ly =  (gamepad1.left_stick_y + prev_ly)/2;
             prev_lx =  (gamepad1.left_stick_x+ prev_lx)/2;
-            prev_rx =  (gamepad1.left_stick_x+ prev_lx)/2;
+            prev_rx =  (gamepad1.right_stick_x+ prev_lx)/2;
 
             drive.update();
 
@@ -458,8 +458,8 @@ public class DriveMode extends LinearOpMode {
         unrotate();
         dontTilt = false;
 
-        linearextenderLeft.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (10 * TICKS_PER_CENTIMETER));
+        linearextenderLeft.setTargetPosition((int) (2 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (2 * TICKS_PER_CENTIMETER));
 
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
