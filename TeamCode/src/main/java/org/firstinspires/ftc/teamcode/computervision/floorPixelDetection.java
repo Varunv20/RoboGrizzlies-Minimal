@@ -39,7 +39,7 @@ public class floorPixelDetection extends OpenCvPipeline {
     }
 
     public floorPixelDetection() {
-        //  this.telemetry = telemetry;
+
     }
     public double avg(double[] a) {
         double sum = 0;
@@ -100,22 +100,39 @@ public class floorPixelDetection extends OpenCvPipeline {
 
     }
 
-    @Override
-    public Mat processFrame(Mat input1) {
-        // Executed every time a new frame is dispatched
-        int[][] coords = new int[(int) input1.height()/5][(int) input1.width()/12];
+    public int[][] setArrayVal(int[][] arr, int x, int y) {
+        arr[y][x] += 1;
+        return arr;
+    }
+    public int[][] initArray(int height, int width) {
+
+        int[][] coords = new int[height][width];
         for (int i = 0; i < 5; i++) {
-            for (int j = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
 
                 coords[i][j] = 0;
             }
         }
-        Random r = new Random();
-        double max_a = 0;
+        return coords;
+    }
+
+    @Override
+    public Mat processFrame(Mat input1) {
+        // Executed every time a new frame is dispatched
 
         if (run) {
+            int[][] coords = initArray(5, 12);
+            Random r = new Random();
+            double max_a = 0;
+            int ec = 0;
+            int x10 = 0;
+            int y10 = 0;
 
-            for (int i = input1.height()/2; i < input1.height()-20; i+=12){
+            int x11 = 0;
+
+
+            for (int i = input1.height()/2; i < input1.height()-40; i+=40){
+
                 for (int j = 20; j < input1.width()-20; j+=9){
                     int i_r = r.nextInt(5) + i;
                     int j_r = r.nextInt(5) + j;
@@ -134,28 +151,40 @@ public class floorPixelDetection extends OpenCvPipeline {
                     boolean edge = Math.abs(a) > floor && Math.abs(a)  < ceil;
 
                     if (edge) {
-                        int p_x = (int) j_r/12;
-                        int p_y = (int) j_r/4;
+                        ec += 1;
+                        int p_x = (int) (12 * j_r/ input1.width());
+                        int p_y = (int)  (5 * i_r/ input1.height());
+                        x10 = p_x;
+                        y10 = p_y;
 
-                        coords[p_y][p_x] += 1;
+                        coords = setArrayVal(coords, p_x, p_y);
+                        x11 = coords[p_y][p_x];
+                    }
+                    if (j_r == 2 || j_r == 1) {
+                        i +=6;
                     }
 
 
                 }
             }
+            int c10 = coords[y10][x10];
+            int ck = 0;
             int edge_max = 0;
             for (int i = 0; i < 5; i++) {
-                for (int j = 0; i < 12; i++) {
-
-                    if (coords[i][j] > edge_max){
+                for (int j = 0; j < 12; j++) {
+                    ck = coords[i][j];
+                    if (ck > edge_max){
                         edge_max = coords[i][j];
                         max_x = j;
                         max_y = i;
                     }
                 }
             }
+            max_y -= 2.5;
+            max_x -= 6;
 
-            String text = "x" + Integer.toString(max_x) + " " + "y" + Integer.toString(max_y);
+
+            String text = "x" + Integer.toString(max_x) + " " + "y" + Integer.toString(max_y) + "ex" + Integer.toString(coords[2][2] );
             Point position = new Point(170, 280);
             Scalar color = new Scalar(0, 0, 255);
             int font = Imgproc.FONT_HERSHEY_SIMPLEX;

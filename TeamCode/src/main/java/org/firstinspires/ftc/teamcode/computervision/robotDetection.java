@@ -107,7 +107,7 @@ public class robotDetection extends OpenCvPipeline {
         double max_a = 0;
         if (run) {
 
-            for (int i = input1.height()/2; i < input1.height()-20; i+=12){
+            for (int i = input1.height()/2; i < input1.height()-40; i+=40){
                 for (int j = 20; j < input1.width()-20; j+=9){
                     int i_r = r.nextInt(5) + i;
                     int j_r = r.nextInt(5) + j;
@@ -142,11 +142,15 @@ public class robotDetection extends OpenCvPipeline {
                             right_edge += 1;
                         }
                     }
+                    if (j_r == 2 || j_r == 1) {
+                        i +=12;
+                    }
+
 
 
                 }
             }
-            if (left_edge > right_edge *1 && left_edge > center_edge*1) {
+            if (left_edge > right_edge *1.5 && left_edge > center_edge*1.5) {
                 left = true;
                 Imgproc.rectangle (
                         input1,                    //Matrix obj of the image
@@ -156,7 +160,7 @@ public class robotDetection extends OpenCvPipeline {
                         5                          //Thickness of the line
                 );
             }
-            else if (right_edge > left_edge*1 && right_edge > center_edge*1) {
+            else if (right_edge > left_edge*1.5 && right_edge > center_edge*1.5) {
                 right = true;
                 Imgproc.rectangle (
                         input1,                    //Matrix obj of the image
@@ -166,7 +170,7 @@ public class robotDetection extends OpenCvPipeline {
                         5                          //Thickness of the line
                 );
             }
-            else if (center_edge > left_edge*1 && center_edge > right_edge*1) {
+            else if (center_edge > left_edge*1.5 && center_edge > right_edge*1.5) {
                 center = true;
 
                 Imgproc.rectangle (

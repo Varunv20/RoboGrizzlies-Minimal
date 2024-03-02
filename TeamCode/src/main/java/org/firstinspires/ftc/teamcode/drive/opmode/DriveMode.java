@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.computervision.floorPixelDetection;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -32,23 +34,28 @@ import java.lang.Math;
 @TeleOp(name="DriverOP2/21ONECONTROLLER", group="Driver OP")
 public class DriveMode extends LinearOpMode {
     OpenCvCamera camera;
+    OpenCvCamera intake_camera;
+    public static String alex = "Hi Baboon!";
+
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
     static final double FEET_PER_METER = 3.28084;
     public static double reload_constant = 1.0;
     public static double rotate_constant = 0.7;
     public static double unrotate_constant = 0.1;
-    public static double unrotate_constant2 = 0.1;
+    public static double unrotate_constant2 = 0.15;
 
     public static double open_constant = 0.0;
     public static double close_constant = 0.489;
     public static double launch_constant = 0.3;
-    public static double up_constant = 1.3;
+    public static double up_constant = 1.0;
 
     public static double leftChopstickP1 = 0.7;
     public static double leftChopstickP2 = 0.0;
     public static double rightChopstickP1 = 0.0;
     public static double rightChopstickP2 = 0.7;
+    public static double xp = 1.0;
+    public static double yp = 1.0;
 
     public static int chopstickSleep = 300;
 
@@ -110,6 +117,7 @@ public class DriveMode extends LinearOpMode {
         linearextenderLeft = hardwareMap.get(DcMotor.class, "linearextenderLeft");
         linearextenderRight = hardwareMap.get(DcMotor.class, "linearextenderRight");
 
+
         linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearextenderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //Servos also need to be mapped!
@@ -132,7 +140,7 @@ public class DriveMode extends LinearOpMode {
 
         //Now and then gobilda motors get reversed. It's a known bug and the inelegant solution is to reverse them here too.
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
+        //linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
 
         /*This value corresponds encoder units to distance. Ticks per rotation is a function of a motor's
         drive encoder. Find wheel radius and solve for ticks per unit distance.
@@ -162,6 +170,43 @@ public class DriveMode extends LinearOpMode {
 // did you use the open cv april tag
             }
         });
+        /*
+        intake_camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "intake_camera"), cameraMonitorViewId);
+        floorPixelDetection fl = new floorPixelDetection();
+        intake_camera.setPipeline(fl);
+        intake_camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                intake_camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+// did you use the open cv april tag
+            }
+        });
+*/
+        //intake_camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "intake_camera"), cameraMonitorViewId);
+        //floorPixelDetection pixelPipeline = new floorPixelDetection();
+        //intake_camera.setPipeline(aprilTagDetectionPipeline);
+
+       /* intake_camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                intake_camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+// did you use the open cv april tag
+            }
+        });*/
         waitForStart(); //THIS OPMODE IS CONFIGURED FOR LINEAROPMODE. If this line is erroring, that may be the issue. Look up opmode vs linearopmode.
 
 
@@ -170,7 +215,10 @@ public class DriveMode extends LinearOpMode {
         float prev_lx = (float) 0.0;
         float prev_rx = (float) 0.0;
         boolean s = true;
+        unrotate();
         while (!isStopRequested()) {
+        //    unrotate();
+            /*
             //THIS IS WIZARDRY. Someone please figure it out.
             if (s) {
                 prev_ly =  gamepad1.left_stick_y;
@@ -178,18 +226,22 @@ public class DriveMode extends LinearOpMode {
                 prev_rx =  gamepad1.right_stick_x;
                 s = false;
             }
+            */
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            (gamepad1.left_stick_y + prev_ly)/2,
-                            (gamepad1.left_stick_x+ prev_lx)/2,
-                            (gamepad1.right_stick_x+ prev_rx)/2
+                            gamepad1.left_stick_y,
+                            gamepad1.left_stick_x * -1,
+                            gamepad1.right_stick_x*-1
+
                     )
             );
+            /*
             prev_ly =  (gamepad1.left_stick_y + prev_ly)/2;
             prev_lx =  (gamepad1.left_stick_x+ prev_lx)/2;
-            prev_rx =  (gamepad1.right_stick_x+ prev_lx)/2;
-
+            prev_rx =  (gamepad1.right_stick_x+ prev_rx)/2;
+*/
             drive.update();
+           // unrotate();
 
             //telemetry for pixel sensor prototype. To be updated.
 
@@ -205,6 +257,7 @@ public class DriveMode extends LinearOpMode {
             }
 
 
+         //   unrotate();
 
             telemetry.addData("RotatorPosition: ", extenderRotator.getPosition());
             telemetry.addData("theta: ", theta);
@@ -219,7 +272,7 @@ public class DriveMode extends LinearOpMode {
                 groundHeight();
                 telemetry.addData("Slides", "Zeroed");
 
-            } else if (gamepad1.x) {
+            } else if (gamepad1.dpad_left) {
                 //medium. See above.
 
 
@@ -231,7 +284,7 @@ public class DriveMode extends LinearOpMode {
             }
 
 
-            if (gamepad1.right_bumper && (!dontTilt || safetyOverride )) {
+            if (gamepad1.right_bumper) {
                 rotate();
             }
             if (gamepad1.left_bumper) {
@@ -242,7 +295,7 @@ public class DriveMode extends LinearOpMode {
             if (gamepad1.right_trigger > 0.5){
                 // toggles intake.
                 //to avoid funny issues this ony works when box is down. This also helps with power draw.
-                startIntake();
+                intakeReady();
                 //extenderRotator.setPosition(0.215);//0.24+theta);
             }
             if(gamepad1.right_trigger> 0.5 && gamepad1.guide){
@@ -254,31 +307,44 @@ public class DriveMode extends LinearOpMode {
             if (gamepad1.left_trigger > 0.5 ) {
                 // toggles intake
                 //stop always works. The intake auto stops when up.
-                stopIntake();
-                unrotate();
+                intakeUnReady();
             }
             if (gamepad1.dpad_right){
                 // door control. Fairly intuitive.
                 open();
             }
-            if (gamepad1.dpad_left && (!dontTilt||safetyOverride)) {
+            if (gamepad1.dpad_left ) {
                 // also door control. Again Don'tTilt is used to prevent errors.
                 close();
             }
-            if (gamepad1.dpad_down) {
+            if (gamepad1.dpad_down && gamepad1.guide) {
                 launchPlane();
                 //Self Explanatory, no? this is the benefit of not naming everything beans.
             }
-            if (gamepad1.left_trigger > 0.3 && gamepad1.guide) {
+            if (gamepad1.dpad_up ) {
                 eatPixels();
             }
-            if (gamepad2.dpad_up){
-                unrotatemore();
-                cHeight();
+            if (gamepad1.dpad_down){
+                openChopsticks();
             }
-            if (gamepad1.dpad_up) {
-               apriltagstuff();
-                //tilt up for pixel stuck issue
+            if (gamepad1.left_stick_button) {
+                apriltagstuff();
+            }
+
+
+            if (gamepad1.right_stick_button) {
+                visionPortal.stopStreaming();
+              /*  fl.run = true;
+                while (fl.run) {
+                    sleep(50);
+                }
+                double x = xp * Math.pow(fl.max_x,2);
+                double y = yp * Math.pow(fl.max_y,2);
+                line(x,y);
+
+                visionPortal.resumeStreaming();
+                //tilt up for pixel stuck issue*/
+
 
             }
             if (gamepad1.left_stick_button && gamepad1.right_stick_button){
@@ -289,18 +355,6 @@ public class DriveMode extends LinearOpMode {
                 dontTilt = false;
                 telemetry.addData("SAFETY OVERRIDE", "ALL SAFEGUARDS DISABLED!!!");
                 //the "I KNOW WHAT I'M DOING" method. Use to override dontTilt and all associated safety features.
-            }
-            if (gamepad1.guide && gamepad1.dpad_up) {
-                if (streaming) {
-                    visionPortal.stopStreaming();
-                    streaming = false;
-                }
-                else {
-
-                    visionPortal.resumeStreaming();
-                    streaming = true;
-                }
-
             }
             if(gamepad1.start){
                 linearextenderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -323,7 +377,7 @@ public class DriveMode extends LinearOpMode {
 
                 telemetry.addData("EMERGENCY DOWNSHIFT", "!!!!!");
             }
-            /*if(gamepad1.right_bumper && gamepad1.guide) {
+            /*if(gamepad1.right_bumperright_bumper && gamepad1.guide) {
                 theta+=0.01; //This code exists to recalibrate the box. Uncomment to use.
                 extenderRotator.setPosition(theta);
             }
@@ -340,6 +394,7 @@ public class DriveMode extends LinearOpMode {
         {
             telemetry.addData("FPS", camera.getFps());
             telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
+            //
             telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
 
             // If we don't see any tags
@@ -399,6 +454,17 @@ public class DriveMode extends LinearOpMode {
 
         }
     }
+    public void intakeReady(){
+     cHeight();
+     unrotatemore();
+     openChopsticks();
+     startIntake();
+    }
+    public void intakeUnReady(){
+        groundHeight();
+        unrotate();
+        stopIntake();
+    }
     private void initAprilTag() {
 
         // Create the AprilTag processor the easy way.
@@ -415,10 +481,10 @@ public class DriveMode extends LinearOpMode {
      */
     private void maxHeight() {
         dontTilt = false;
-        extenderRotator.setPosition(0.19);//0.21+theta);
+     //   extenderRotator.setPosition(0.19);//0.21+theta);
 
-        linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
-        linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
+        linearextenderLeft.setTargetPosition((int) (63 * TICKS_PER_CENTIMETER));
+        linearextenderRight.setTargetPosition((int) (63 * TICKS_PER_CENTIMETER));
 
         linearextenderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearextenderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -536,6 +602,12 @@ public class DriveMode extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(traj1);
     }
+    void line(double x, double y){
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineTo(new Vector2d(drive.getPoseEstimate().getX() + x, drive.getPoseEstimate().getY() + y))
+                .build();
+        drive.followTrajectorySequence(traj1);
+    }
     void openChopsticks() {
         rightChopstick.setPosition(rightChopstickP1);
         leftChopstick.setPosition(leftChopstickP1);
@@ -566,6 +638,7 @@ public class DriveMode extends LinearOpMode {
     void unrotatemore(){
         extenderRotator.setPosition(unrotate_constant2);//0.52+theta);
     }
+    void rotatemore(){extenderRotator.setPosition(1.0);}
 
     void open(){
         extenderPlacer.setPosition(open_constant);

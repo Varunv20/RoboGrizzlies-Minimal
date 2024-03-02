@@ -43,23 +43,15 @@ public class MeepMeepTesting {
                                 .build()
                 );
         int red = 1;
-        RoadRunnerBotEntity blueCENTER = new DefaultBotBuilder(meepMeep)
+        RoadRunnerBotEntity blueR = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(70, 70, Math.toRadians(180), Math.toRadians(180), 18)
+                .setConstraints(50, 70, Math.toRadians(180), Math.toRadians(180), 18)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-36, 63.25*red, Math.toRadians(90 * red)))
-                                .back(32)
+                        drive.trajectorySequenceBuilder(new Pose2d(12, 63.25*red, Math.toRadians(90 * red)))
+                                .lineToLinearHeading(new Pose2d(12,34.75* red, Math.toRadians(90* red)))
+                                .forward(8)
+                                .lineToLinearHeading(new Pose2d(43 , 36* red, Math.toRadians(180* red)))
 
-                                .forward(1.5)
-                                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
-                                .lineToLinearHeading(new Pose2d(-57, 42* red, Math.toRadians(180* red)))
-                                .splineToConstantHeading(new Vector2d(-36,60* red), Math.toRadians(0* red))
-                                .splineToConstantHeading(new Vector2d(-30, 60* red), Math.toRadians(0* red))
-
-                                .splineToConstantHeading(new Vector2d(24,60* red), Math.toRadians(0* red))
-                                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
-                                .back(3.9)
-                                .forward(2)
                                 .splineTo(new Vector2d(24,60* red), Math.toRadians(180* red))
                                 .lineToLinearHeading(new Pose2d(-36, 60* red, Math.toRadians(180* red)))
                                 .splineToConstantHeading(new Vector2d(-57,36* red), Math.toRadians(180* red))
@@ -85,8 +77,7 @@ public class MeepMeepTesting {
                                 .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
                                 .splineToConstantHeading(new Vector2d(43.25,32* red), Math.toRadians(0* red))
                                 .back(2)
-                                .lineToLinearHeading(new Pose2d(43.25, 60* red, Math.toRadians(180* red)))
-                                .back(15)
+
 
 
 
@@ -98,6 +89,80 @@ public class MeepMeepTesting {
 
                                 // .splineTo(new Vector2d(53, 30), Math.toRadians(0))
 
+
+                                .build()
+                );
+        RoadRunnerBotEntity blueCENTER = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(50, 70, Math.toRadians(180), Math.toRadians(180), 18)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(new Pose2d(-36, 63.25*red, Math.toRadians(90 * red)))
+                                .back(32)
+
+                                .forward(1.5)
+                                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
+                                .lineToLinearHeading(new Pose2d(-57, 42* red, Math.toRadians(180* red)))
+                                .splineToConstantHeading(new Vector2d(-36,60* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(-30, 60* red), Math.toRadians(0* red))
+
+                                .splineToConstantHeading(new Vector2d(24,60* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
+                                .back(0.1)
+                                .forward(0.1)
+                                .splineTo(new Vector2d(24,60* red), Math.toRadians(180* red))
+                                .lineToLinearHeading(new Pose2d(-36, 60* red, Math.toRadians(180* red)))
+                                .splineToConstantHeading(new Vector2d(-57,36* red), Math.toRadians(180* red))
+                                .lineToLinearHeading(new Pose2d(-61 , 36* red, Math.toRadians(180* red)))
+
+                                .lineToLinearHeading(new Pose2d(-57, 30* red, Math.toRadians(180* red)))
+                                .splineToConstantHeading(new Vector2d(-36,10* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(-30, 10* red), Math.toRadians(0* red))
+
+                                .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(43.25,40* red), Math.toRadians(0* red))
+                                .back(0.1)
+                                .forward(0.1)
+
+                                .splineTo(new Vector2d(24,12* red), Math.toRadians(180* red))
+                                .lineToLinearHeading(new Pose2d(-36, 12* red, Math.toRadians(180* red)))
+                                .splineToConstantHeading(new Vector2d(-57,12* red), Math.toRadians(180* red))
+                                .lineToLinearHeading(new Pose2d(-61 , 12* red, Math.toRadians(180* red)))
+
+                                .lineToLinearHeading(new Pose2d(-57, 12* red, Math.toRadians(180* red)))
+                                .splineToConstantHeading(new Vector2d(-36,10* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(-30, 10* red), Math.toRadians(0* red))
+
+                                .splineToConstantHeading(new Vector2d(24,10* red), Math.toRadians(0* red))
+                                .splineToConstantHeading(new Vector2d(43.25,32* red), Math.toRadians(0* red))
+                                .back(2)
+
+
+
+
+
+                                // .back(5)
+                                //intake
+                                // .forward(5)
+                                // .splineTo(new Vector2d(0, 6), Math.toRadians(180))
+
+                                // .splineTo(new Vector2d(53, 30), Math.toRadians(0))
+
+
+                                .build()
+                );
+        RoadRunnerBotEntity blueClose = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(new Pose2d(-34, -63.25, Math.toRadians(90)))
+
+
+                                .lineToLinearHeading(new Pose2d(12,34.75, Math.toRadians(90)))
+                                .forward(8)
+                                .splineTo(new Vector2d(24,60), Math.toRadians(180))
+                                .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(180)))
+                                .splineToConstantHeading(new Vector2d(-57,36), Math.toRadians(180))
+                                .lineToLinearHeading(new Pose2d(-61, 36, Math.toRadians(180)))
 
                                 .build()
                 );
@@ -175,6 +240,8 @@ public class MeepMeepTesting {
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(blueCENTER)
+                .addEntity(blueR)
+
                 .start();
     }
 }

@@ -40,6 +40,7 @@ public class eocvTeamProp extends OpenCvPipeline {
     public Mat processFrame(Mat input1) {
         // Executed every time a new frame is dispatched
 
+        //run = true;
         if (run) {
 
             Integer[] redheights = new Integer[input1.width()/3];
@@ -48,16 +49,16 @@ public class eocvTeamProp extends OpenCvPipeline {
             int right_counter = 0;
 
 
-            for (int y = 0; y < input1.width()/3; y++) {
+            for (int y = 0; y < input1.width(); y+=8) {
                 int icounter = 0;
                 long s = System.nanoTime();
-                for (int x = input1.height()/4; x < input1.height()-input1.height()/4; x+=3) {
+                for (int x = input1.height()/4; x < input1.height()-input1.height()/4; x+=30) {
 
-                    double[] i = input1.get(x, y*3);
+                    double[] i = input1.get(x, y);
 
 
                     if (is_red(i)) {
-                        int i111 =(int)y*9/ (input1.width()/3);
+                        int i111 =(int)y/ (input1.width()/3);
                         if (i111 == 0){
                             left_counter++;
                         }
@@ -70,6 +71,7 @@ public class eocvTeamProp extends OpenCvPipeline {
 
                     }
 
+
                 }
                 long e = System.nanoTime();
 
@@ -78,7 +80,14 @@ public class eocvTeamProp extends OpenCvPipeline {
 
             }
 
-
+           if (center_counter == 0) {
+                center_counter = 1;
+            }
+            if (right_counter == 0) {
+                right_counter = 1;
+            }if (left_counter == 0) {
+                left_counter = 1;
+            }
             if (left_counter / center_counter > 1.4 && left_counter / right_counter > 1.15) {
                 result = "left";
             } else if (right_counter / center_counter > 1.4 && right_counter / left_counter > 1.15) {
@@ -88,7 +97,7 @@ public class eocvTeamProp extends OpenCvPipeline {
             }
 
 
-            run = true;
+            run = false;
 
         }
         return input1; // Return the image that will be displayed in the viewport

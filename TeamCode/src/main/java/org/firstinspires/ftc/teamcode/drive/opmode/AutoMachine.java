@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 // package com.example.meepmeeptesting;
 
+import android.sax.StartElementListener;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -43,7 +45,7 @@ public class AutoMachine  {
     public DcMotor linearextenderLeft;
     public DcMotor linearextenderRight;
     public DcMotor intakeMotor;
-
+    OpenCvCamera intake_camera;
     public Servo claws;
     public static double reload_constant = 1.0;
     public static double rotate_constant = 0.49;
@@ -118,10 +120,14 @@ public class AutoMachine  {
 
             //Now and then gobilda motors get reversed. It's a known bug and the inelegant solution is to reverse them here too.
             intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-            linearextenderRight.setDirection(DcMotor.Direction.REVERSE);
+            linearextenderLeft.setDirection(DcMotor.Direction.REVERSE);
             int cameraMonitorViewId = l.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", l.hardwareMap.appContext.getPackageName());
             webcam = OpenCvCameraFactory.getInstance().createWebcam(l.hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-            final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
+            //intake_camera = OpenCvCameraFactory.getInstance().createWebcam(l.hardwareMap.get(WebcamName.class, "intake_camera"), cameraMonitorViewId);
+             l.telemetry.addData("point1", "1");
+             l.telemetry.update();
+
+        final double TICKS_PER_CENTIMETER = 537.7 / 11.2;
             AutoTrajectories a = new AutoTrajectories();
             a.drive = drive;
             a.op = this;
@@ -136,7 +142,10 @@ public class AutoMachine  {
             drive.setPoseEstimate(a.startpos);
             eocvTeamProp pipeline = new eocvTeamProp();
             robotDetection r = new robotDetection();
-            webcam.setPipeline(pipeline);
+        robotDetection rIntake = new robotDetection();
+        l.telemetry.addData("point2", "1");
+        l.telemetry.update();
+        webcam.setPipeline(pipeline);
 
             webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
 
@@ -158,13 +167,48 @@ public class AutoMachine  {
 
                 }
             });
-            pipeline.red = false;
-            l.waitForStart();
+       // intake_camera.setPipeline(rIntake);
+        /*intake_camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
 
-            pipeline.setRun();
-            while (pipeline.run) {
+        {
+            @Override
+            public void onOpened()
+            {
+
+                intake_camera.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+
+                  This will be called if the camera could not be opened
+
+
+            }
+        });
+*/
+
+            pipeline.red = false;
+        l.telemetry.addData("point3", "1");
+        l.telemetry.update();
+        l.waitForStart();
+        l.telemetry.addData("point4", "1");
+
+
+        pipeline.setRun();
+            while (pipeline.run && !l.isStopRequested()) {
+                l.telemetry.addData("point4", pipeline.run);
+                l.telemetry.addData("result", pipeline.result);
+
+                l.telemetry.update();
+
                 l.sleep(100);
             }
+            if (l.isStopRequested()) return;
+
+
             String result = pipeline.getResult();
             webcam.setPipeline( r);
 
@@ -188,17 +232,12 @@ public class AutoMachine  {
             TrajectorySequence  park;
 
             traj1 = a.getTraj1(result);
-            traj2 = a.getTraj2();
-            traj3 = a.getTraj3();
             traj4 = a.getTraj4();
             traj4e = a.getTraj4Edge();
-            traj5 = a.getTraj5();
-            traj6 = a.getTraj6();
-            traj65 = a.getTraj65();
+
             traj7 = a.getTraj7();
             traj7c = a.getTraj7Middle();
 
-            traj8 = a.getTraj8();
             traj9 = a.getTraj9();
             traj10 = a.getTraj10();
 
@@ -211,10 +250,10 @@ public class AutoMachine  {
 
 
             if(l.isStopRequested()) return;
-            if (close) {
-                lowHeight();
-            }
+            lowHeight();
 
+        l.telemetry.addData("point5", "1");
+        l.telemetry.update();
             //stickUp();
             currentState = State.traj1;
             drive.followTrajectorySequence(traj1);
@@ -223,82 +262,44 @@ public class AutoMachine  {
                 switch (currentState) {
 
                     case traj1:
+
                         if (lift) {
                             close();
-                            maxHeight();
+                            midHeight();
                             rotate();
 
+
                         }
-
-
-                        if (!drive.isBusy()) {
-                            r.run = true;
-                            currentState = State.traj2;
-                            open();
-                            while (r.run) {
-                                l.sleep(100);
-                            }
-                            if (cycle) {
-                                currentState = State.traj4;
-
-                                while (r.run) {
-                                    l.sleep(100);
-                                }
-                                if (r.right) {
-                                    drive.followTrajectorySequence(traj4);
-
-                                }
-                                else {
-                                    drive.followTrajectorySequence(traj4e);
-                                }
-
-                            }
-                            else {
-                                currentState= State.park;
-                                drive.followTrajectorySequence(park);
-                            }
-                            //do code
-                        }
-                        break;
-                    case traj2:
-
-                        if (!drive.isBusy()) {
-
-                            open();
-                            l.sleep((long) sleep2);
-                            // unrotate();
-                            //  groundHeight();
-
-
-                            //  unrotate();
-                            // groundHeight();
-                            r.run = true;
-
-                            currentState = State.traj3;
-                            drive.followTrajectorySequence(traj3);
-                            //do code
-                        }
-                        break;
-                    case traj3:
-
-
-                        if (!drive.isBusy()) {
+                        else {
+                            unrotate();
                             groundHeight();
+                            open();
+
+                        }
 
 
+
+                        if (!drive.isBusy()) {
+                           // rIntake.run = true;
+                            open();
+                            l.sleep(7000);
+                            lift = false;
+                           // while (rIntake.run && !l.isStopRequested()) {
+                           //     l.sleep(100);
+                           // }
                             if (cycle) {
                                 currentState = State.traj4;
 
-                                while (r.run) {
-                                    l.sleep(100);
-                                }
-                                if (r.right) {
+                               // while (rIntake.run && !l.isStopRequested()) {
+                               //     l.sleep(100);
+                               // }
+                              //  if (rIntake.right) {
                                     drive.followTrajectorySequence(traj4);
 
-                                }
-                                else {
-                                    drive.followTrajectorySequence(traj4e);
-                                }
+                               // }
+                               // else {
+                               //     drive.followTrajectorySequence(traj4e);
+                               /// }
 
                             }
                             else {
@@ -308,10 +309,10 @@ public class AutoMachine  {
                             //do code
                         }
                         break;
+
                     case traj4:
-                        unrotate();
-                        groundHeight();
                         if (!drive.isBusy()) {
+
                             r.run = true;
                             startIntake();
                             eatPixels();
@@ -320,7 +321,7 @@ public class AutoMachine  {
                             eatPixels();
                             r.reset();
 
-                            while (r.run) {
+                            while (r.run && !l.isStopRequested()) {
                                 l.sleep(100);
                             }
                             if (r.right) {
@@ -335,64 +336,7 @@ public class AutoMachine  {
                             //do code
                         }
                         break;
-                    case traj5:
-                        unrotate();
-                       // stickDown();
-                        l.sleep(400);
-                        if (!drive.isBusy()) {
-                            //rotatemore();
-                            //startIntake();
-                           // stickUp();
-                            l.sleep(400);
-                            currentState = State.traj6;
-                            drive.followTrajectorySequence(traj6);
 
-                            //up+place+open
-                            //do code
-                        }
-                        break;
-                    case traj5B:
-                        if(!drive.isBusy()) {
-                            currentState = State.Idle;
-                        }
-
-                    case traj6:
-                       // stickUp();
-                        //rotatemore();
-
-                        if (!drive.isBusy()) {
-                            //  rotatemore();
-                            unrotate();
-                            groundHeight();
-                            //  sleep(300);
-                            startIntake();
-
-                            currentState = State.traj65;
-
-                            drive.followTrajectorySequence(traj65);
-
-                            //up+place+open
-                            //do code
-                        }
-                        break;
-                    case traj65:
-                        //rotatemore();
-
-                        if (!drive.isBusy()) {
-
-                            l.sleep(1100);
-                            stopIntake();
-                         //   reverseIntake();
-                           // stickUp();
-                            unrotate();
-                            groundHeight();
-                            currentState = State.traj7;
-                            drive.followTrajectorySequence(traj7);
-
-                            //up+place+open
-                            //do code
-                        }
-                        break;
                     case traj7:
                         unrotate();
                         stopIntake();
@@ -406,6 +350,8 @@ public class AutoMachine  {
 
                             open();
                             l.sleep(400);
+
+                            lift = false;
                             currentState = State.traj9;
                             drive.followTrajectorySequence(traj9);
 
@@ -438,17 +384,12 @@ public class AutoMachine  {
                     case traj10:
                         unrotate();
                         stopIntake();
-                        if (lift) {
-                            close();
 
-                            maxHeight();
-                            rotate();
-                        }
                         if (!drive.isBusy()) {
                             open();
                             l.sleep(400);
-                            currentState = State.park;
-                            drive.followTrajectorySequence(park);
+                            currentState = State.Idle;
+                         //   drive.followTrajectorySequence(park);
 
                             //up+place+open
                             //do code
@@ -462,10 +403,23 @@ public class AutoMachine  {
                     case Idle:
                         break;
                 }
-                unrotate();
+                if (lift) {
+                    close();
+                    maxHeight();
+                    rotate();
+
+
+                }
+                else {
+                    unrotate();
+                    groundHeight();
+                    open();
+
+                }
+
 
             }
-            unrotate();
+            return;
         }
 
 
@@ -473,7 +427,6 @@ public class AutoMachine  {
      * Add telemetry about AprilTag detections.
      */
     private void maxHeight() {
-        extenderRotator.setPosition(0.19);//0.21+theta);
 
         linearextenderLeft.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
         linearextenderRight.setTargetPosition((int) (65 * TICKS_PER_CENTIMETER));
@@ -487,7 +440,6 @@ public class AutoMachine  {
         close();
     }
     private void midHeight() {
-        extenderRotator.setPosition(0.19);//0.21+theta);
 
         linearextenderLeft.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
         linearextenderRight.setTargetPosition((int) (50 * TICKS_PER_CENTIMETER));
@@ -525,6 +477,7 @@ public class AutoMachine  {
         close();
     }
     private void groundHeight() {
+        unrotate();
         linearextenderLeft.setTargetPosition(0);
         linearextenderRight.setTargetPosition(0);
 
@@ -533,6 +486,7 @@ public class AutoMachine  {
 
         linearextenderRight.setPower(1.0);
         linearextenderLeft.setPower(1.0);
+        unrotate();
     }
     /*
     methods. They are separate from the buttons because sometimes they are called in

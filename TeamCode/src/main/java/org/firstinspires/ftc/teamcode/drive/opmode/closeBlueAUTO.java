@@ -36,9 +36,12 @@ public class closeBlueAUTO extends LinearOpMode {
 
 
 
+
     public void runOpMode() { //static
         AutoMachine am = new AutoMachine();
         am.runAUTO( this,true, false, true, true);
+        if (isStopRequested()) {
 
+        }
     }
 }
